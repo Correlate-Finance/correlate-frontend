@@ -17,7 +17,7 @@ import Results, {CorrelationDataPoint} from "@/components/Results"
 
 
 
-const page = () => {
+const Page = () => {
   const [isLoading, setLoading] = useState(false);
   const [hasData, setHasData] = useState(false);
   const [data, setDataArray] = useState<CorrelationDataPoint[]>([]);
@@ -31,7 +31,6 @@ const page = () => {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Fetching");
     setLoading(true)
 
     const res = await fetch(`api/fetch?stock=${values.ticker}`);
@@ -41,12 +40,8 @@ const page = () => {
     setLoading(false)
     
     const arrData = jsonData.data.data as CorrelationDataPoint[]
-    console.log(arrData[0].title)
-    console.log(typeof arrData)
     
     setDataArray(arrData)
-    
-    
     setHasData(true)
   }
 
@@ -107,4 +102,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

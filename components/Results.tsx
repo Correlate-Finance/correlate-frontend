@@ -21,9 +21,6 @@ export type CorrelationDataPoint = {
 }
 
 const Results: React.FC<MyComponentProps> = ({ data }) => {
-    console.log("rendering results")
-    console.log(data)
-
     return (
         <div className='text-white border-white'>
             <Table>
