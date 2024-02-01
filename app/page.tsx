@@ -33,14 +33,11 @@ const Page = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true)
 
-    const res = await fetch(`api/fetch?stock=${values.ticker}`);
+    const res = await fetch(`api/fetch?stock=${values.ticker}&startYear=${values.startYear}`);
     const jsonData = await res.json()
 
-    
-    setLoading(false)
-    
+    setLoading(false)    
     const arrData = jsonData.data.data as CorrelationDataPoint[]
-    
     setDataArray(arrData)
     setHasData(true)
   }
@@ -81,7 +78,7 @@ const Page = () => {
                 <FormItem>
                   <FormLabel>Start Year</FormLabel>
                   <FormControl>
-                    <Input placeholder="2018" {...field} />
+                    <Input placeholder="2010" {...field} />
                   </FormControl>
                   <FormDescription>
                     The year to correlate from.
