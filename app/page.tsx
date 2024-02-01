@@ -16,7 +16,7 @@ import { z } from "zod"
 import Results, { CorrelationDataPoint } from "@/components/Results"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import InputData from "@/components/InputData"
-import { DataPointsSchema } from "./api/revenue/route"
+import { RevenueResponseSchema } from "./api/schema"
 
 
 
@@ -56,7 +56,7 @@ const Page = () => {
     const res = await fetch(`api/revenue?stock=${values.ticker}&startYear=${values.startYear}`);
     const jsonData = await res.json()
 
-    const parsed = DataPointsSchema.parse(jsonData.data);
+    const parsed = RevenueResponseSchema.parse(jsonData.data);
 
     const parsedData = parsed.map(x => [x.date, x.value])
     setRevenueData(parsedData)
