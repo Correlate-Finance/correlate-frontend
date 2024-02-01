@@ -46,7 +46,7 @@ const Page = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       ticker: "AAPL",
-      startYear: 2018,
+      startYear: 2010,
     },
   })
 
