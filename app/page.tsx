@@ -18,14 +18,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import InputData from "@/components/InputData"
 import { RevenueResponseSchema } from "./api/schema"
 
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 
 const Page = () => {
   const [isLoading, setLoading] = useState(false);
   const [hasData, setHasData] = useState(false);
   const [data, setDataArray] = useState<CorrelationDataPoint[]>([]);
-  const [revenueData, setRevenueData] = useState<(string|number)[][]>();
+  const [revenueData, setRevenueData] = useState<(string | number)[][]>();
 
   const [inputData, setInputData] = useState("");
   console.log(inputData)
@@ -34,14 +40,16 @@ const Page = () => {
     ticker: z.string().min(2, {
       message: "Stock Ticker must be at least 2 characters.",
     }),
-    startYear: z.number().max(2023, { message: "Year needs to be lower than 2023" }).min(2000, { message: "Year needs to be higher than 2000" })
+    startYear: z.coerce.number().max(2023, { message: "Year needs to be lower than 2023" }).min(2000, { message: "Year needs to be higher than 2000" }),
+    aggregationPeriod: z.string()
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
     getRevenueData(values)
     setLoading(true)
 
-    const res = await fetch(`api/fetch?stock=${values.ticker}&startYear=${values.startYear}`);
+    const res = await fetch(`api/fetch?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}`);
     const jsonData = await res.json()
 
     setLoading(false)
@@ -53,7 +61,7 @@ const Page = () => {
   async function getRevenueData(values: z.infer<typeof formSchema>) {
     setLoading(true)
 
-    const res = await fetch(`api/revenue?stock=${values.ticker}&startYear=${values.startYear}`);
+    const res = await fetch(`api/revenue?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}`);
     const jsonData = await res.json()
 
     const parsed = RevenueResponseSchema.parse(jsonData.data);
@@ -107,6 +115,7 @@ const Page = () => {
     defaultValues: {
       ticker: "AAPL",
       startYear: 2010,
+      aggregationPeriod: "Annually",
     },
   })
 
@@ -154,16 +163,40 @@ const Page = () => {
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="aggregationPeriod"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Aggregation Period</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue="Annually">
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Annually">Annually</SelectItem>
+                            <SelectItem value="Quarterly">Quarterly</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          Aggregation Period
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <Button type="submit"> {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />} Correlate</Button>
                 </form>
               </Form>
             </div>
-            {revenueData && <InputData data={revenueData}/>}
+            {revenueData && <InputData data={revenueData} />}
           </TabsContent>
           <TabsContent value="Manual" className="flex flex-col justify-around">
-            <Textarea onChange={updateInputText} placeholder="Input excel data here" />
+            <Textarea onChange={updateInputText} placeholder="Paste excel data here" />
             <Button onClick={correlateInputText} className="mt-4"> {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />} Correlate</Button>
-            {inputData && <InputData data={generateTabularData()}/>}
+            {inputData && <InputData data={generateTabularData()} />}
           </TabsContent>
         </Tabs>
       </div>
