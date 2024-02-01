@@ -18,28 +18,37 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import InputData from "@/components/InputData"
 import { RevenueResponseSchema } from "./api/schema"
 
-
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 
 const Page = () => {
   const [isLoading, setLoading] = useState(false);
   const [hasData, setHasData] = useState(false);
   const [data, setDataArray] = useState<CorrelationDataPoint[]>([]);
-  const [revenueData, setRevenueData] = useState<(string|number)[][]>();
-
+  const [revenueData, setRevenueData] = useState<(string | number)[][]>();
   const [inputData, setInputData] = useState("");
-  console.log(inputData)
 
   const formSchema = z.object({
     ticker: z.string().min(2, {
       message: "Stock Ticker must be at least 2 characters.",
     }),
-    startYear: z.number().max(2023, { message: "Year needs to be lower than 2023" }).min(2000, { message: "Year needs to be higher than 2000" })
+    startYear: z.number().max(2023, { message: "Year needs to be lower than 2023" }).min(2000, { message: "Year needs to be higher than 2000" }),
+    aggregationPeriod: z.enum(["Annually", "Quarterly"])
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    getRevenueData(values)
     setLoading(true)
+    getRevenueData(values)
+
+    console.log("Fetching")
 
     const res = await fetch(`api/fetch?stock=${values.ticker}&startYear=${values.startYear}`);
     const jsonData = await res.json()
@@ -52,7 +61,6 @@ const Page = () => {
 
   async function getRevenueData(values: z.infer<typeof formSchema>) {
     setLoading(true)
-
     const res = await fetch(`api/revenue?stock=${values.ticker}&startYear=${values.startYear}`);
     const jsonData = await res.json()
 
@@ -121,7 +129,7 @@ const Page = () => {
           <TabsContent value="Automatic">
             <div className="w-40 ml-4">
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-1">
+                <form onSubmit={() => { console.log("submitting"); form.handleSubmit(onSubmit) }} className="space-y-1">
                   <FormField
                     control={form.control}
                     name="ticker"
@@ -154,16 +162,17 @@ const Page = () => {
                       </FormItem>
                     )}
                   />
+                  
                   <Button type="submit"> {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />} Correlate</Button>
                 </form>
               </Form>
             </div>
-            {revenueData && <InputData data={revenueData}/>}
+            {revenueData && <InputData data={revenueData} />}
           </TabsContent>
           <TabsContent value="Manual" className="flex flex-col justify-around">
             <Textarea onChange={updateInputText} placeholder="Input excel data here" />
             <Button onClick={correlateInputText} className="mt-4"> {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />} Correlate</Button>
-            {inputData && <InputData data={generateTabularData()}/>}
+            {inputData && <InputData data={generateTabularData()} />}
           </TabsContent>
         </Tabs>
       </div>
