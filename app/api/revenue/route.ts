@@ -1,19 +1,34 @@
 import { type NextRequest } from 'next/server'
+import { getBaseUrl } from '../util'
+
+import { z } from 'zod';
+
+const DataPointSchema = z.object({
+  date: z
+    .string({
+      required_error: 'Date is required',
+    })
+    .trim()
+    .min(1, 'Date cannot be empty'),
+  value: z
+    .number({
+      required_error: 'Value is required',
+    })
+});
+
+export const DataPointsSchema = z.array(DataPointSchema)
+
+export type DataPoint = z.infer<typeof DataPointSchema>;
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const stock = searchParams.get('stock')
-  const res = await fetch(`https://discountingcashflows.com/api/income-statement/${stock}/`)
-  const json = await res.json()
-
-  const revenues = new Map<string, number>();
-
-  const report = json.report
-  for (let i = 0; i < report.length; i++) {
-    const date = report[i]["calendarYear"]
-    revenues.set(date,report[i]["revenue"])
-  }
-
-  console.log(Object.fromEntries(revenues));
-  return Response.json(Object.fromEntries(revenues))
+    const startYear = searchParams.get('startYear')
+    
+    const res = await fetch(`${getBaseUrl()}/revenue?stock=${stock}&startYear=${startYear}`)
+    const data = await res.json()
+    
+    console.log(data)
+   
+    return Response.json({ data })
 }

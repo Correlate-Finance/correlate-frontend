@@ -15,6 +15,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import Results, { CorrelationDataPoint } from "@/components/Results"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import InputData from "@/components/InputData"
+import { DataPointsSchema } from "./api/revenue/route"
 
 
 
@@ -23,8 +25,9 @@ const Page = () => {
   const [isLoading, setLoading] = useState(false);
   const [hasData, setHasData] = useState(false);
   const [data, setDataArray] = useState<CorrelationDataPoint[]>([]);
+  const [revenueData, setRevenueData] = useState<(string|number)[][]>();
 
-  const [inputData, setinputData] = useState("");
+  const [inputData, setInputData] = useState("");
   console.log(inputData)
 
   const formSchema = z.object({
@@ -35,6 +38,7 @@ const Page = () => {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    getRevenueData(values)
     setLoading(true)
 
     const res = await fetch(`api/fetch?stock=${values.ticker}&startYear=${values.startYear}`);
@@ -46,8 +50,20 @@ const Page = () => {
     setHasData(true)
   }
 
+  async function getRevenueData(values: z.infer<typeof formSchema>) {
+    setLoading(true)
+
+    const res = await fetch(`api/revenue?stock=${values.ticker}&startYear=${values.startYear}`);
+    const jsonData = await res.json()
+
+    const parsed = DataPointsSchema.parse(jsonData.data);
+
+    const parsedData = parsed.map(x => [x.date, x.value])
+    setRevenueData(parsedData)
+  }
+
   function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    setinputData(e.target.value)
+    setInputData(e.target.value)
   }
 
   async function correlateInputText() {
@@ -68,6 +84,24 @@ const Page = () => {
     setHasData(true)
   }
 
+  function generateTabularData() {
+    var rows = inputData.split("\n");
+
+    var table: (string | number)[][] = [];
+
+    for (var y in rows) {
+      var cells = rows[y].split("\t");
+      table.push(cells);
+    }
+
+    // Transpose table
+    if (table.length == 2) {
+      table = table[0].map((_, colIndex) => table.map(row => row[colIndex]));
+    }
+
+    return table;
+  }
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -78,7 +112,6 @@ const Page = () => {
 
   return (
     <main className='flex flex-row h-full w-full justify-center' >
-
       <div className="m-4">
         <Tabs defaultValue="Automatic" className="w-[400px]">
           <TabsList className="grid w-full grid-cols-2">
@@ -125,10 +158,12 @@ const Page = () => {
                 </form>
               </Form>
             </div>
+            {revenueData && <InputData data={revenueData}/>}
           </TabsContent>
           <TabsContent value="Manual" className="flex flex-col justify-around">
             <Textarea onChange={updateInputText} placeholder="Input excel data here" />
             <Button onClick={correlateInputText} className="mt-4"> {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />} Correlate</Button>
+            {inputData && <InputData data={generateTabularData()}/>}
           </TabsContent>
         </Tabs>
       </div>
