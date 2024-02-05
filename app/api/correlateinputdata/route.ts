@@ -5,8 +5,9 @@ export async function POST(request: NextRequest) {
     const inputData = await request.text();
     const searchParams = request.nextUrl.searchParams
     const fiscalYearEnd = searchParams.get('fiscalYearEnd')
+    const timeIncrement = searchParams.get('timeIncrement')
 
-    const res = await fetch(`${getBaseUrl()}/correlateInputData/?fiscal_year_end=${fiscalYearEnd}`, {
+    const res = await fetch(`${getBaseUrl()}/correlateInputData/?fiscal_year_end=${fiscalYearEnd}&time_increment=${timeIncrement}`, {
         method: "POST",
         body: inputData,
         headers: {

@@ -33,6 +33,7 @@ const Page = () => {
   const [data, setDataArray] = useState<CorrelationDataPoint[]>([]);
   const [revenueData, setRevenueData] = useState<(string)[][]>();
   const [fiscalYearEnd, setFiscalYearEnd] = useState<string>("December");
+  const [timeIncrement, setTimeIncrement] = useState<string>("Quarterly");
 
 
   const [inputData, setInputData] = useState("");
@@ -78,7 +79,7 @@ const Page = () => {
   async function correlateInputText() {
     setLoading(true)
 
-    const res = await fetch(`api/correlateinputdata?fiscalYearEnd=${fiscalYearEnd}`, {
+    const res = await fetch(`api/correlateinputdata?fiscalYearEnd=${fiscalYearEnd}&timeIncrement=${timeIncrement}`, {
       method: "POST",
       body: inputData,
       headers: {
@@ -195,27 +196,39 @@ const Page = () => {
             {revenueData && <InputData data={revenueData} />}
           </TabsContent>
           <TabsContent value="Manual" className="flex flex-col justify-around m-4">
-            <Textarea onChange={updateInputText} placeholder="Paste excel data here" className="mb-4"/>
+            <Textarea onChange={updateInputText} placeholder="Paste excel data here" className="mb-4" />
             <p className="text-white"> Fiscal Year End</p>
-            <Select onValueChange={(e: string) => setFiscalYearEnd(e)} defaultValue="December">
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="January">January</SelectItem>
-                <SelectItem value="February">February</SelectItem>
-                <SelectItem value="March">March</SelectItem>
-                <SelectItem value="April">April</SelectItem>
-                <SelectItem value="May">May</SelectItem>
-                <SelectItem value="June">June</SelectItem>
-                <SelectItem value="July">July</SelectItem>
-                <SelectItem value="August">August</SelectItem>
-                <SelectItem value="September">September</SelectItem>
-                <SelectItem value="October">October</SelectItem>
-                <SelectItem value="November">November</SelectItem>
-                <SelectItem value="December">December</SelectItem>
-              </SelectContent>
-            </Select>
+            <div>
+              <Select onValueChange={(e: string) => setFiscalYearEnd(e)} defaultValue="December">
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="January">January</SelectItem>
+                  <SelectItem value="February">February</SelectItem>
+                  <SelectItem value="March">March</SelectItem>
+                  <SelectItem value="April">April</SelectItem>
+                  <SelectItem value="May">May</SelectItem>
+                  <SelectItem value="June">June</SelectItem>
+                  <SelectItem value="July">July</SelectItem>
+                  <SelectItem value="August">August</SelectItem>
+                  <SelectItem value="September">September</SelectItem>
+                  <SelectItem value="October">October</SelectItem>
+                  <SelectItem value="November">November</SelectItem>
+                  <SelectItem value="December">December</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <p className="text-white mt-4">Aggregation Period</p>
+              <Select onValueChange={(e: string) => setTimeIncrement(e)} defaultValue="Quarterly">
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Quarterly">Quarterly</SelectItem>
+                  <SelectItem value="Annually">Annually</SelectItem>
+                </SelectContent>
+              </Select>
             <Button onClick={correlateInputText} className="mt-4"> {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />} Correlate</Button>
             {inputData && <InputData data={generateTabularData()} />}
           </TabsContent>
