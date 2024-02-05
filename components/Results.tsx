@@ -17,6 +17,7 @@ interface MyComponentProps {
 export type CorrelationDataPoint = {
     title: string;
     pearson_value: number;
+    lag: number;
 }
 
 const Results: React.FC<MyComponentProps> = ({ data }) => {
@@ -27,6 +28,7 @@ const Results: React.FC<MyComponentProps> = ({ data }) => {
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[100px]">Table Name</TableHead>
+                        <TableHead>Lag</TableHead>
                         <TableHead>Correlation</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -34,6 +36,7 @@ const Results: React.FC<MyComponentProps> = ({ data }) => {
                     {data.map((dp) => (
                         <TableRow key={dp.title}>
                             <TableCell className="font-medium">{dp.title}</TableCell>
+                            <TableCell>{dp.lag}</TableCell>
                             <TableCell>{dp.pearson_value}</TableCell>
                         </TableRow>
                     ))}
