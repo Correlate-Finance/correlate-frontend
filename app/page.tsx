@@ -31,7 +31,7 @@ const Page = () => {
   const [isLoading, setLoading] = useState(false);
   const [hasData, setHasData] = useState(false);
   const [data, setDataArray] = useState<CorrelationDataPoint[]>([]);
-  const [revenueData, setRevenueData] = useState<(string | number)[][]>();
+  const [revenueData, setRevenueData] = useState<(string)[][]>();
 
   const [inputData, setInputData] = useState("");
   console.log(inputData)
