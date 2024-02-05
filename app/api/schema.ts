@@ -8,7 +8,7 @@ const DataPointSchema = z.object({
     .trim()
     .min(1, 'Date cannot be empty'),
   value: z
-    .number({
+    .string({
       required_error: 'Value is required',
     })
 });
