@@ -123,10 +123,10 @@ const Page = () => {
   return (
     <main className='flex flex-row h-full w-full justify-center' >
       <div className="m-4">
-        <Tabs defaultValue="Automatic" className="w-[400px]">
+        <Tabs defaultValue="Manual" className="w-[400px]">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="Automatic">Automatic</TabsTrigger>
             <TabsTrigger value="Manual">Manual</TabsTrigger>
+            <TabsTrigger value="Automatic">Automatic</TabsTrigger>
           </TabsList>
           <TabsContent value="Automatic">
             <div className="w-40 ml-4">
