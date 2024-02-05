@@ -95,7 +95,7 @@ const Page = () => {
   function generateTabularData() {
     var rows = inputData.split("\n");
 
-    var table: (string | number)[][] = [];
+    var table: (string)[][] = [];
 
     for (var y in rows) {
       var cells = rows[y].split("\t");

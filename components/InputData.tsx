@@ -12,7 +12,7 @@ import {
 
 
 interface MyComponentProps {
-    data: (string|number)[][]
+    data: (string)[][]
 }
 
 
@@ -37,7 +37,7 @@ const InputData: React.FC<MyComponentProps> = ({ data }) => {
                     {data.map((dp) => (
                         <TableRow key={dp[0]}>
                             <TableCell className="font-medium w-1/2">{dp[0]}</TableCell>
-                            <TableCell>{USDollar.format(dp[1] as number)}</TableCell>
+                            <TableCell>{USDollar.format(Number(dp[1].replace(",","")))}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
