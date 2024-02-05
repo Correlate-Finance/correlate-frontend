@@ -10,7 +10,5 @@ export async function GET(request: NextRequest) {
   const res = await fetch(`${getBaseUrl()}/revenue?stock=${stock}&startYear=${startYear}&aggregationPeriod=${aggregationPeriod}`)
   const data = await res.json()
 
-  console.log(data)
-
   return Response.json({ data })
 }
