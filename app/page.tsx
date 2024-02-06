@@ -140,7 +140,7 @@ const Page = () => {
             </TabsList>
             <TabsContent value="Automatic">
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-row justify-center items-center w-full [&>*]:mx-2 [&>*]:whitespace-nowrap">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex md:flex-row flex-col justify-center items-center w-full [&>*]:mx-2 [&>*]:whitespace-nowrap">
                   <FormField
                     control={form.control}
                     name="ticker"
@@ -192,7 +192,7 @@ const Page = () => {
                 </form>
               </Form>
             </TabsContent>
-            <TabsContent value="Manual" className="flex flex-row justify-around [&>*]:mx-2 [&>*]:whitespace-nowrap">
+            <TabsContent value="Manual" className="flex flex-col md:flex-row justify-around [&>*]:mx-2 [&>*]:whitespace-nowrap">
               <div className="">
                 <p className="text-white text-sm mb-2 text-opacity-80">Input Data</p>
                 <Input onChange={updateInputText} placeholder="Paste excel data here" className="" />
