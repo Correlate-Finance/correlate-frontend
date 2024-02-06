@@ -4,10 +4,10 @@ import { Separator } from './ui/separator'
 const Header = () => {
     return (
         <header className="flex-row justify-items-center" >
-            <h1 className='text-5xl bg-gradient-to-r from-sky-500 to-indigo-500 text-white text-center'>
+            <h1 className='text-[28px] text-white mx-6'>
                 Correlate
             </h1>
-            <Separator/>
+            <Separator className='bg-neutral-700'/>
         </header>
     )
 }

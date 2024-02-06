@@ -11,6 +11,15 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import Results, { CorrelationDataPoint } from "@/components/Results"
@@ -71,7 +80,7 @@ const Page = () => {
     setRevenueData(parsedData)
   }
 
-  function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
+  function updateInputText(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault()
     setInputData(e.target.value)
   }
@@ -108,7 +117,6 @@ const Page = () => {
     if (table.length == 2) {
       table = table[0].map((_, colIndex) => table.map(row => row[colIndex]));
     }
-
     return table;
   }
 
@@ -122,29 +130,26 @@ const Page = () => {
   })
 
   return (
-    <main className='flex flex-row h-full w-full justify-center' >
-      <div className="m-4">
-        <Tabs defaultValue="Manual" className="w-[400px]">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="Manual">Manual</TabsTrigger>
-            <TabsTrigger value="Automatic">Automatic</TabsTrigger>
-          </TabsList>
-          <TabsContent value="Automatic">
-            <div className="w-40 ml-4">
+    <main className='flex flex-col w-full items-center' >
+      <Card className="bg-[#1b1b26] flex flex-col justify-center m-4 w-3/4 border-neutral-700">
+        <CardContent>
+          <Tabs defaultValue="Manual" className="flex flex-col items-center my-4">
+            <TabsList className="flex flex-row w-min">
+              <TabsTrigger value="Manual">Manual</TabsTrigger>
+              <TabsTrigger value="Automatic">Automatic</TabsTrigger>
+            </TabsList>
+            <TabsContent value="Automatic">
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-1">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-row justify-center items-center w-full [&>*]:mx-2 [&>*]:whitespace-nowrap">
                   <FormField
                     control={form.control}
                     name="ticker"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white">Ticker</FormLabel>
+                        <FormLabel className="text-white text-opacity-80">Ticker</FormLabel>
                         <FormControl>
                           <Input placeholder="AAPL" {...field} />
                         </FormControl>
-                        <FormDescription>
-                          Stock Display Name.
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -154,13 +159,10 @@ const Page = () => {
                     name="startYear"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white">Start Year</FormLabel>
+                        <FormLabel className="text-white text-opacity-80">Start Year</FormLabel>
                         <FormControl>
                           <Input placeholder="2010" {...field} />
                         </FormControl>
-                        <FormDescription>
-                          The year to correlate from.
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -170,7 +172,7 @@ const Page = () => {
                     name="aggregationPeriod"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white">Aggregation Period</FormLabel>
+                        <FormLabel className="text-white text-opacity-80">Aggregation Period</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue="Annually">
                           <FormControl>
                             <SelectTrigger>
@@ -182,62 +184,70 @@ const Page = () => {
                             <SelectItem value="Quarterly">Quarterly</SelectItem>
                           </SelectContent>
                         </Select>
-                        <FormDescription>
-                          Aggregation Period
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <Button type="submit"> {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />} Correlate</Button>
+                  <Button type="submit" className="mt-4 bg-green-600 hover:bg-green-900 self-center"> {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />} Correlate</Button>
                 </form>
               </Form>
-            </div>
-            {revenueData && <InputData data={revenueData} />}
-          </TabsContent>
-          <TabsContent value="Manual" className="flex flex-col justify-around m-4">
-            <Textarea onChange={updateInputText} placeholder="Paste excel data here" className="mb-4" />
-            <p className="text-white"> Fiscal Year End</p>
-            <div>
-              <Select onValueChange={(e: string) => setFiscalYearEnd(e)} defaultValue="December">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="January">January</SelectItem>
-                  <SelectItem value="February">February</SelectItem>
-                  <SelectItem value="March">March</SelectItem>
-                  <SelectItem value="April">April</SelectItem>
-                  <SelectItem value="May">May</SelectItem>
-                  <SelectItem value="June">June</SelectItem>
-                  <SelectItem value="July">July</SelectItem>
-                  <SelectItem value="August">August</SelectItem>
-                  <SelectItem value="September">September</SelectItem>
-                  <SelectItem value="October">October</SelectItem>
-                  <SelectItem value="November">November</SelectItem>
-                  <SelectItem value="December">December</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <p className="text-white mt-4">Aggregation Period</p>
-              <Select onValueChange={(e: string) => setTimeIncrement(e)} defaultValue="Quarterly">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Quarterly">Quarterly</SelectItem>
-                  <SelectItem value="Annually">Annually</SelectItem>
-                </SelectContent>
-              </Select>
-            <Button onClick={correlateInputText} className="mt-4"> {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />} Correlate</Button>
-            {inputData && <InputData data={generateTabularData()} />}
-          </TabsContent>
-        </Tabs>
-      </div>
-
+            </TabsContent>
+            <TabsContent value="Manual" className="flex flex-row justify-around [&>*]:mx-2 [&>*]:whitespace-nowrap">
+              <div className="">
+                <p className="text-white text-sm mb-2 text-opacity-80">Input Data</p>
+                <Input onChange={updateInputText} placeholder="Paste excel data here" className="" />
+              </div>
+              <div>
+                <p className="text-white text-sm mb-2 text-opacity-80">Fiscal Year End</p>
+                <Select onValueChange={(e: string) => setFiscalYearEnd(e)} defaultValue="December">
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="January">January</SelectItem>
+                    <SelectItem value="February">February</SelectItem>
+                    <SelectItem value="March">March</SelectItem>
+                    <SelectItem value="April">April</SelectItem>
+                    <SelectItem value="May">May</SelectItem>
+                    <SelectItem value="June">June</SelectItem>
+                    <SelectItem value="July">July</SelectItem>
+                    <SelectItem value="August">August</SelectItem>
+                    <SelectItem value="September">September</SelectItem>
+                    <SelectItem value="October">October</SelectItem>
+                    <SelectItem value="November">November</SelectItem>
+                    <SelectItem value="December">December</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <p className="text-white text-sm mb-2 text-opacity-80">Aggregation Period</p>
+                <Select onValueChange={(e: string) => setTimeIncrement(e)} defaultValue="Quarterly">
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Quarterly">Quarterly</SelectItem>
+                    <SelectItem value="Annually">Annually</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <p className="text-[#1b1b26] text-sm mb-2">button</p>
+                <Button onClick={correlateInputText} className="top-4 bg-green-600 hover:bg-green-900"> {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />} Correlate</Button>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
       {/* <Separator orientation="vertical" className="my-40 w-4 border-white" /> */}
-      <div className="w-1/2 m-5">
-        {hasData && <Results data={data} />}
+      <div className="m-5 flex flex-row justify-between w-3/4">
+        <div className="w-min">
+          {((inputData ) && <InputData data={generateTabularData()}/>) || (revenueData && <InputData data={revenueData} />)}
+        </div>
+        <Separator orientation="vertical" className="border-neutral-700 w-[10px] h-full" />
+        <div className="w-2/3">
+          {hasData && <Results data={data} />}
+        </div>
       </div>
     </main>
   )
