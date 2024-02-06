@@ -80,7 +80,7 @@ const Page = () => {
     setRevenueData(parsedData)
   }
 
-  function updateInputText(e: React.ChangeEvent<HTMLInputElement>) {
+  function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
     e.preventDefault()
     setInputData(e.target.value)
   }
@@ -195,7 +195,7 @@ const Page = () => {
             <TabsContent value="Manual" className="flex flex-col md:flex-row justify-around [&>*]:mx-2 [&>*]:whitespace-nowrap">
               <div className="">
                 <p className="text-white text-sm mb-2 text-opacity-80">Input Data</p>
-                <Input onChange={updateInputText} placeholder="Paste excel data here" className="" />
+                <Textarea onChange={updateInputText} placeholder="Paste excel data here" className="" />
               </div>
               <div>
                 <p className="text-white text-sm mb-2 text-opacity-80">Fiscal Year End</p>
