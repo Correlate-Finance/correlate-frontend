@@ -46,9 +46,9 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
                             <TableHead>Correlation</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
+                    <TableBody className='[&>*]:whitespace-nowrap'>
                         {data.map((dp) => (
-                            <TableRow key={dp.title}>
+                            <TableRow key={`${dp.title}-${dp.lag}`}>
                                 <TableCell className="font-medium">{dp.title}</TableCell>
                                 {lagPeriods > 0 && <TableCell>{dp.lag}</TableCell>}
                                 <TableCell className={`${getColorClass(dp.pearson_value)}`}>{dp.pearson_value}</TableCell>

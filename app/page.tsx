@@ -39,7 +39,7 @@ import {
 const Page = () => {
   const [isLoading, setLoading] = useState(false);
   const [hasData, setHasData] = useState(false);
-  const [data, setDataArray] = useState<CorrelationDataPoint[]>([]);
+  const [dataArray, setDataArray] = useState<CorrelationDataPoint[]>([]);
   const [revenueData, setRevenueData] = useState<(string)[][]>();
   const [fiscalYearEnd, setFiscalYearEnd] = useState<string>("December");
   const [timeIncrement, setTimeIncrement] = useState<string>("Quarterly");
@@ -287,7 +287,7 @@ const Page = () => {
         </div>
         <Separator orientation="vertical" className="border-neutral-700 w-[10px] h-full" />
         <div className="w-2/3">
-          {hasData && <Results data={data} lagPeriods={lagPeriods} />}
+          {hasData && <Results data={dataArray} lagPeriods={lagPeriods} />}
         </div>
       </div>
     </main>
