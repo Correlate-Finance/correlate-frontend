@@ -43,6 +43,7 @@ const Page = () => {
   const [revenueData, setRevenueData] = useState<(string)[][]>();
   const [fiscalYearEnd, setFiscalYearEnd] = useState<string>("December");
   const [timeIncrement, setTimeIncrement] = useState<string>("Quarterly");
+  const [lagPeriods, setLagPeriods] = useState<number>(0);
 
 
   const [inputData, setInputData] = useState("");
@@ -52,14 +53,16 @@ const Page = () => {
       message: "Stock Ticker must be at least 2 characters.",
     }),
     startYear: z.coerce.number().max(2023, { message: "Year needs to be lower than 2023" }).min(2000, { message: "Year needs to be higher than 2000" }),
-    aggregationPeriod: z.string()
+    aggregationPeriod: z.string(),
+    lagPeriods: z.coerce.number(),
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     getRevenueData(values)
     setLoading(true)
+    setLagPeriods(values.lagPeriods)
 
-    const res = await fetch(`api/fetch?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}`);
+    const res = await fetch(`api/fetch?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}&lagPeriods=${values.lagPeriods}`);
     const jsonData = await res.json()
 
     setLoading(false)
@@ -88,7 +91,7 @@ const Page = () => {
   async function correlateInputText() {
     setLoading(true)
 
-    const res = await fetch(`api/correlateinputdata?fiscalYearEnd=${fiscalYearEnd}&timeIncrement=${timeIncrement}`, {
+    const res = await fetch(`api/correlateinputdata?fiscalYearEnd=${fiscalYearEnd}&timeIncrement=${timeIncrement}&lagPeriods=${lagPeriods}`, {
       method: "POST",
       body: inputData,
       headers: {
@@ -126,6 +129,7 @@ const Page = () => {
       ticker: "AAPL",
       startYear: 2010,
       aggregationPeriod: "Annually",
+      lagPeriods: 0,
     },
   })
 
@@ -188,6 +192,29 @@ const Page = () => {
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="lagPeriods"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white text-opacity-80">Lag Periods</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue="0">
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="0">0</SelectItem>
+                            <SelectItem value="1">1</SelectItem>
+                            <SelectItem value="2">2</SelectItem>
+                            <SelectItem value="3">3</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <Button type="submit" className="mt-4 bg-green-600 hover:bg-green-900 self-center"> {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />} Correlate</Button>
                 </form>
               </Form>
@@ -232,6 +259,20 @@ const Page = () => {
                 </Select>
               </div>
               <div>
+                <p className="text-white text-sm mb-2 text-opacity-80">Lag Periods</p>
+                <Select onValueChange={(e: string) => setLagPeriods(Number(e))} defaultValue="0">
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">0</SelectItem>
+                    <SelectItem value="1">1</SelectItem>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
                 <p className="text-[#1b1b26] text-sm mb-2">button</p>
                 <Button onClick={correlateInputText} className="top-4 bg-green-600 hover:bg-green-900"> {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />} Correlate</Button>
               </div>
@@ -242,11 +283,11 @@ const Page = () => {
       {/* <Separator orientation="vertical" className="my-40 w-4 border-white" /> */}
       <div className="m-5 flex flex-row justify-between w-3/4">
         <div className="w-min">
-          {((inputData ) && <InputData data={generateTabularData()}/>) || (revenueData && <InputData data={revenueData} />)}
+          {((inputData) && <InputData data={generateTabularData()} />) || (revenueData && <InputData data={revenueData} />)}
         </div>
         <Separator orientation="vertical" className="border-neutral-700 w-[10px] h-full" />
         <div className="w-2/3">
-          {hasData && <Results data={data} />}
+          {hasData && <Results data={data} lagPeriods={lagPeriods} />}
         </div>
       </div>
     </main>

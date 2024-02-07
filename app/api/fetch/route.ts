@@ -6,8 +6,9 @@ export async function GET(request: NextRequest) {
     const stock = searchParams.get('stock')
     const startYear = searchParams.get('startYear')
     const aggregationPeriod = searchParams.get('aggregationPeriod')
+    const lagPeriods = searchParams.get('lagPeriods')
     
-    const res = await fetch(`${getBaseUrl()}/correlate?stock=${stock}&startYear=${startYear}&aggregationPeriod=${aggregationPeriod}`)
+    const res = await fetch(`${getBaseUrl()}/correlate?stock=${stock}&startYear=${startYear}&aggregationPeriod=${aggregationPeriod}&lag_periods=${lagPeriods}`)
     const data = await res.json()
    
     return Response.json({ data })

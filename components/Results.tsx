@@ -12,6 +12,7 @@ import {
 
 interface MyComponentProps {
     data: CorrelationDataPoint[]
+    lagPeriods: number
 }
 
 export type CorrelationDataPoint = {
@@ -20,7 +21,7 @@ export type CorrelationDataPoint = {
     lag: number;
 }
 
-const Results: React.FC<MyComponentProps> = ({ data }) => {
+const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
 
     const getColorClass = (value: number) => {
         if (Math.abs(value) > 0.8) {
@@ -41,7 +42,7 @@ const Results: React.FC<MyComponentProps> = ({ data }) => {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[100px]">Table Name</TableHead>
-                            <TableHead>Lag</TableHead>
+                            {lagPeriods > 0 && <TableHead>Lag</TableHead>}
                             <TableHead>Correlation</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -49,7 +50,7 @@ const Results: React.FC<MyComponentProps> = ({ data }) => {
                         {data.map((dp) => (
                             <TableRow key={dp.title}>
                                 <TableCell className="font-medium">{dp.title}</TableCell>
-                                <TableCell>{dp.lag}</TableCell>
+                                {lagPeriods > 0 && <TableCell>{dp.lag}</TableCell>}
                                 <TableCell className={`${getColorClass(dp.pearson_value)}`}>{dp.pearson_value}</TableCell>
                             </TableRow>
                         ))}
