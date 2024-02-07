@@ -1,4 +1,4 @@
-This is the next js frontend for correlate. 
+This is the next js frontend for correlate.
 
 ## Getting Started
 
