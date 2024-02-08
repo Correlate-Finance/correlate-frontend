@@ -58,6 +58,7 @@ const Page = () => {
     if (response.ok) {
       localStorage.setItem('loggedIn', 'true');
       window.dispatchEvent(new Event('storage'));
+      console.log('Logged in!');
       router.push('/');
     } else {
       // Handle errors
