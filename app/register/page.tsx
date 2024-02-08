@@ -24,11 +24,22 @@ import {
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 
-const formSchema = z.object({
-  email: z.string().min(1).max(255),
-  name: z.string().min(1).max(255),
-  password: z.string().min(1).max(255),
-});
+const formSchema = z
+  .object({
+    email: z.string().min(1).max(255),
+    name: z.string().min(1).max(255),
+    password: z.string().min(1).max(255),
+    confirmPassword: z.string().min(1).max(255),
+  })
+  .superRefine(({ confirmPassword, password }, ctx) => {
+    if (confirmPassword !== password) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'The passwords did not match',
+        path: ['confirmPassword'],
+      });
+    }
+  });
 
 const Page = () => {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -105,6 +116,19 @@ const Page = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
                     <Input type="password" {...field} />
                   </FormControl>
