@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Table,
   TableBody,
@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 
 interface MyComponentProps {
   data: CorrelationDataPoint[];
@@ -17,17 +17,21 @@ interface MyComponentProps {
 export type CorrelationDataPoint = {
   title: string;
   pearson_value: number;
+  p_value: number;
   lag: number;
 };
 
-const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
+const Results: React.FC<MyComponentProps> = ({
+  data,
+  lagPeriods,
+}) => {
   const getColorClass = (value: number) => {
     if (Math.abs(value) > 0.8) {
-      return "text-green-400"; // Bright green
+      return 'text-green-400'; // Bright green
     } else if (Math.abs(value) < 0.2) {
-      return "text-red-200"; // Red
+      return 'text-red-200'; // Red
     } else {
-      return "text-white"; // Default color or any other color you prefer
+      return 'text-white'; // Default color or any other color you prefer
     }
   };
 
@@ -47,9 +51,13 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
           <TableBody className="[&>*]:whitespace-nowrap">
             {data.map((dp) => (
               <TableRow key={`${dp.title}-${dp.lag}`}>
-                <TableCell className="font-medium">{dp.title}</TableCell>
+                <TableCell className="font-medium">
+                  {dp.title}
+                </TableCell>
                 {lagPeriods > 0 && <TableCell>{dp.lag}</TableCell>}
-                <TableCell className={`${getColorClass(dp.pearson_value)}`}>
+                <TableCell
+                  className={`${getColorClass(dp.pearson_value)}`}
+                >
                   {dp.pearson_value}
                 </TableCell>
               </TableRow>
