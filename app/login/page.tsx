@@ -118,7 +118,7 @@ const Page = () => {
       </CardContent>
       <CardFooter className="text-sm flex flex-row justify-center">
         <div className="text-neutral-400 ">
-          Don't have an account?{' '}
+          New user?{' '}
           <Link href="/register" className="text-blue-400">
             Sign Up
           </Link>
