@@ -14,8 +14,8 @@ import CustomTooltip from './CustomTooltip';
 
 export type GraphDataPoint = {
   date: string;
-  revenue: number;
-  dataset: number;
+  revenue: number | null;
+  dataset: number | null;
 };
 
 interface MyComponentProps {

@@ -36,11 +36,15 @@ const ResultsRow: React.FC<MyComponentProps> = ({
   };
 
   const graphData = (dp: CorrelationDataPoint) => {
+    const total = dp.dates.length;
     const combinedList = dp.dates.map((date, index) => {
       return {
         date,
-        revenue: dp.input_data[index],
-        dataset: dp.dataset_data[index],
+        // For revenue we want to remove items from the bottom of the list.
+        revenue: index < dp.lag ? null : dp.input_data[index],
+        // for dataset we want to remove items from the top.
+        dataset:
+          index >= total - dp.lag ? null : dp.dataset_data[index],
       };
     });
     return combinedList;
