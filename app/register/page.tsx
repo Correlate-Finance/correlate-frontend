@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z
   .object({
@@ -42,12 +43,15 @@ const formSchema = z
   });
 
 const Page = () => {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
       password: '',
       name: '',
+      confirmPassword: '',
     },
   });
 
@@ -63,7 +67,7 @@ const Page = () => {
         'Content-Type': 'application/json',
       },
     });
-    console.log(data);
+    router.push('/login');
   }
   return (
     <Card className="mx-auto max-w-sm mt-16">
