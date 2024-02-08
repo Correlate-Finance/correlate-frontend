@@ -16,6 +16,15 @@ export async function POST(request: NextRequest) {
   const data = await res.json();
 
   cookies().set({ name: 'logged_in', value: 'true' });
-  cookies().set({ name: 'session', value: data.token, httpOnly: true });
+  cookies().set({
+    name: 'session',
+    value: data.token,
+    httpOnly: true,
+  });
+  cookies().set({
+    name: 'session',
+    value: data.token,
+    httpOnly: true,
+  });
   return Response.json({ data });
 }

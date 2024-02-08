@@ -24,6 +24,7 @@ import {
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getBaseUrl } from '../api/util';
 
 const formSchema = z.object({
   email: z.string().min(1).max(255),
@@ -42,7 +43,7 @@ const Page = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const response = await fetch('api/login', {
+    const response = await fetch(`${getBaseUrl()}/users/login/`, {
       method: 'POST',
       body: JSON.stringify({
         email: values.email,
@@ -51,6 +52,7 @@ const Page = () => {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
     });
 
     if (response.ok) {
