@@ -53,10 +53,8 @@ const ResultsRow: React.FC<MyComponentProps> = ({
   const handleClick: React.MouseEventHandler<HTMLDivElement> = (
     e
   ) => {
-    console.log('here');
-    setexpanded(!expanded);
-
     e.preventDefault();
+    setexpanded(!expanded);
   };
 
   return (

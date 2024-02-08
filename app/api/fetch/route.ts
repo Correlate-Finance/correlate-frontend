@@ -9,8 +9,6 @@ export async function GET(request: NextRequest) {
   const aggregationPeriod = searchParams.get('aggregationPeriod');
   const lagPeriods = searchParams.get('lagPeriods');
 
-  console.log(request.cookies);
-
   const res = await fetch(
     `${getBaseUrl()}/correlate?stock=${stock}&startYear=${startYear}&aggregationPeriod=${aggregationPeriod}&lag_periods=${lagPeriods}`,
     {

@@ -11,6 +11,7 @@ import {
   Tooltip,
 } from 'recharts';
 import CustomTooltip from './CustomTooltip';
+import { DataFormatter } from '@/lib/utils';
 
 export type GraphDataPoint = {
   date: string;
@@ -23,11 +24,6 @@ interface MyComponentProps {
 }
 
 const DoubleLineChart: React.FC<MyComponentProps> = ({ data }) => {
-  const DataFormatter = new Intl.NumberFormat('en-US', {
-    notation: 'compact',
-    compactDisplay: 'short',
-  }).format;
-
   return (
     <LineChart
       width={500}
@@ -58,13 +54,17 @@ const DoubleLineChart: React.FC<MyComponentProps> = ({ data }) => {
         type="monotone"
         dataKey="revenue"
         stroke="#AA4A44"
-        activeDot={{ r: 8 }}
+        dot={{
+          r: 1,
+          fill: '#AA4A44',
+        }}
       />
       <Line
         yAxisId="right"
         type="monotone"
         dataKey="dataset"
         stroke="#82ca9d"
+        dot={{ r: 1, fill: '#82ca9d' }}
       />
     </LineChart>
   );

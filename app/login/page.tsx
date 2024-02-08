@@ -61,7 +61,6 @@ const Page = () => {
       localStorage.setItem('session', json.token);
 
       window.dispatchEvent(new Event('storage'));
-      console.log('Logged in!');
       router.push('/');
     } else {
       // Handle errors
