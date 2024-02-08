@@ -1,6 +1,5 @@
 import React from 'react';
 import { TooltipProps } from 'recharts';
-// for recharts v2.1 and above
 import {
   ValueType,
   NameType,
@@ -23,7 +22,6 @@ const CustomTooltip = ({
         <p className="text-[#82ca9d]">
           {`Dataset: ${payload[1].value}`}{' '}
         </p>
-        {/* <p>{`${payload[2].value}`}</p> */}
       </div>
     );
   }

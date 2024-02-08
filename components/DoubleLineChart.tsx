@@ -9,7 +9,6 @@ import {
   Legend,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
 } from 'recharts';
 import CustomTooltip from './CustomTooltip';
 
@@ -30,48 +29,44 @@ const DoubleLineChart: React.FC<MyComponentProps> = ({ data }) => {
   }).format;
 
   return (
-    <>
-      {/* <ResponsiveContainer> */}
-      <LineChart
-        width={500}
-        height={300}
-        data={data}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="date" />
-        <YAxis yAxisId="left" tickFormatter={DataFormatter} />
-        <YAxis
-          yAxisId="right"
-          orientation="right"
-          tickFormatter={DataFormatter}
-        />
-        <Tooltip
-          content={<CustomTooltip />}
-          cursor={{ fill: 'transparent' }}
-        />
-        <Legend />
-        <Line
-          yAxisId="left"
-          type="monotone"
-          dataKey="revenue"
-          stroke="#AA4A44"
-          activeDot={{ r: 8 }}
-        />
-        <Line
-          yAxisId="right"
-          type="monotone"
-          dataKey="dataset"
-          stroke="#82ca9d"
-        />
-      </LineChart>
-      {/* </ResponsiveContainer> */}
-    </>
+    <LineChart
+      width={500}
+      height={300}
+      data={data}
+      margin={{
+        top: 5,
+        right: 30,
+        left: 20,
+        bottom: 5,
+      }}
+    >
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="date" />
+      <YAxis yAxisId="left" tickFormatter={DataFormatter} />
+      <YAxis
+        yAxisId="right"
+        orientation="right"
+        tickFormatter={DataFormatter}
+      />
+      <Tooltip
+        content={<CustomTooltip />}
+        cursor={{ fill: 'transparent' }}
+      />
+      <Legend />
+      <Line
+        yAxisId="left"
+        type="monotone"
+        dataKey="revenue"
+        stroke="#AA4A44"
+        activeDot={{ r: 8 }}
+      />
+      <Line
+        yAxisId="right"
+        type="monotone"
+        dataKey="dataset"
+        stroke="#82ca9d"
+      />
+    </LineChart>
   );
 };
 
