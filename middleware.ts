@@ -7,9 +7,10 @@ export function middleware(request: NextRequest) {
 
   if (!currentUser) {
     return NextResponse.redirect(new URL('/login', request.url));
-  } else {
-    return NextResponse.next();
   }
+  // } else {
+  //   return NextResponse.next();
+  // }
 }
 
 export const config = {

@@ -56,7 +56,10 @@ const Page = () => {
     });
 
     if (response.ok) {
+      const json = await response.json();
       localStorage.setItem('loggedIn', 'true');
+      localStorage.setItem('session', json.token);
+
       window.dispatchEvent(new Event('storage'));
       console.log('Logged in!');
       router.push('/');

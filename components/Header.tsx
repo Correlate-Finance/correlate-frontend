@@ -6,7 +6,7 @@ import Logout from './Logout';
 import Link from 'next/link';
 
 const Header = () => {
-  const [loggedIn, setloggedIn] = useState(false);
+  const [loggedIn, setloggedIn] = useState(true);
 
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
