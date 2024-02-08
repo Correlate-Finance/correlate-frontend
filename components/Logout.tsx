@@ -3,12 +3,18 @@
 import React from 'react';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
+import { getBaseUrl } from '@/app/api/util';
 
 const Logout = () => {
   const router = useRouter();
 
   function logout() {
-    fetch('api/logout', { method: 'POST' });
+    fetch(`${getBaseUrl()}/users/logout/`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+    localStorage.setItem('loggedIn', 'false');
+    window.dispatchEvent(new Event('storage'));
     router.push('/login');
   }
 
