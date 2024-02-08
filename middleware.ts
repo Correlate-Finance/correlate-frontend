@@ -10,5 +10,7 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!login|api|_next/static|_next/image|.*\\.png$).*)'],
+  matcher: [
+    '/((?!login|register|api|_next/static|_next/image|.*\\.png$).*)',
+  ],
 };
