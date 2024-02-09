@@ -34,7 +34,7 @@ const Clipboard: React.FC<ClipboardProps> = ({
           setCopied(false);
         }, 1500);
       }}
-      className="cursor-pointer bg-transparent grid"
+      className="cursor-pointer bg-transparent grid w-fit"
     >
       <Clippy
         className="icon col-start-1 row-start-1"
