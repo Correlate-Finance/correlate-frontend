@@ -1,4 +1,4 @@
-import DoubleLineChart from '@/components/DoubleLineChart';
+import DoubleLineChart from '@/components/chart/DoubleLineChart';
 
 const Page = () => {
   const data = [

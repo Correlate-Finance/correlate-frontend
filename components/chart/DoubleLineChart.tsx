@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import CustomTooltip from './CustomTooltip';
+import CustomTooltip from '../CustomTooltip';
 
 export type GraphDataPoint = {
   date: string;

@@ -1,6 +1,7 @@
 'use client';
 
 import { DataTrendPoint } from '@/app/api/schema';
+import BarLineChart from '@/components/chart/BarLineChart';
 import {
   Table,
   TableBody,
@@ -24,13 +25,25 @@ export default function Page({ params }: { params: { table: string } }) {
       body: params.table,
     })
       .then((res) => res.json())
-      .then((json) => setData(JSON.parse(json.data)));
+      .then((json) => setData(JSON.parse(json.data).toReversed()));
   }, []);
 
   return (
-    <p className="text-white">
+    <>
       {data ? (
         <div>
+          <div className="flex flex-row justify-start">
+            <BarLineChart
+              data={data.slice(6, 26)}
+              barChartKey="Value"
+              lineChartKey="YoYGrowth"
+            />
+            <BarLineChart
+              data={data.slice(6, 26)}
+              barChartKey="Value"
+              lineChartKey="Stack3Y"
+            />
+          </div>
           <h2 className="text-white text-center">Input Data</h2>
           <div className="text-white border-white">
             <Table className="border-white w-min">
@@ -52,7 +65,7 @@ export default function Page({ params }: { params: { table: string } }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.toReversed().map((dp, index) => {
+                {data.map((dp, index) => {
                   return (
                     <TableRow key={index}>
                       <TableCell>{index}</TableCell>
@@ -87,6 +100,6 @@ export default function Page({ params }: { params: { table: string } }) {
       ) : (
         'Loading...'
       )}
-    </p>
+    </>
   );
 }

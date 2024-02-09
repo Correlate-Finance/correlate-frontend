@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import DoubleLineChart from './DoubleLineChart';
 import { CorrelationDataPoint } from './Results';
+import DoubleLineChart from './chart/DoubleLineChart';
 import Clipboard from './clipboard/Clipboard';
 
 import { TableCell, TableRow } from '@/components/ui/table';
