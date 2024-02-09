@@ -1,6 +1,6 @@
 import React from 'react';
-import Clippy from './ClippyIcon';
 import Check from './CheckIcon';
+import Clippy from './ClippyIcon';
 
 interface ClipboardProps {
   copied: boolean;

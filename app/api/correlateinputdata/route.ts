@@ -1,6 +1,6 @@
+import { headers } from 'next/headers';
 import { type NextRequest } from 'next/server';
 import { getBaseUrl } from '../util';
-import { headers } from 'next/headers';
 
 export async function POST(request: NextRequest) {
   const inputData = await request.text();

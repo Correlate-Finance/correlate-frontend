@@ -1,9 +1,8 @@
 'use client';
 
-import React from 'react';
-import { Button } from './ui/button';
-import { useRouter } from 'next/navigation';
 import { getBaseUrl } from '@/app/api/util';
+import { useRouter } from 'next/navigation';
+import { Button } from './ui/button';
 
 const Logout = () => {
   const router = useRouter();

@@ -1,5 +1,4 @@
 import DoubleLineChart from '@/components/DoubleLineChart';
-import React from 'react';
 
 const Page = () => {
   const data = [

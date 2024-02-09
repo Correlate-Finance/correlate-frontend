@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Separator } from './ui/separator';
-import Logout from './Logout';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import Logout from './Logout';
+import { Separator } from './ui/separator';
 
 const Header = () => {
   const [loggedIn, setloggedIn] = useState(true);

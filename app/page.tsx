@@ -1,45 +1,18 @@
 'use client';
 
-import { ReloadIcon } from '@radix-ui/react-icons';
-
+import InputData from '@/components/InputData';
+import Results, { CorrelationDataPoint } from '@/components/Results';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import React from 'react';
-import { useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { SubmitHandler, useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import Results, { CorrelationDataPoint } from '@/components/Results';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import InputData from '@/components/InputData';
-import { RevenueResponseSchema } from './api/schema';
-
 import {
   Select,
   SelectContent,
@@ -47,22 +20,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ReloadIcon } from '@radix-ui/react-icons';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { RevenueResponseSchema } from './api/schema';
 
 const Page = () => {
   const [isLoading, setLoading] = useState(false);
   const [hasData, setHasData] = useState(() => {
     return false;
   });
-  const [dataArray, setDataArray] = useState<CorrelationDataPoint[]>(
-    () => {
-      return [];
-    },
-  );
+  const [dataArray, setDataArray] = useState<CorrelationDataPoint[]>(() => {
+    return [];
+  });
   const [revenueData, setRevenueData] = useState<string[][]>();
-  const [fiscalYearEnd, setFiscalYearEnd] =
-    useState<string>('December');
-  const [timeIncrement, setTimeIncrement] =
-    useState<string>('Quarterly');
+  const [fiscalYearEnd, setFiscalYearEnd] = useState<string>('December');
+  const [timeIncrement, setTimeIncrement] = useState<string>('Quarterly');
   const [lagPeriods, setLagPeriods] = useState<number>(() => {
     return 0;
   });
@@ -108,10 +86,7 @@ const Page = () => {
   useEffect(() => {
     console.log('revenueData', revenueData);
     if (revenueData !== undefined) {
-      localStorage.setItem(
-        'revenueData',
-        JSON.stringify(revenueData),
-      );
+      localStorage.setItem('revenueData', JSON.stringify(revenueData));
     }
   }, [revenueData]);
   useEffect(() => {
@@ -199,9 +174,7 @@ const Page = () => {
     setRevenueData(parsedData);
   }
 
-  function updateInputText(
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-  ) {
+  function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
     e.preventDefault();
     setInputData(e.target.value);
   }
@@ -240,9 +213,7 @@ const Page = () => {
 
     // Transpose table
     if (table.length == 2) {
-      table = table[0].map((_, colIndex) =>
-        table.map((row) => row[colIndex]),
-      );
+      table = table[0].map((_, colIndex) => table.map((row) => row[colIndex]));
     }
     return table;
   }
@@ -324,12 +295,8 @@ const Page = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Annually">
-                              Annually
-                            </SelectItem>
-                            <SelectItem value="Quarterly">
-                              Quarterly
-                            </SelectItem>
+                            <SelectItem value="Annually">Annually</SelectItem>
+                            <SelectItem value="Quarterly">Quarterly</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -415,9 +382,7 @@ const Page = () => {
                     <SelectItem value="June">June</SelectItem>
                     <SelectItem value="July">July</SelectItem>
                     <SelectItem value="August">August</SelectItem>
-                    <SelectItem value="September">
-                      September
-                    </SelectItem>
+                    <SelectItem value="September">September</SelectItem>
                     <SelectItem value="October">October</SelectItem>
                     <SelectItem value="November">November</SelectItem>
                     <SelectItem value="December">December</SelectItem>
@@ -436,9 +401,7 @@ const Page = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Quarterly">
-                      Quarterly
-                    </SelectItem>
+                    <SelectItem value="Quarterly">Quarterly</SelectItem>
                     <SelectItem value="Annually">Annually</SelectItem>
                   </SelectContent>
                 </Select>
@@ -448,9 +411,7 @@ const Page = () => {
                   Lag Periods
                 </p>
                 <Select
-                  onValueChange={(e: string) =>
-                    setLagPeriods(Number(e))
-                  }
+                  onValueChange={(e: string) => setLagPeriods(Number(e))}
                   value={lagPeriods.toString()}
                 >
                   <SelectTrigger>
@@ -485,9 +446,7 @@ const Page = () => {
       {/* <Separator orientation="vertical" className="my-40 w-4 border-white" /> */}
       <div className="m-5 flex flex-row justify-between w-3/4">
         <div className="w-min">
-          {(inputData && (
-            <InputData data={generateTabularData()} />
-          )) ||
+          {(inputData && <InputData data={generateTabularData()} />) ||
             (revenueData && <InputData data={revenueData} />)}
         </div>
         <Separator
@@ -495,9 +454,7 @@ const Page = () => {
           className="border-neutral-700 w-[10px] h-full"
         />
         <div className="w-2/3">
-          {hasData && (
-            <Results data={dataArray} lagPeriods={lagPeriods} />
-          )}
+          {hasData && <Results data={dataArray} lagPeriods={lagPeriods} />}
         </div>
       </div>
     </main>

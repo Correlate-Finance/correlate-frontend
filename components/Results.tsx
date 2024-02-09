@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Table,
   TableBody,
@@ -7,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import React from 'react';
 import ResultsRow from './ResultsRow';
 
 interface MyComponentProps {
@@ -24,10 +24,7 @@ export type CorrelationDataPoint = {
   dates: string[];
 };
 
-const Results: React.FC<MyComponentProps> = ({
-  data,
-  lagPeriods,
-}) => {
+const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
   return (
     <>
       <h2 className="text-white text-center">Correlations</h2>

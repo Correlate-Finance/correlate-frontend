@@ -1,17 +1,17 @@
 'use client';
 
+import { DataFormatter } from '@/lib/utils';
 import React from 'react';
 import {
-  LineChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  Tooltip,
   XAxis,
   YAxis,
-  Legend,
-  CartesianGrid,
-  Tooltip,
 } from 'recharts';
 import CustomTooltip from './CustomTooltip';
-import { DataFormatter } from '@/lib/utils';
 
 export type GraphDataPoint = {
   date: string;
@@ -44,10 +44,7 @@ const DoubleLineChart: React.FC<MyComponentProps> = ({ data }) => {
         orientation="right"
         tickFormatter={DataFormatter}
       />
-      <Tooltip
-        content={<CustomTooltip />}
-        cursor={{ fill: 'transparent' }}
-      />
+      <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
       <Legend />
       <Line
         yAxisId="left"

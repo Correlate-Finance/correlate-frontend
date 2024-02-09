@@ -1,32 +1,21 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CorrelationDataPoint } from './Results';
 import DoubleLineChart from './DoubleLineChart';
+import { CorrelationDataPoint } from './Results';
 import Clipboard from './clipboard/Clipboard';
 
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Button } from './ui/button';
-import { useRouter } from 'next/navigation';
+import { TableCell, TableRow } from '@/components/ui/table';
 import { convertToExcel } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
+import { Button } from './ui/button';
 
 interface MyComponentProps {
   dp: CorrelationDataPoint;
   lagPeriods: number;
 }
 
-const ResultsRow: React.FC<MyComponentProps> = ({
-  dp,
-  lagPeriods,
-}) => {
+const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
   const [expanded, setexpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const router = useRouter();
@@ -49,16 +38,13 @@ const ResultsRow: React.FC<MyComponentProps> = ({
         // For revenue we want to remove items from the bottom of the list.
         revenue: index < dp.lag ? null : dp.input_data[index],
         // for dataset we want to remove items from the top.
-        dataset:
-          index >= total - dp.lag ? null : dp.dataset_data[index],
+        dataset: index >= total - dp.lag ? null : dp.dataset_data[index],
       };
     });
     return combinedList;
   };
 
-  const handleClick: React.MouseEventHandler<HTMLDivElement> = (
-    e,
-  ) => {
+  const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
     setexpanded(!expanded);
   };

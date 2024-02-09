@@ -1,9 +1,8 @@
 import { DataFormatter } from '@/lib/utils';
-import React from 'react';
 import { TooltipProps } from 'recharts';
 import {
-  ValueType,
   NameType,
+  ValueType,
 } from 'recharts/types/component/DefaultTooltipContent';
 
 const CustomTooltip = ({
