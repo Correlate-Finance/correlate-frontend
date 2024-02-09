@@ -15,3 +15,17 @@ const DataPointSchema = z.object({
 export const RevenueResponseSchema = z.array(DataPointSchema);
 
 export type DataPoint = z.infer<typeof DataPointSchema>;
+
+export type DataTrendPoint = {
+  Date: string;
+  Value: number;
+  T3M: number;
+  T6M: number;
+  T12M: number;
+  YoYGrowth: number;
+  T3M_YoYGrowth: number;
+  T6M_YoYGrowth: number;
+  T12M_YoYGrowth: number;
+  Stack2Y: number;
+  Stack3Y: number;
+};
