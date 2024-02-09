@@ -88,7 +88,7 @@ const Page = () => {
     if (revenueData !== undefined) {
       localStorage.setItem('revenueData', JSON.stringify(revenueData));
     }
-  }, [revenueData]);
+  }, [revenueData, firstRender]);
   useEffect(() => {
     if (firstRender) {
       setFirstRender(false);
@@ -96,35 +96,35 @@ const Page = () => {
     }
     console.log('hasData', hasData);
     localStorage.setItem('hasData', JSON.stringify(hasData));
-  }, [hasData]);
+  }, [hasData, firstRender]);
   useEffect(() => {
     if (firstRender) {
       setFirstRender(false);
       return;
     }
     localStorage.setItem('inputData', JSON.stringify(inputData));
-  }, [inputData]);
+  }, [inputData, firstRender]);
   useEffect(() => {
     if (firstRender) {
       setFirstRender(false);
       return;
     }
     localStorage.setItem('dataArray', JSON.stringify(dataArray));
-  }, [dataArray]);
+  }, [dataArray, firstRender]);
   useEffect(() => {
     if (firstRender) {
       setFirstRender(false);
       return;
     }
     localStorage.setItem('lagPeriods', JSON.stringify(lagPeriods));
-  }, [lagPeriods]);
+  }, [lagPeriods, firstRender]);
   useEffect(() => {
     if (firstRender) {
       setFirstRender(false);
       return;
     }
     localStorage.setItem('tabValue', JSON.stringify(tabValue));
-  }, [tabValue]);
+  }, [tabValue, firstRender]);
 
   const formSchema = z.object({
     ticker: z.string().min(2, {
