@@ -13,6 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Button } from './ui/button';
+import { useRouter } from 'next/navigation';
 
 interface MyComponentProps {
   dp: CorrelationDataPoint;
@@ -24,6 +26,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
   lagPeriods,
 }) => {
   const [expanded, setexpanded] = useState(false);
+  const router = useRouter();
 
   const getColorClass = (value: number) => {
     if (Math.abs(value) > 0.8) {
@@ -66,15 +69,24 @@ const ResultsRow: React.FC<MyComponentProps> = ({
           {dp.pearson_value}
         </TableCell>
       </TableRow>
-      <TableRow
-        key={`${dp.title}-${dp.lag}-chart`}
-        hidden={!expanded}
-        className="hover:bg-inherit"
-      >
-        <TableCell colSpan={100}>
-          {expanded && <DoubleLineChart data={graphData(dp)} />}
-        </TableCell>
-      </TableRow>
+      {expanded && (
+        <TableRow
+          key={`${dp.title}-${dp.lag}-chart`}
+          className="hover:bg-inherit"
+        >
+          <TableCell colSpan={100}>
+            <div className="flex flex-row justify-around items-center">
+              <DoubleLineChart data={graphData(dp)} />{' '}
+              <Button
+                onClick={() => router.push(`/data/${dp.title}`)}
+                className="text-white"
+              >
+                See More
+              </Button>
+            </div>
+          </TableCell>
+        </TableRow>
+      )}
     </>
   );
 };
