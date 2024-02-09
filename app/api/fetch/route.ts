@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     {
       headers: headers(),
       credentials: 'include',
-    }
+    },
   );
   const data = await res.json();
 

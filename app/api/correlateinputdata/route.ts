@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       body: inputData,
       headers: headers(),
       credentials: 'include',
-    }
+    },
   );
 
   const data = await res.json();

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     {
       credentials: 'include',
       headers: headers(),
-    }
+    },
   );
   const data = await res.json();
 

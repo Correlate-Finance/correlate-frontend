@@ -57,7 +57,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
   };
 
   const handleClick: React.MouseEventHandler<HTMLDivElement> = (
-    e
+    e,
   ) => {
     e.preventDefault();
     setexpanded(!expanded);

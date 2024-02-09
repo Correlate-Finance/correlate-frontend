@@ -7,12 +7,11 @@ const DataPointSchema = z.object({
     })
     .trim()
     .min(1, 'Date cannot be empty'),
-  value: z
-    .string({
-      required_error: 'Value is required',
-    })
+  value: z.string({
+    required_error: 'Value is required',
+  }),
 });
 
-export const RevenueResponseSchema = z.array(DataPointSchema)
+export const RevenueResponseSchema = z.array(DataPointSchema);
 
 export type DataPoint = z.infer<typeof DataPointSchema>;

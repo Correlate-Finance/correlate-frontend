@@ -4,7 +4,7 @@ import { ReloadIcon } from '@radix-ui/react-icons';
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import React, { FormEvent, useReducer } from 'react';
+import React from 'react';
 import { useState, useEffect } from 'react';
 import {
   Form,
@@ -56,7 +56,7 @@ const Page = () => {
   const [dataArray, setDataArray] = useState<CorrelationDataPoint[]>(
     () => {
       return [];
-    }
+    },
   );
   const [revenueData, setRevenueData] = useState<string[][]>();
   const [fiscalYearEnd, setFiscalYearEnd] =
@@ -110,7 +110,7 @@ const Page = () => {
     if (revenueData !== undefined) {
       localStorage.setItem(
         'revenueData',
-        JSON.stringify(revenueData)
+        JSON.stringify(revenueData),
       );
     }
   }, [revenueData]);
@@ -172,7 +172,7 @@ const Page = () => {
       `api/fetch?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}&lagPeriods=${values.lagPeriods}`,
       {
         credentials: 'include',
-      }
+      },
     );
     const jsonData = await res.json();
 
@@ -189,7 +189,7 @@ const Page = () => {
       `api/revenue?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}`,
       {
         credentials: 'include',
-      }
+      },
     );
     const jsonData = await res.json();
 
@@ -200,7 +200,7 @@ const Page = () => {
   }
 
   function updateInputText(
-    e: React.ChangeEvent<HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLTextAreaElement>,
   ) {
     e.preventDefault();
     setInputData(e.target.value);
@@ -218,7 +218,7 @@ const Page = () => {
           'Content-Type': 'text/html; charset=utf-8',
         },
         credentials: 'include',
-      }
+      },
     );
     const jsonData = await res.json();
 
@@ -241,7 +241,7 @@ const Page = () => {
     // Transpose table
     if (table.length == 2) {
       table = table[0].map((_, colIndex) =>
-        table.map((row) => row[colIndex])
+        table.map((row) => row[colIndex]),
       );
     }
     return table;

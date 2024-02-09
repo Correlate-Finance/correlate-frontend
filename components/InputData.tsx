@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 import {
   Table,
@@ -8,16 +8,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 
 interface MyComponentProps {
   data: string[][];
 }
 
 const InputData: React.FC<MyComponentProps> = ({ data }) => {
-  let USDollar = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  let USDollar = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
   });
 
   return (
@@ -39,7 +39,7 @@ const InputData: React.FC<MyComponentProps> = ({ data }) => {
                   {dp[0]}
                 </TableCell>
                 <TableCell className="whitespace-nowrap">
-                  {USDollar.format(Number(dp[1].replace(",", "")))}
+                  {USDollar.format(Number(dp[1].replace(',', '')))}
                 </TableCell>
               </TableRow>
             ))}

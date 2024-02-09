@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const DataFormatter = (
-  number: number | bigint | undefined
+  number: number | bigint | undefined,
 ) => {
   if (number !== undefined) {
     return new Intl.NumberFormat('en-US', {
