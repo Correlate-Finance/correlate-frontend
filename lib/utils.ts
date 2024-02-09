@@ -16,3 +16,12 @@ export const DataFormatter = (
   }
   return '';
 };
+
+export function convertToExcel(data: number[], date: string[]) {
+  return (
+    'Date\tValue\n' +
+    data
+      .map((dataItem, index) => `${date[index]}\t${dataItem}`)
+      .join('\n')
+  );
+}

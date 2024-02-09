@@ -36,7 +36,7 @@ const Results: React.FC<MyComponentProps> = ({
         <Table>
           <TableCaption>Top Correlations with the data.</TableCaption>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-inherit">
               <TableHead className="w-[100px]">Table Name</TableHead>
               {lagPeriods > 0 && <TableHead>Lag</TableHead>}
               <TableHead>Correlation</TableHead>

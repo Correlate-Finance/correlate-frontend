@@ -16,10 +16,10 @@ const CustomTooltip = ({
       <div className="bg-neutral-100">
         <p className="text-black">{`Date: ${label}`}</p>
         <p className="text-[#AA4A44]">
-          {`Revenue: ${DataFormatter(Number(payload[0].value))}`}{' '}
+          {`Revenue: ${DataFormatter(Number(payload[0]?.value))}`}{' '}
         </p>
         <p className="text-[#82ca9d]">
-          {`Dataset: ${DataFormatter(Number(payload[1].value))}`}{' '}
+          {`Dataset: ${DataFormatter(Number(payload[1]?.value))}`}{' '}
         </p>
       </div>
     );

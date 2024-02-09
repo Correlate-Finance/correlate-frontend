@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { CorrelationDataPoint } from './Results';
 import DoubleLineChart from './DoubleLineChart';
+import Clipboard from './clipboard/Clipboard';
 
 import {
   Table,
@@ -15,6 +16,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
+import { convertToExcel } from '@/lib/utils';
 
 interface MyComponentProps {
   dp: CorrelationDataPoint;
@@ -26,6 +28,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
   lagPeriods,
 }) => {
   const [expanded, setexpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
   const router = useRouter();
 
   const getColorClass = (value: number) => {
@@ -68,6 +71,14 @@ const ResultsRow: React.FC<MyComponentProps> = ({
         <TableCell className={`${getColorClass(dp.pearson_value)}`}>
           {dp.pearson_value}
         </TableCell>
+        <TableCell onClick={(e) => e.stopPropagation()}>
+          <Clipboard
+            copied={copied}
+            setCopied={setCopied}
+            text={convertToExcel(dp.dataset_data, dp.dates)}
+            color="white"
+          />
+        </TableCell>
       </TableRow>
       {expanded && (
         <TableRow
@@ -75,7 +86,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
           className="hover:bg-inherit"
         >
           <TableCell colSpan={100}>
-            <div className="flex flex-row justify-around items-center">
+            <div className="flex flex-row justify-between items-end">
               <DoubleLineChart data={graphData(dp)} />{' '}
               <Button
                 onClick={() => router.push(`/data/${dp.title}`)}
