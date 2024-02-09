@@ -50,18 +50,106 @@ import {
 
 const Page = () => {
   const [isLoading, setLoading] = useState(false);
-  const [hasData, setHasData] = useState(false);
+  const [hasData, setHasData] = useState(() => {
+    return false;
+  });
   const [dataArray, setDataArray] = useState<CorrelationDataPoint[]>(
-    []
+    () => {
+      return [];
+    }
   );
   const [revenueData, setRevenueData] = useState<string[][]>();
   const [fiscalYearEnd, setFiscalYearEnd] =
     useState<string>('December');
   const [timeIncrement, setTimeIncrement] =
     useState<string>('Quarterly');
-  const [lagPeriods, setLagPeriods] = useState<number>(0);
+  const [lagPeriods, setLagPeriods] = useState<number>(() => {
+    return 0;
+  });
+  const [inputData, setInputData] = useState(() => {
+    return '';
+  });
+  const [tabValue, setTabValue] = useState(() => {
+    return 'Manual';
+  });
+  const [firstRender, setFirstRender] = useState(true);
 
-  const [inputData, setInputData] = useState('');
+  // Fetch initial props from localstorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storageHasData = localStorage.getItem('hasData');
+      if (storageHasData !== null) {
+        setHasData(JSON.parse(storageHasData));
+      }
+      const storageDataArray = localStorage.getItem('dataArray');
+      if (storageDataArray !== null) {
+        setDataArray(JSON.parse(storageDataArray));
+      }
+      const storageRevenueData = localStorage.getItem('revenueData');
+      if (storageRevenueData !== null) {
+        setRevenueData(JSON.parse(storageRevenueData));
+      }
+      const storageLagPeriods = localStorage.getItem('lagPeriods');
+      if (storageLagPeriods !== null) {
+        setLagPeriods(JSON.parse(storageLagPeriods));
+      }
+      const storageInputData = localStorage.getItem('inputData');
+      if (storageInputData !== null) {
+        setInputData(JSON.parse(storageInputData));
+      }
+      const storageTabValue = localStorage.getItem('tabValue');
+      if (storageTabValue !== null) {
+        setTabValue(JSON.parse(storageTabValue));
+      }
+    }
+  }, []);
+
+  // Set data to local storage whenever state changes.
+  useEffect(() => {
+    console.log('revenueData', revenueData);
+    if (revenueData !== undefined) {
+      localStorage.setItem(
+        'revenueData',
+        JSON.stringify(revenueData)
+      );
+    }
+  }, [revenueData]);
+  useEffect(() => {
+    if (firstRender) {
+      setFirstRender(false);
+      return;
+    }
+    console.log('hasData', hasData);
+    localStorage.setItem('hasData', JSON.stringify(hasData));
+  }, [hasData]);
+  useEffect(() => {
+    if (firstRender) {
+      setFirstRender(false);
+      return;
+    }
+    localStorage.setItem('inputData', JSON.stringify(inputData));
+  }, [inputData]);
+  useEffect(() => {
+    if (firstRender) {
+      setFirstRender(false);
+      return;
+    }
+    localStorage.setItem('dataArray', JSON.stringify(dataArray));
+  }, [dataArray]);
+  useEffect(() => {
+    if (firstRender) {
+      setFirstRender(false);
+      return;
+    }
+    localStorage.setItem('lagPeriods', JSON.stringify(lagPeriods));
+  }, [lagPeriods]);
+  useEffect(() => {
+    if (firstRender) {
+      setFirstRender(false);
+      return;
+    }
+    localStorage.setItem('tabValue', JSON.stringify(tabValue));
+  }, [tabValue]);
 
   const formSchema = z.object({
     ticker: z.string().min(2, {
@@ -174,8 +262,9 @@ const Page = () => {
       <Card className="bg-[#1b1b26] flex flex-col justify-center m-4 w-3/4 border-neutral-700">
         <CardContent>
           <Tabs
-            defaultValue="Manual"
+            value={tabValue}
             className="flex flex-col items-center my-4"
+            onValueChange={(e) => setTabValue(e)}
           >
             <TabsList className="flex flex-row w-min">
               <TabsTrigger value="Manual">Manual</TabsTrigger>
