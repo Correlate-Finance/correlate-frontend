@@ -127,8 +127,8 @@ const Page = () => {
   }, [tabValue, firstRender]);
 
   const formSchema = z.object({
-    ticker: z.string().min(2, {
-      message: 'Stock Ticker must be at least 2 characters.',
+    ticker: z.string().min(1, {
+      message: 'Stock Ticker must be at least 1 character long.',
     }),
     startYear: z.coerce
       .number()
