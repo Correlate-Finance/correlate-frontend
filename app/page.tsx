@@ -345,8 +345,11 @@ const Page = () => {
                           Lag Periods
                         </FormLabel>
                         <Select
-                          onValueChange={field.onChange}
-                          defaultValue="0"
+                          onValueChange={(e: string) => {
+                            setLagPeriods(Number(e));
+                            field.onChange(e);
+                          }}
+                          value={lagPeriods.toString()}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -448,7 +451,7 @@ const Page = () => {
                   onValueChange={(e: string) =>
                     setLagPeriods(Number(e))
                   }
-                  defaultValue="0"
+                  value={lagPeriods.toString()}
                 >
                   <SelectTrigger>
                     <SelectValue />
