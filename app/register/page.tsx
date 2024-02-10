@@ -55,7 +55,7 @@ const Page = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const data = await fetch('api/register', {
+    await fetch('api/register', {
       method: 'POST',
       body: JSON.stringify({
         email: values.email,

@@ -26,7 +26,7 @@ const Clipboard: React.FC<ClipboardProps> = ({
   };
 
   return (
-    <div
+    <button
       onClick={() => {
         setCopied(true);
         navigator.clipboard.writeText(text);
@@ -54,7 +54,7 @@ const Clipboard: React.FC<ClipboardProps> = ({
           transition: 'all 300ms ease-in-out',
         }}
       />
-    </div>
+    </button>
   );
 };
 
