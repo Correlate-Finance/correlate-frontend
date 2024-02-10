@@ -63,9 +63,6 @@ const Page = () => {
 
       window.dispatchEvent(new Event('storage'));
       router.push('/');
-    } else {
-      // Handle errors
-      console.log(response);
     }
   }
 

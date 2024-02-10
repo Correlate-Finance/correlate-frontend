@@ -2,7 +2,6 @@ import { headers } from 'next/headers';
 import { type NextRequest } from 'next/server';
 import { getBaseUrl } from '../util';
 
-
 export async function POST(request: NextRequest) {
   const tableName = await request.text();
 

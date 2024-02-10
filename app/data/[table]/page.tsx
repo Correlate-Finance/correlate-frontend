@@ -26,7 +26,7 @@ export default function Page({ params }: { params: { table: string } }) {
     })
       .then((res) => res.json())
       .then((json) => setData(JSON.parse(json.data).toReversed()));
-  }, []);
+  }, [params.table]);
 
   return (
     <>

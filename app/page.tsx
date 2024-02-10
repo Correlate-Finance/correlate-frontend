@@ -84,7 +84,6 @@ const Page = () => {
 
   // Set data to local storage whenever state changes.
   useEffect(() => {
-    console.log('revenueData', revenueData);
     if (revenueData !== undefined) {
       localStorage.setItem('revenueData', JSON.stringify(revenueData));
     }
@@ -94,7 +93,6 @@ const Page = () => {
       setFirstRender(false);
       return;
     }
-    console.log('hasData', hasData);
     localStorage.setItem('hasData', JSON.stringify(hasData));
   }, [hasData, firstRender]);
   useEffect(() => {
