@@ -1,3 +1,20 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [ 
+    "next/core-web-vitals",
+    "next",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:jsx-a11y/recommended",
+    "prettier"
+  ],
+  "plugins": ["react", "jsx-a11y", "prettier"],
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "no-unused-vars": "error",
+    "no-console": "warn",
+    "react/react-in-jsx-scope": "off",
+    "prettier/prettier": ["error", {}, { "usePrettierrc": true }],
+    "indent": ["error", 2, {"SwitchCase": 1}],
+    "no-tabs": "error"
+  }
 }

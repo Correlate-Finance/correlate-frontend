@@ -9,7 +9,7 @@ const Header = () => {
   const [loggedIn, setloggedIn] = useState(true);
 
   useEffect(() => {
-    const handleStorage = (e: StorageEvent) => {
+    const handleStorage = () => {
       setloggedIn(localStorage.getItem('loggedIn') === 'true');
     };
 

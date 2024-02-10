@@ -1,9 +1,11 @@
 import Header from '@/components/Header';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import React from 'react';
+// import { Inter } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+// TODO: Remove the unused variable assignment
+// const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Correlate',
