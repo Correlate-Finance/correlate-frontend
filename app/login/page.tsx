@@ -43,29 +43,33 @@ const Page = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const response = await fetch(`${getBaseUrl()}/users/login/`, {
-      method: 'POST',
-      body: JSON.stringify({
-        email: values.email,
-        password: values.password,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
+    try {
+      const response = await fetch(`${getBaseUrl()}/users/login/`, {
+        method: 'POST',
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
 
-    if (response.ok) {
-      const json = await response.json();
-      localStorage.setItem('loggedIn', 'true');
-      localStorage.setItem('session', json.token);
-      Cookies.set('session', json.token);
+      if (response.ok) {
+        const json = await response.json();
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('session', json.token);
+        Cookies.set('session', json.token);
 
-      window.dispatchEvent(new Event('storage'));
-      router.push('/');
-    } else {
-      // Handle errors
-      console.log(response);
+        window.dispatchEvent(new Event('storage'));
+        router.push('/');
+      } else {
+        // Handle errors
+        throw new Error('HTTP error! Status: ' + response.status);
+      }
+    } catch (error) {
+      alert('Error: ' + error);
     }
   }
 

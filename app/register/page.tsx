@@ -55,18 +55,25 @@ const Page = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await fetch('api/register', {
-      method: 'POST',
-      body: JSON.stringify({
-        email: values.email,
-        name: values.name,
-        password: values.password,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    router.push('/login');
+    try {
+      const res = await fetch('api/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: values.email,
+          name: values.name,
+          password: values.password,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+      router.push('/login');
+    } catch (error) {
+      alert('Error: ' + error);
+    }
   }
   return (
     <Card className="mx-auto max-w-sm mt-16">

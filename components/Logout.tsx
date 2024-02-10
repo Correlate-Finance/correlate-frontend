@@ -7,14 +7,21 @@ import { Button } from './ui/button';
 const Logout = () => {
   const router = useRouter();
 
-  function logout() {
-    fetch(`${getBaseUrl()}/users/logout/`, {
-      method: 'POST',
-      credentials: 'include',
-    });
-    localStorage.setItem('loggedIn', 'false');
-    window.dispatchEvent(new Event('storage'));
-    router.push('/login');
+  async function logout() {
+    try {
+      const res = await fetch(`${getBaseUrl()}/users/logout/`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      localStorage.setItem('loggedIn', 'false');
+      window.dispatchEvent(new Event('storage'));
+      router.push('/login');
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+    } catch (error) {
+      alert('Error: ' + error);
+    }
   }
 
   return (

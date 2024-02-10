@@ -8,14 +8,24 @@ export async function GET(request: NextRequest) {
   const startYear = searchParams.get('startYear');
   const aggregationPeriod = searchParams.get('aggregationPeriod');
 
-  const res = await fetch(
-    `${getBaseUrl()}/revenue?stock=${stock}&startYear=${startYear}&aggregationPeriod=${aggregationPeriod}`,
-    {
-      credentials: 'include',
-      headers: headers(),
-    },
-  );
-  const data = await res.json();
+  try {
+    const res = await fetch(
+      `${getBaseUrl()}/revenue?stock=${stock}&startYear=${startYear}&aggregationPeriod=${aggregationPeriod}`,
+      {
+        headers: headers(),
+        credentials: 'include',
+      },
+    );
 
-  return Response.json({ data });
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    return Response.json({ data });
+  } catch (error) {
+    alert('Error: ' + error);
+    return Promise.reject(error);
+  }
 }
