@@ -141,35 +141,48 @@ const Page = () => {
     setLoading(true);
     setLagPeriods(values.lagPeriods);
 
-    const res = await fetch(
-      `api/fetch?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}&lagPeriods=${values.lagPeriods}`,
-      {
-        credentials: 'include',
-      },
-    );
-    const jsonData = await res.json();
+    try {
+      const res = await fetch(
+        `api/fetch?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}&lagPeriods=${values.lagPeriods}`,
+        {
+          credentials: 'include',
+        },
+      );
+      const jsonData = await res.json();
 
-    setLoading(false);
-    const arrData = jsonData.data.data as CorrelationDataPoint[];
-    setDataArray(arrData);
-    setHasData(true);
+      setLoading(false);
+      const arrData = jsonData.data.data as CorrelationDataPoint[];
+      setDataArray(arrData);
+      setHasData(true);
+    } catch (e) {
+      alert('Error fetching data');
+      setLoading(false);
+      setDataArray([]);
+      setHasData(false);
+    }
   }
 
   async function getRevenueData(values: z.infer<typeof formSchema>) {
     setLoading(true);
 
-    const res = await fetch(
-      `api/revenue?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}`,
-      {
-        credentials: 'include',
-      },
-    );
-    const jsonData = await res.json();
+    try {
+      const res = await fetch(
+        `api/revenue?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}`,
+        {
+          credentials: 'include',
+        },
+      );
+      const jsonData = await res.json();
 
-    const parsed = RevenueResponseSchema.parse(jsonData.data);
+      const parsed = RevenueResponseSchema.parse(jsonData.data);
 
-    const parsedData = parsed.map((x) => [x.date, x.value]);
-    setRevenueData(parsedData);
+      const parsedData = parsed.map((x) => [x.date, x.value]);
+      setRevenueData(parsedData);
+    } catch (e) {
+      alert('Error fetching revenue data');
+      setLoading(false);
+      setRevenueData([]);
+    }
   }
 
   function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -180,23 +193,31 @@ const Page = () => {
   async function correlateInputText() {
     setLoading(true);
 
-    const res = await fetch(
-      `api/correlateinputdata?fiscalYearEnd=${fiscalYearEnd}&timeIncrement=${timeIncrement}&lagPeriods=${lagPeriods}`,
-      {
-        method: 'POST',
-        body: inputData,
-        headers: {
-          'Content-Type': 'text/html; charset=utf-8',
+    try {
+      const res = await fetch(
+        `api/correlateinputdata?fiscalYearEnd=${fiscalYearEnd}&timeIncrement=${timeIncrement}&lagPeriods=${lagPeriods}`,
+        {
+          method: 'POST',
+          body: inputData,
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8',
+          },
+          credentials: 'include',
         },
-        credentials: 'include',
-      },
-    );
-    const jsonData = await res.json();
+      );
 
-    setLoading(false);
-    const arrData = jsonData.data.data as CorrelationDataPoint[];
-    setDataArray(arrData);
-    setHasData(true);
+      const jsonData = await res.json();
+
+      setLoading(false);
+      const arrData = jsonData.data.data as CorrelationDataPoint[];
+      setDataArray(arrData);
+      setHasData(true);
+    } catch (e) {
+      alert('Error correlating data');
+      setLoading(false);
+      setDataArray([]);
+      setHasData(false);
+    }
   }
 
   function generateTabularData() {
@@ -335,7 +356,7 @@ const Page = () => {
                   />
                   <Button
                     type="submit"
-                    className="mt-4 bg-green-600 hover:bg-green-900 self-center"
+                    className="mt-8 bg-green-600 hover:bg-green-900 self-center"
                   >
                     {' '}
                     {isLoading && (

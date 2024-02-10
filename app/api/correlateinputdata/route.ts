@@ -9,17 +9,26 @@ export async function POST(request: NextRequest) {
   const timeIncrement = searchParams.get('timeIncrement');
   const lagPeriods = searchParams.get('lagPeriods');
 
-  const res = await fetch(
-    `${getBaseUrl()}/correlateInputData/?fiscal_year_end=${fiscalYearEnd}&time_increment=${timeIncrement}&lag_periods=${lagPeriods}`,
-    {
-      method: 'POST',
-      body: inputData,
-      headers: headers(),
-      credentials: 'include',
-    },
-  );
+  try {
+    const res = await fetch(
+      `${getBaseUrl()}/correlateInputData/?fiscal_year_end=${fiscalYearEnd}&time_increment=${timeIncrement}&lag_periods=${lagPeriods}`,
+      {
+        method: 'POST',
+        body: inputData,
+        headers: headers(),
+        credentials: 'include',
+      },
+    );
 
-  const data = await res.json();
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
 
-  return Response.json({ data });
+    const data = await res.json();
+
+    return Response.json({ data });
+  } catch (error) {
+    alert('Error: ' + error);
+    return Promise.reject(error);
+  }
 }

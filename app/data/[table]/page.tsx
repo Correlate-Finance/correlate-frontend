@@ -25,7 +25,10 @@ export default function Page({ params }: { params: { table: string } }) {
       body: params.table,
     })
       .then((res) => res.json())
-      .then((json) => setData(JSON.parse(json.data).toReversed()));
+      .then((json) => setData(JSON.parse(json.data).toReversed()))
+      .catch((err) => {
+        alert('Error: ' + err);
+      });
   }, [params.table]);
 
   return (
