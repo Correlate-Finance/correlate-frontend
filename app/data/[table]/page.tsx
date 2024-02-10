@@ -29,7 +29,7 @@ export default function Page({ params }: { params: { table: string } }) {
       .catch((err) => {
         alert('Error: ' + err);
       });
-  }, []);
+  }, [params.table]);
 
   return (
     <>
