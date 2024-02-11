@@ -2,6 +2,7 @@ import { DataTrendPoint } from '@/app/api/schema';
 import React from 'react';
 import {
   Bar,
+  Brush,
   ComposedChart,
   Legend,
   Line,
@@ -22,6 +23,7 @@ const BarLineChart: React.FC<MyComponentProps> = ({
   lineChartKey,
 }: MyComponentProps) => {
   data = data.toReversed();
+  const dataLength = data.length;
   return (
     <ComposedChart
       width={500}
@@ -47,6 +49,15 @@ const BarLineChart: React.FC<MyComponentProps> = ({
         dataKey={lineChartKey}
         stroke="#ff7300"
       />
+      {dataLength > 20 && (
+        <Brush
+          dataKey="Date"
+          height={30}
+          stroke="#8884d8"
+          startIndex={dataLength - 20}
+          endIndex={dataLength - 1}
+        />
+      )}
     </ComposedChart>
   );
 };

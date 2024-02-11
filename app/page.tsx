@@ -221,12 +221,12 @@ const Page = () => {
   }
 
   function generateTabularData() {
-    var rows = inputData.split('\n');
+    let rows = inputData.split('\n');
 
-    var table: string[][] = [];
+    let table: string[][] = [];
 
-    for (var y in rows) {
-      var cells = rows[y].split('\t');
+    for (let y in rows) {
+      let cells = rows[y].split('\t');
       table.push(cells);
     }
 
