@@ -31,8 +31,8 @@ import { z } from 'zod';
 import { RevenueResponseSchema } from './api/schema';
 
 const Page = () => {
-  const [isLoading, setLoading] = useState(false);
-  const [hasData, setHasData] = useState(() => {
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const [hasData, setHasData] = useState<boolean>(() => {
     return false;
   });
   const [dataArray, setDataArray] = useState<CorrelationDataPoint[]>(() => {

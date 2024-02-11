@@ -28,4 +28,7 @@ export type DataTrendPoint = {
   T12M_YoYGrowth: number;
   Stack2Y: number;
   Stack3Y: number;
+  MoMGrowth: number;
+  DeltaSeasonality: number;
+  averageMoM: number;
 };
