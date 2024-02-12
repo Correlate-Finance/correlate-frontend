@@ -308,7 +308,6 @@ export default function Page({ params }: { params: { table: string } }) {
                 </div>
                 <div>
                   <Table className="border-white w-min">
-                    <caption>Input Data.</caption>
                     <TableHeader>
                       <TableRow>
                         <TableHead className="w-[100px]">Month</TableHead>
@@ -316,11 +315,11 @@ export default function Page({ params }: { params: { table: string } }) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {data.map((dp, index) => {
+                      {data.slice(data.length - 12).map((dp, index) => {
                         return (
                           <TableRow key={index}>
                             <TableCell className="whitespace-nowrap">
-                              {dayjs(dp.Date).format('MMMM YYYY')}
+                              {dayjs(dp.Date).format('MMMM')}
                             </TableCell>
                             <TableCell className="whitespace-nowrap">
                               {formatter(dp.averageMoM)}
