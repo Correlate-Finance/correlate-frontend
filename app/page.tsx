@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -51,8 +52,9 @@ const Page = () => {
     return 'Manual';
   });
   const [firstRender, setFirstRender] = useState(true);
+  const [highLevelOnly, setHighLevelOnly] = useState(false);
 
-  // Fetch initial props from localstorage
+  // Fetch initial props from local storage
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storageHasData = localStorage.getItem('hasData');
@@ -78,6 +80,10 @@ const Page = () => {
       const storageTabValue = localStorage.getItem('tabValue');
       if (storageTabValue !== null) {
         setTabValue(JSON.parse(storageTabValue));
+      }
+      const storageHighLevelOnly = localStorage.getItem('highLevelOnly');
+      if (storageHighLevelOnly !== null) {
+        setHighLevelOnly(JSON.parse(storageHighLevelOnly));
       }
     }
   }, []);
@@ -123,6 +129,14 @@ const Page = () => {
     }
     localStorage.setItem('tabValue', JSON.stringify(tabValue));
   }, [tabValue, firstRender]);
+  useEffect(() => {
+    console.log(highLevelOnly);
+    if (firstRender) {
+      setFirstRender(false);
+      return;
+    }
+    localStorage.setItem('highLevelOnly', JSON.stringify(highLevelOnly));
+  }, [highLevelOnly, firstRender]);
 
   const formSchema = z.object({
     ticker: z.string().min(1, {
@@ -134,16 +148,16 @@ const Page = () => {
       .min(2000, { message: 'Year needs to be higher than 2000' }),
     aggregationPeriod: z.string(),
     lagPeriods: z.coerce.number(),
+    highLevelOnly: z.boolean().default(false),
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     getRevenueData(values);
     setLoading(true);
-    setLagPeriods(values.lagPeriods);
 
     try {
       const res = await fetch(
-        `api/fetch?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}&lagPeriods=${values.lagPeriods}`,
+        `api/fetch?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}&lagPeriods=${values.lagPeriods}&highLevelOnly=${highLevelOnly}`,
         {
           credentials: 'include',
         },
@@ -195,7 +209,7 @@ const Page = () => {
 
     try {
       const res = await fetch(
-        `api/correlateinputdata?fiscalYearEnd=${fiscalYearEnd}&timeIncrement=${timeIncrement}&lagPeriods=${lagPeriods}`,
+        `api/correlateinputdata?fiscalYearEnd=${fiscalYearEnd}&timeIncrement=${timeIncrement}&lagPeriods=${lagPeriods}&highLevelOnly=${highLevelOnly}`,
         {
           method: 'POST',
           body: inputData,
@@ -244,6 +258,7 @@ const Page = () => {
       startYear: 2010,
       aggregationPeriod: 'Annually',
       lagPeriods: 0,
+      highLevelOnly: false,
     },
   });
 
@@ -354,6 +369,29 @@ const Page = () => {
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="highLevelOnly"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-white text-opacity-80">
+                            High Level Datasets
+                          </FormLabel>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-neutral-400"
+                            checked={field.value}
+                            onCheckedChange={(e: boolean) => {
+                              setHighLevelOnly(e);
+                              field.onChange(e);
+                            }}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                   <Button
                     type="submit"
                     className="mt-8 bg-green-600 hover:bg-green-900 self-center"
@@ -444,6 +482,15 @@ const Page = () => {
                     <SelectItem value="4">4</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div>
+                <p className="text-white text-sm mb-2 text-opacity-80">
+                  High Level Datasets
+                </p>
+                <Switch
+                  checked={highLevelOnly}
+                  onCheckedChange={setHighLevelOnly}
+                />
               </div>
               <div>
                 <p className="text-[#1b1b26] text-sm mb-2">button</p>

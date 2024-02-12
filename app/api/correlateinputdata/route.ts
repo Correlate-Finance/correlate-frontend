@@ -8,10 +8,11 @@ export async function POST(request: NextRequest) {
   const fiscalYearEnd = searchParams.get('fiscalYearEnd');
   const timeIncrement = searchParams.get('timeIncrement');
   const lagPeriods = searchParams.get('lagPeriods');
+  const highLevelOnly = searchParams.get('highLevelOnly');
 
   try {
     const res = await fetch(
-      `${getBaseUrl()}/correlateInputData/?fiscal_year_end=${fiscalYearEnd}&time_increment=${timeIncrement}&lag_periods=${lagPeriods}`,
+      `${getBaseUrl()}/correlateInputData/?fiscal_year_end=${fiscalYearEnd}&time_increment=${timeIncrement}&lag_periods=${lagPeriods}&high_level_only=${highLevelOnly}`,
       {
         method: 'POST',
         body: inputData,
