@@ -25,7 +25,7 @@ import { useEffect, useMemo, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-type TActiveStack = 'Stack2Y' | 'Stack3Y';
+type TActiveStack = 'Stack2Y' | 'Stack3Y' | 'Stack4Y' | 'Stack5Y';
 type TActiveTab = 'Raw' | 'Seasonal';
 
 export default function Page({ params }: { params: { table: string } }) {
@@ -52,6 +52,7 @@ export default function Page({ params }: { params: { table: string } }) {
       });
   }, [params.table]);
 
+  // Load default state from local storage
   useEffect(() => {
     const activeTab = localStorage.getItem('activeTab');
     if (activeTab) {
@@ -89,6 +90,7 @@ export default function Page({ params }: { params: { table: string } }) {
     }
     return lastFiveYears;
   }, []);
+
   const filteredDataSeasonal = useMemo(() => {
     if (selectedYear === 'all') {
       return data;
@@ -104,7 +106,7 @@ export default function Page({ params }: { params: { table: string } }) {
   };
 
   const handleActiveStack = (e: string) => {
-    setActiveStack(e as 'Stack2Y' | 'Stack3Y');
+    setActiveStack(e as 'Stack2Y' | 'Stack3Y' | 'Stack4Y' | 'Stack5Y');
     localStorage.setItem('activeStack', e);
   };
 
@@ -150,6 +152,8 @@ export default function Page({ params }: { params: { table: string } }) {
                   <SelectContent>
                     <SelectItem value="Stack2Y">2Y Stack</SelectItem>
                     <SelectItem value="Stack3Y">3Y Stack</SelectItem>
+                    <SelectItem value="Stack4Y">4Y Stack</SelectItem>
+                    <SelectItem value="Stack5Y">5Y Stack</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -196,8 +200,7 @@ export default function Page({ params }: { params: { table: string } }) {
                       <TableHead>T3M YoY Growth</TableHead>
                       <TableHead>T6M YoY Growth</TableHead>
                       <TableHead>T12M YoY Growth</TableHead>
-                      <TableHead>Stack2Y</TableHead>
-                      <TableHead>Stack3Y</TableHead>
+                      <TableHead>{activeStack}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -224,8 +227,7 @@ export default function Page({ params }: { params: { table: string } }) {
                           <TableCell>{formatter(dp.T3M_YoYGrowth)}</TableCell>
                           <TableCell>{formatter(dp.T6M_YoYGrowth)}</TableCell>
                           <TableCell>{formatter(dp.T12M_YoYGrowth)}</TableCell>
-                          <TableCell>{formatter(dp.Stack2Y)}</TableCell>
-                          <TableCell>{formatter(dp.Stack3Y)}</TableCell>
+                          <TableCell>{formatter(dp[activeStack])}</TableCell>
                         </TableRow>
                       );
                     })}

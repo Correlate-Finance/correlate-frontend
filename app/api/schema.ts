@@ -28,6 +28,8 @@ export type DataTrendPoint = {
   T12M_YoYGrowth: number;
   Stack2Y: number;
   Stack3Y: number;
+  Stack4Y: number;
+  Stack5Y: number;
 
   // Seasonality fields
   MoMGrowth: number;
