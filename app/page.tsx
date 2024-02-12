@@ -487,6 +487,7 @@ const Page = () => {
                   High Level Datasets
                 </p>
                 <Switch
+                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-neutral-400"
                   checked={highLevelOnly}
                   onCheckedChange={setHighLevelOnly}
                 />
