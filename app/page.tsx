@@ -130,7 +130,6 @@ const Page = () => {
     localStorage.setItem('tabValue', JSON.stringify(tabValue));
   }, [tabValue, firstRender]);
   useEffect(() => {
-    console.log(highLevelOnly);
     if (firstRender) {
       setFirstRender(false);
       return;
