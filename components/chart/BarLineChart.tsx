@@ -18,6 +18,7 @@ interface MyComponentProps {
   lineChartKey: string;
   barChartKeyFormat: 'number' | 'percentage';
   lineChartKeyFormat: 'number' | 'percentage';
+  syncId?: string;
 }
 
 const BarLineChart: React.FC<MyComponentProps> = ({
@@ -26,6 +27,7 @@ const BarLineChart: React.FC<MyComponentProps> = ({
   lineChartKey,
   barChartKeyFormat,
   lineChartKeyFormat,
+  syncId,
 }: MyComponentProps) => {
   data = data.slice().reverse();
   const dataLength = data.length;
@@ -40,6 +42,7 @@ const BarLineChart: React.FC<MyComponentProps> = ({
         bottom: 20,
         left: 20,
       }}
+      {...(syncId && { syncId })}
     >
       {/* <CartesianGrid stroke="#f5f5f5" /> */}
       <XAxis
@@ -97,16 +100,15 @@ const BarLineChart: React.FC<MyComponentProps> = ({
         dataKey={lineChartKey}
         stroke="#ff7300"
       />
-      {dataLength > 20 && (
-        <Brush
-          dataKey="Date"
-          height={30}
-          stroke="#8884d8"
-          startIndex={dataLength - 20}
-          endIndex={dataLength - 1}
-          travellerWidth={0}
-        />
-      )}
+      <Brush
+        dataKey="Date"
+        height={30}
+        stroke="#8884d8"
+        startIndex={dataLength - 20}
+        travellerWidth={0}
+        data={data}
+        className="hidden"
+      />
     </ComposedChart>
   );
 };

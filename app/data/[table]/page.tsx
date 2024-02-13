@@ -1,6 +1,7 @@
 'use client';
 
 import BarLineChart from '@/components/chart/BarLineChart';
+import BrushWrapper from '@/components/chart/BrushWrapper';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -96,6 +97,7 @@ export default function Page({ params }: { params: { table: string } }) {
                   barChartKeyFormat="number"
                   lineChartKey="YoYGrowth"
                   lineChartKeyFormat="percentage"
+                  syncId="syncId"
                 />
                 <BarLineChart
                   data={filteredDataRaw}
@@ -103,7 +105,11 @@ export default function Page({ params }: { params: { table: string } }) {
                   barChartKeyFormat="number"
                   lineChartKey={activeStack}
                   lineChartKeyFormat="percentage"
+                  syncId="syncId"
                 />
+              </div>
+              <div className="flex flex-col items-center w-full">
+                <BrushWrapper data={filteredDataRaw} syncId="syncId" />
               </div>
               <h2 className="text-white text-center">Input Data</h2>
               <div className="text-white border-white">
