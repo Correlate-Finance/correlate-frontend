@@ -20,9 +20,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { exportToExcel, formatNumber, formatPercentage } from '@/lib/utils';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import {
   useFetchData,
   useFilterData,
@@ -45,26 +42,11 @@ export default function Page({ params }: { params: { table: string } }) {
     'all',
   );
   const [activeTab, setActiveTab] = useLocalStorage('activeTab', 'Raw');
-  const [dateRange, setDateRange] = useState([null, null]);
-  const [startDate, endDate] = dateRange;
+
   const { filteredDataRaw, filteredDataSeasonal } = useFilterData(
     data,
-    startDate,
-    endDate,
     selectedYear,
   );
-
-  useEffect(() => {
-    const dateRange = localStorage.getItem('dateRange');
-    if (dateRange) {
-      setDateRange(JSON.parse(dateRange));
-    }
-  }, []);
-
-  const handleDateRange = (update: any) => {
-    setDateRange(update);
-    localStorage.setItem('dateRange', JSON.stringify(update));
-  };
 
   return (
     <div>
@@ -103,17 +85,6 @@ export default function Page({ params }: { params: { table: string } }) {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-            <div>
-              <DatePicker
-                selectsRange={true}
-                startDate={startDate}
-                endDate={endDate}
-                onChange={(update: any) => handleDateRange(update)}
-                isClearable={true}
-                placeholderText="Date Picker"
-                className="bg-white text-black rounded-md p-2 w-60 text-center"
-              />
             </div>
           </div>
           {data ? (
