@@ -1,6 +1,5 @@
 'use client';
 
-import { DataTrendPoint } from '@/app/api/schema';
 import BarLineChart from '@/components/chart/BarLineChart';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,103 +18,52 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { exportToExcel } from '@/lib/utils';
+import { exportToExcel, formatNumber, formatPercentage } from '@/lib/utils';
 import dayjs from 'dayjs';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import {
+  useFetchData,
+  useFilterData,
+  useLastFiveYearsArray,
+  useLocalStorage,
+} from './hooks';
 
 type TActiveStack = 'Stack2Y' | 'Stack3Y';
 type TActiveTab = 'Raw' | 'Seasonal';
 
 export default function Page({ params }: { params: { table: string } }) {
-  const [data, setData] = useState<DataTrendPoint[]>([]);
-  const [activeStack, setActiveStack] = useState<TActiveStack>('Stack3Y');
-  const [selectedYear, setSelectedYear] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState<TActiveTab>('Raw');
+  const data = useFetchData(params);
+  const lastFiveYearsArray = useLastFiveYearsArray();
+  const [activeStack, setActiveStack] = useLocalStorage(
+    'activeStack',
+    'Stack3Y',
+  );
+  const [selectedYear, setSelectedYear] = useLocalStorage(
+    'selectedYear',
+    'all',
+  );
+  const [activeTab, setActiveTab] = useLocalStorage('activeTab', 'Raw');
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'percent',
-    maximumFractionDigits: 2,
-  }).format;
+  const { filteredDataRaw, filteredDataSeasonal } = useFilterData(
+    data,
+    startDate,
+    endDate,
+    selectedYear,
+  );
 
   useEffect(() => {
-    fetch(`/api/dataset/`, {
-      method: 'POST',
-      body: params.table,
-    })
-      .then((res) => res.json())
-      .then((json) => setData(JSON.parse(json.data).toReversed()))
-      .catch((err) => {
-        alert('Error: ' + err);
-      });
-  }, [params.table]);
-
-  useEffect(() => {
-    const activeTab = localStorage.getItem('activeTab');
-    if (activeTab) {
-      setActiveTab(activeTab as TActiveTab);
-    }
-    const activeStack = localStorage.getItem('activeStack');
-    if (activeStack) {
-      setActiveStack(activeStack as TActiveStack);
-    }
     const dateRange = localStorage.getItem('dateRange');
     if (dateRange) {
       setDateRange(JSON.parse(dateRange));
     }
-    const selectedYear = localStorage.getItem('selectedYear');
-    if (selectedYear) {
-      setSelectedYear(selectedYear);
-    }
   }, []);
-
-  const filteredDataRaw = useMemo(() => {
-    if (startDate && endDate) {
-      return data.filter((dp) => {
-        return (
-          dayjs(dp.Date).isAfter(startDate) && dayjs(dp.Date).isBefore(endDate)
-        );
-      });
-    }
-    return data;
-  }, [data, startDate, endDate]);
-
-  const lastFiveYearsArray = useMemo(() => {
-    const lastFiveYears = [];
-    for (let i = 0; i < 5; i++) {
-      lastFiveYears.push(dayjs().subtract(i, 'year').format('YYYY'));
-    }
-    return lastFiveYears;
-  }, []);
-  const filteredDataSeasonal = useMemo(() => {
-    if (selectedYear === 'all') {
-      return data;
-    }
-    return data.filter((dp) => {
-      return dayjs(dp.Date).format('YYYY') === selectedYear;
-    });
-  }, [data, selectedYear]);
-
-  const handleActiveTab = (e: TActiveTab) => {
-    setActiveTab(e);
-    localStorage.setItem('activeTab', e);
-  };
-
-  const handleActiveStack = (e: string) => {
-    setActiveStack(e as 'Stack2Y' | 'Stack3Y');
-    localStorage.setItem('activeStack', e);
-  };
 
   const handleDateRange = (update: any) => {
     setDateRange(update);
     localStorage.setItem('dateRange', JSON.stringify(update));
-  };
-
-  const handleChangeSelectedYear = (e: string) => {
-    setSelectedYear(e);
-    localStorage.setItem('selectedYear', e);
   };
 
   return (
@@ -128,7 +76,7 @@ export default function Page({ params }: { params: { table: string } }) {
       </Button>
       <Tabs
         value={activeTab}
-        onValueChange={(value) => handleActiveTab(value as TActiveTab)}
+        onValueChange={(value) => setActiveTab(value as TActiveTab)}
         className="flex flex-col items-center my-4"
       >
         <TabsList className="flex flex-row w-min">
@@ -141,7 +89,7 @@ export default function Page({ params }: { params: { table: string } }) {
               <p className="text-white text-center">Multi-year stack</p>
               <div className="w-30">
                 <Select
-                  onValueChange={(e: string) => handleActiveStack(e)}
+                  onValueChange={(e) => setActiveStack(e as TActiveStack)}
                   value={activeStack}
                 >
                   <SelectTrigger>
@@ -168,69 +116,96 @@ export default function Page({ params }: { params: { table: string } }) {
           </div>
           {data ? (
             <div>
-              <div className="flex flex-row justify-start">
+              <div className="flex flex-row justify-center gap-10">
                 <BarLineChart
                   data={filteredDataRaw}
                   barChartKey="Value"
+                  barChartKeyFormat="number"
                   lineChartKey="YoYGrowth"
+                  lineChartKeyFormat="percentage"
                 />
                 <BarLineChart
                   data={filteredDataRaw}
                   barChartKey="Value"
+                  barChartKeyFormat="number"
                   lineChartKey={activeStack}
+                  lineChartKeyFormat="percentage"
                 />
               </div>
               <h2 className="text-white text-center">Input Data</h2>
               <div className="text-white border-white">
-                <Table className="border-white w-min">
-                  <caption>Input Data.</caption>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Index</TableHead>
-                      <TableHead className="w-[100px]">Date</TableHead>
-                      <TableHead>Value</TableHead>
-                      <TableHead>T3M</TableHead>
-                      <TableHead>T6M</TableHead>
-                      <TableHead>T12M</TableHead>
-                      <TableHead>YoY Growth</TableHead>
-                      <TableHead>T3M YoY Growth</TableHead>
-                      <TableHead>T6M YoY Growth</TableHead>
-                      <TableHead>T12M YoY Growth</TableHead>
-                      <TableHead>Stack2Y</TableHead>
-                      <TableHead>Stack3Y</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.map((dp, index) => {
-                      return (
-                        <TableRow key={index}>
-                          <TableCell>{index}</TableCell>
-                          <TableCell className="whitespace-nowrap">
-                            {dp.Date}
-                          </TableCell>
-                          <TableCell className="whitespace-nowrap">
-                            {dp.Value}
-                          </TableCell>
-                          <TableCell className="whitespace-nowrap">
-                            {dp.T3M}
-                          </TableCell>
-                          <TableCell className="whitespace-nowrap">
-                            {dp.T6M}
-                          </TableCell>
-                          <TableCell className="whitespace-nowrap">
-                            {dp.T12M}
-                          </TableCell>
-                          <TableCell>{formatter(dp.YoYGrowth)}</TableCell>
-                          <TableCell>{formatter(dp.T3M_YoYGrowth)}</TableCell>
-                          <TableCell>{formatter(dp.T6M_YoYGrowth)}</TableCell>
-                          <TableCell>{formatter(dp.T12M_YoYGrowth)}</TableCell>
-                          <TableCell>{formatter(dp.Stack2Y)}</TableCell>
-                          <TableCell>{formatter(dp.Stack3Y)}</TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
+                <div className="w-full">
+                  <Table className="border-white">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[20px]">Index</TableHead>
+                        <TableHead className="w-[100px]">Date</TableHead>
+                        <TableHead className="w-[100px]">Value</TableHead>
+                        <TableHead className="w-[100px]">T3M</TableHead>
+                        <TableHead className="w-[100px]">T6M</TableHead>
+                        <TableHead className="w-[100px]">T12M</TableHead>
+                        <TableHead className="w-[100px]">YoY Growth</TableHead>
+                        <TableHead className="w-[100px]">
+                          T3M YoY Growth
+                        </TableHead>
+                        <TableHead className="w-[100px]">
+                          T6M YoY Growth
+                        </TableHead>
+                        <TableHead className="w-[100px]">
+                          T12M YoY Growth
+                        </TableHead>
+                        <TableHead className="w-[100px]">Stack2Y</TableHead>
+                        <TableHead className="w-[100px]">Stack3Y</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                  </Table>
+                </div>
+                <div className="max-h-[90vh] overflow-y-auto">
+                  <Table className="w-full">
+                    <TableBody>
+                      {data.map((dp, index) => {
+                        return (
+                          <TableRow key={index}>
+                            <TableCell className="w-[20px]">{index}</TableCell>
+                            <TableCell className="whitespace-nowrap w-[100px]">
+                              {dp.Date}
+                            </TableCell>
+                            <TableCell className="whitespace-nowrap w-[100px]">
+                              {formatNumber(dp.Value)}
+                            </TableCell>
+                            <TableCell className="whitespace-nowrap w-[100px]">
+                              {formatNumber(dp.T3M)}
+                            </TableCell>
+                            <TableCell className="whitespace-nowrap w-[100px]">
+                              {formatNumber(dp.T6M)}
+                            </TableCell>
+                            <TableCell className="whitespace-nowrap w-[100px]">
+                              {formatNumber(dp.T12M)}
+                            </TableCell>
+                            <TableCell className="w-[100px]">
+                              {formatPercentage(dp.YoYGrowth)}
+                            </TableCell>
+                            <TableCell className="w-[100px]">
+                              {formatPercentage(dp.T3M_YoYGrowth)}
+                            </TableCell>
+                            <TableCell className="w-[100px]">
+                              {formatPercentage(dp.T6M_YoYGrowth)}
+                            </TableCell>
+                            <TableCell className="w-[100px]">
+                              {formatPercentage(dp.T12M_YoYGrowth)}
+                            </TableCell>
+                            <TableCell className="w-[100px]">
+                              {formatPercentage(dp.Stack2Y)}
+                            </TableCell>
+                            <TableCell className="w-[100px]">
+                              {formatPercentage(dp.Stack3Y)}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
             </div>
           ) : (
@@ -242,7 +217,7 @@ export default function Page({ params }: { params: { table: string } }) {
             <p className="text-white text-center">Year Selector</p>
             <div className="w-30">
               <Select
-                onValueChange={(e: string) => handleChangeSelectedYear(e)}
+                onValueChange={(e: string) => setSelectedYear(e)}
                 value={selectedYear}
               >
                 <SelectTrigger>
@@ -267,67 +242,83 @@ export default function Page({ params }: { params: { table: string } }) {
                 <BarLineChart
                   data={filteredDataSeasonal}
                   barChartKey="MoMGrowth"
+                  barChartKeyFormat="percentage"
                   lineChartKey="DeltaSeasonality"
+                  lineChartKeyFormat="percentage"
                 />
               </div>
               <div className="text-white border-white flex justify-between gap-20">
                 <div>
-                  <Table className="border-white w-min">
-                    <caption>Input Data.</caption>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Index</TableHead>
-                        <TableHead className="w-[100px]">Date</TableHead>
-                        <TableHead>Value</TableHead>
-                        <TableHead>MoM Growth</TableHead>
-                        <TableHead>Delta Seasonality</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {data.map((dp, index) => {
-                        return (
-                          <TableRow key={index}>
-                            <TableCell>{index}</TableCell>
-                            <TableCell className="whitespace-nowrap">
-                              {dp.Date}
-                            </TableCell>
-                            <TableCell className="whitespace-nowrap">
-                              {dp.Value}
-                            </TableCell>
-                            <TableCell>{formatter(dp.MoMGrowth)}</TableCell>
-                            <TableCell>
-                              {formatter(dp.DeltaSeasonality)}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
+                  <div className="w-full">
+                    <Table className="border-white">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[20px]">Index</TableHead>
+                          <TableHead className="w-[120px]">Date</TableHead>
+                          <TableHead className="w-[100px]">Value</TableHead>
+                          <TableHead className="w-[50px]">MoM Growth</TableHead>
+                          <TableHead className="w-[75px]">
+                            Delta Seasonality
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                    </Table>
+                  </div>
+                  <div className="max-h-[90vh] overflow-y-auto">
+                    <Table className="w-full">
+                      <TableBody>
+                        {data.map((dp, index) => {
+                          return (
+                            <TableRow key={index}>
+                              <TableCell className="w-[20px]">
+                                {index}
+                              </TableCell>
+                              <TableCell className="w-[120px]">
+                                {dp.Date}
+                              </TableCell>
+                              <TableCell className="w-[100px]">
+                                {dp.Value}
+                              </TableCell>
+                              <TableCell className="w-[50px]">
+                                {formatPercentage(dp.MoMGrowth)}
+                              </TableCell>
+                              <TableCell className="w-[75px]">
+                                {formatPercentage(dp.DeltaSeasonality)}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
                 <div>
-                  <Table className="border-white w-min">
-                    <caption>Input Data.</caption>
+                  <Table className="border-white w-full">
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[100px]">Month</TableHead>
-                        <TableHead>Average MoM</TableHead>
+                        <TableHead className="w-[150px]">Month</TableHead>
+                        <TableHead className="w-[100px]">Average MoM</TableHead>
                       </TableRow>
                     </TableHeader>
-                    <TableBody>
-                      {data.map((dp, index) => {
-                        return (
-                          <TableRow key={index}>
-                            <TableCell className="whitespace-nowrap">
-                              {dayjs(dp.Date).format('MMMM YYYY')}
-                            </TableCell>
-                            <TableCell className="whitespace-nowrap">
-                              {formatter(dp.averageMoM)}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
                   </Table>
+                  <div className="max-h-[90vh] overflow-y-auto">
+                    <Table className="w-full">
+                      <TableBody>
+                        {data.map((dp, index) => {
+                          return (
+                            <TableRow key={index}>
+                              <TableCell className="whitespace-nowrap w-[150px]">
+                                {dayjs(dp.Date).format('MMMM YYYY')}
+                              </TableCell>
+                              <TableCell className="whitespace-nowrap w-[100px]">
+                                {formatPercentage(dp.averageMoM)}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
               </div>
             </div>
