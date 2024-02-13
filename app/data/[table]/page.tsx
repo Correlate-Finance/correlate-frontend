@@ -30,7 +30,7 @@ import {
   useLocalStorage,
 } from './hooks';
 
-type TActiveStack = 'Stack2Y' | 'Stack3Y';
+type TActiveStack = 'Stack2Y' | 'Stack3Y' | 'Stack4Y' | 'Stack5Y';
 type TActiveTab = 'Raw' | 'Seasonal';
 
 export default function Page({ params }: { params: { table: string } }) {
@@ -98,6 +98,8 @@ export default function Page({ params }: { params: { table: string } }) {
                   <SelectContent>
                     <SelectItem value="Stack2Y">2Y Stack</SelectItem>
                     <SelectItem value="Stack3Y">3Y Stack</SelectItem>
+                    <SelectItem value="Stack4Y">4Y Stack</SelectItem>
+                    <SelectItem value="Stack5Y">5Y Stack</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

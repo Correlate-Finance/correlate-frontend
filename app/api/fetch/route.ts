@@ -8,10 +8,11 @@ export async function GET(request: NextRequest) {
   const startYear = searchParams.get('startYear');
   const aggregationPeriod = searchParams.get('aggregationPeriod');
   const lagPeriods = searchParams.get('lagPeriods');
+  const highLevelOnly = searchParams.get('highLevelOnly');
 
   try {
     const res = await fetch(
-      `${getBaseUrl()}/correlate?stock=${stock}&startYear=${startYear}&aggregationPeriod=${aggregationPeriod}&lag_periods=${lagPeriods}`,
+      `${getBaseUrl()}/correlate?stock=${stock}&startYear=${startYear}&aggregationPeriod=${aggregationPeriod}&lag_periods=${lagPeriods}&high_level_only=${highLevelOnly}`,
       {
         headers: headers(),
         credentials: 'include',
