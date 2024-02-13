@@ -1,4 +1,5 @@
 import { DataTrendPoint } from '@/app/api/schema';
+import { formatNumber, formatPercentage } from '@/lib/utils';
 import React from 'react';
 import {
   Bar,
@@ -15,14 +16,18 @@ interface MyComponentProps {
   data: DataTrendPoint[];
   barChartKey: string;
   lineChartKey: string;
+  barChartKeyFormat: 'number' | 'percentage';
+  lineChartKeyFormat: 'number' | 'percentage';
 }
 
 const BarLineChart: React.FC<MyComponentProps> = ({
   data,
   barChartKey,
   lineChartKey,
+  barChartKeyFormat,
+  lineChartKeyFormat,
 }: MyComponentProps) => {
-  data = data.toReversed();
+  data = data.slice().reverse();
   const dataLength = data.length;
   return (
     <ComposedChart
@@ -37,10 +42,53 @@ const BarLineChart: React.FC<MyComponentProps> = ({
       }}
     >
       {/* <CartesianGrid stroke="#f5f5f5" /> */}
-      <XAxis dataKey="Date" scale="band" />
-      <YAxis yAxisId="left" />
-      <YAxis yAxisId="right" orientation="right" />
-      <Tooltip />
+      <XAxis
+        dataKey="Date"
+        scale="band"
+        angle={-45}
+        textAnchor="end"
+        interval={0}
+        tick={{
+          fontSize: 10,
+          fill: '#ffffff',
+        }}
+        height={70}
+      />
+      <YAxis
+        yAxisId="left"
+        tickFormatter={(number) => {
+          if (barChartKeyFormat === 'percentage') {
+            return formatPercentage(number);
+          } else {
+            return formatNumber(number);
+          }
+        }}
+      />
+      <YAxis
+        yAxisId="right"
+        orientation="right"
+        tickFormatter={(number) => {
+          if (lineChartKeyFormat === 'percentage') {
+            return formatPercentage(number);
+          } else {
+            return formatNumber(number);
+          }
+        }}
+      />
+      <Tooltip
+        formatter={(value, name, { dataKey }) => {
+          if (dataKey === lineChartKey && lineChartKeyFormat === 'percentage') {
+            return formatPercentage(value as number);
+          } else if (
+            dataKey === barChartKey &&
+            barChartKeyFormat === 'percentage'
+          ) {
+            return formatPercentage(value as number);
+          } else {
+            return formatNumber(value as number);
+          }
+        }}
+      />
       <Legend />
       <Bar yAxisId="left" dataKey={barChartKey} barSize={10} fill="#413ea0" />
       <Line
@@ -56,6 +104,7 @@ const BarLineChart: React.FC<MyComponentProps> = ({
           stroke="#8884d8"
           startIndex={dataLength - 20}
           endIndex={dataLength - 1}
+          travellerWidth={0}
         />
       )}
     </ComposedChart>

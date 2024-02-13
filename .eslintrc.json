@@ -16,5 +16,8 @@
     "prettier/prettier": ["error", {}, { "usePrettierrc": true }],
     "indent": ["error", 2, {"SwitchCase": 1}],
     "no-tabs": "error"
+  },
+  "env": {
+    "jest": true
   }
 }

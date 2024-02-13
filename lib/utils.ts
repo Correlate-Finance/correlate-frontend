@@ -60,3 +60,20 @@ export const exportToExcel = (data: any) => {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 };
+
+export const formatNumber = (number: number | bigint | undefined) => {
+  if (number !== undefined) {
+    return new Intl.NumberFormat('en-US').format(number);
+  }
+  return '';
+};
+
+export const formatPercentage = (number: number | bigint | undefined) => {
+  if (number !== undefined) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'percent',
+      maximumFractionDigits: 2,
+    }).format(number);
+  }
+  return '';
+};
