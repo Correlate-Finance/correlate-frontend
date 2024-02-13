@@ -42,7 +42,18 @@ const BarLineChart: React.FC<MyComponentProps> = ({
       }}
     >
       {/* <CartesianGrid stroke="#f5f5f5" /> */}
-      <XAxis dataKey="Date" scale="band" />
+      <XAxis
+        dataKey="Date"
+        scale="band"
+        angle={-45}
+        textAnchor="end"
+        interval={0}
+        tick={{
+          fontSize: 10,
+          fill: '#ffffff',
+        }}
+        height={70}
+      />
       <YAxis
         yAxisId="left"
         tickFormatter={(number) => {
@@ -93,6 +104,7 @@ const BarLineChart: React.FC<MyComponentProps> = ({
           stroke="#8884d8"
           startIndex={dataLength - 20}
           endIndex={dataLength - 1}
+          travellerWidth={0}
         />
       )}
     </ComposedChart>
