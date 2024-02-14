@@ -1,12 +1,12 @@
 'use client';
 
+import { DownloadIcon } from '@radix-ui/react-icons';
 import React, { useState } from 'react';
 import { CorrelationDataPoint } from './Results';
 import DoubleLineChart from './chart/DoubleLineChart';
-import Clipboard from './clipboard/Clipboard';
 
 import { TableCell, TableRow } from '@/components/ui/table';
-import { convertToExcel } from '@/lib/utils';
+import { exportToExcel } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 
@@ -17,7 +17,6 @@ interface MyComponentProps {
 
 const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
   const [expanded, setexpanded] = useState(false);
-  const [copied, setCopied] = useState(false);
   const router = useRouter();
 
   const getColorClass = (value: number) => {
@@ -49,6 +48,16 @@ const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
     setexpanded(!expanded);
   };
 
+  const handleClickIcon = () => {
+    const excelData = dp.dataset_data.map((value, index) => {
+      return {
+        Date: dp.dates[index],
+        Value: value,
+      };
+    });
+    exportToExcel(excelData);
+  };
+
   return (
     <>
       <TableRow key={`${dp.title}-${dp.lag}`} onClick={handleClick}>
@@ -58,12 +67,12 @@ const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
           {dp.pearson_value}
         </TableCell>
         <TableCell onClick={(e) => e.stopPropagation()}>
-          <Clipboard
-            copied={copied}
-            setCopied={setCopied}
-            text={convertToExcel(dp.dataset_data, dp.dates)}
-            color="white"
-          />
+          <div title="Export to Excel">
+            <DownloadIcon
+              className="w-6 h-6 text-white cursor-pointer hover:text-green-400 transition-colors duration-300 ease-in-out"
+              onClick={() => handleClickIcon()}
+            />
+          </div>
         </TableCell>
       </TableRow>
       {expanded && (

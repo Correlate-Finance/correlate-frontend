@@ -34,8 +34,13 @@ import { MonthlySeasonality, calculateSeasonality } from './seasonality';
 
 type TActiveStack = 'Stack2Y' | 'Stack3Y' | 'Stack4Y' | 'Stack5Y';
 type TActiveTab = 'Raw' | 'Seasonal';
+type TProps = {
+  params: {
+    table: string;
+  };
+};
 
-export default function Page({ params }: { params: { table: string } }) {
+export default function Page({ params }: Readonly<TProps>) {
   const data = useFetchData(params);
   const allYearsArray = useAllYearsArray(data);
   const [activeStack, setActiveStack] = useLocalStorage(
