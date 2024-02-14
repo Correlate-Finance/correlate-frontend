@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
@@ -510,14 +509,12 @@ const Page = () => {
       {/* <Separator orientation="vertical" className="my-40 w-4 border-white" /> */}
       <div className="m-5 flex flex-row justify-between w-3/4">
         <div className="w-min">
-          {(inputData && <InputData data={generateTabularData()} />) ||
-            (revenueData && <InputData data={revenueData} />)}
+          {(inputData && (
+            <InputData data={generateTabularData()} tab={tabValue} />
+          )) ||
+            (revenueData && <InputData data={revenueData} tab={tabValue} />)}
         </div>
-        <Separator
-          orientation="vertical"
-          className="border-neutral-700 w-[10px] h-full"
-        />
-        <div className="w-2/3">
+        <div className="w-min">
           {hasData && <Results data={dataArray} lagPeriods={lagPeriods} />}
         </div>
       </div>

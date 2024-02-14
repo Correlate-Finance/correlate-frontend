@@ -3,7 +3,6 @@ import React from 'react';
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -12,9 +11,10 @@ import {
 
 interface MyComponentProps {
   data: string[][];
+  tab: string;
 }
 
-const InputData: React.FC<MyComponentProps> = ({ data }) => {
+const InputData: React.FC<MyComponentProps> = ({ data, tab }) => {
   let USDollar = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -22,10 +22,11 @@ const InputData: React.FC<MyComponentProps> = ({ data }) => {
 
   return (
     <>
-      <h2 className="text-white text-center">Input Data</h2>
+      <h2 className="text-white text-center">
+        {tab === 'Automatic' ? 'Revenue' : 'Input Data'}
+      </h2>
       <div className="text-white border-white">
         <Table>
-          <TableCaption>Input Data.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Date</TableHead>
