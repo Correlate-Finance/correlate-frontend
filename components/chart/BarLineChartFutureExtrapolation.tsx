@@ -39,9 +39,7 @@ const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
   if (data.length < 12) {
     return null;
   }
-
   const dataEndDate = data[0].Date;
-  console.log('dataEndDate', dataEndDate);
 
   // Add 6 months of future data to the data array
   let futureData: DataTrendPoint[] = [];
@@ -66,11 +64,9 @@ const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
     };
   });
 
-  console.log('futureData', futureData);
   futureData = futureData.slice().reverse();
   const dataLength = futureData.length;
   futureData = futureData.slice(dataLength - 25);
-
   return (
     <ComposedChart
       width={500}
@@ -155,7 +151,6 @@ const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
       </defs>
       <Bar yAxisId="left" dataKey={barChartKey} barSize={10}>
         {futureData.map((entry) => {
-          console.log('entry.Date', entry.Date);
           return (
             <Cell
               key={entry.Date}
