@@ -32,7 +32,7 @@ import { z } from 'zod';
 import { RevenueResponseSchema } from './api/schema';
 
 const Page = () => {
-  const [isLoading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [hasData, setHasData] = useState<boolean>(() => {
     return false;
   });
@@ -394,7 +394,7 @@ const Page = () => {
                     className="mt-8 bg-green-600 hover:bg-green-900 self-center"
                   >
                     {' '}
-                    {isLoading && (
+                    {loading && (
                       <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />
                     )}{' '}
                     Correlate
@@ -497,7 +497,7 @@ const Page = () => {
                   className="top-4 bg-green-600 hover:bg-green-900"
                 >
                   {' '}
-                  {isLoading && (
+                  {loading && (
                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />
                   )}{' '}
                   Correlate

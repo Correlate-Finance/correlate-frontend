@@ -91,6 +91,7 @@ const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
           fill: '#ffffff',
         }}
         height={70}
+        tickFormatter={(date) => dayjs(date).format('MMM YYYY')}
       />
       <YAxis
         yAxisId="left"
@@ -135,6 +136,7 @@ const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
             return formatNumber(value as number);
           }
         }}
+        labelFormatter={(label) => dayjs(label).format('MMM YYYY')}
       />
       <Legend />
       <defs>

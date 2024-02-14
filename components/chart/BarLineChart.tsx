@@ -2,6 +2,7 @@
 
 import { DataTrendPoint } from '@/app/api/schema';
 import { formatNumber, formatPercentage } from '@/lib/utils';
+import dayjs from 'dayjs';
 import React from 'react';
 import {
   Bar,
@@ -60,6 +61,7 @@ const BarLineChart: React.FC<MyComponentProps> = ({
           fill: '#ffffff',
         }}
         height={70}
+        tickFormatter={(date) => dayjs(date).format('MMM YYYY')}
       />
       <YAxis
         yAxisId="left"
@@ -104,6 +106,7 @@ const BarLineChart: React.FC<MyComponentProps> = ({
             return formatNumber(value as number);
           }
         }}
+        labelFormatter={(label) => dayjs(label).format('MMM YYYY')}
       />
       <Legend />
       <Bar yAxisId="left" dataKey={barChartKey} barSize={10} fill="#413ea0" />
