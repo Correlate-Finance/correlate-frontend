@@ -13,7 +13,7 @@ export function convertToExcel(data: number[], date: string[]) {
   );
 }
 
-export const exportToExcel = (data: any) => {
+export const exportToExcel = (data: any, filename: string) => {
   if (!data?.length) {
     alert('No data to export');
     return;
@@ -25,7 +25,13 @@ export const exportToExcel = (data: any) => {
   const dataObjKeys = Object.keys(data?.[0] || {});
   const excelData = [dataObjKeys, ...dataObjValues];
 
+  // Since we are pushing to the start have to append in reverse order
+  excelData.unshift(['', '']);
+  excelData.unshift(['Source', 'example.com']);
+  excelData.unshift(['Dataset', filename]);
+
   const ws = XLSX.utils.aoa_to_sheet(excelData);
+
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Sheet 1');
 
@@ -42,7 +48,7 @@ export const exportToExcel = (data: any) => {
 
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'data.xlsx';
+  link.download = `${filename}.xlsx`;
 
   document.body.appendChild(link);
   link.click();

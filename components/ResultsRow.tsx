@@ -55,7 +55,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
         Value: value,
       };
     });
-    exportToExcel(excelData);
+    exportToExcel(excelData, dp.title);
   };
 
   return (

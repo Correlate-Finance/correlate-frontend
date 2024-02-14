@@ -65,7 +65,7 @@ export default function Page({ params }: Readonly<TProps>) {
     <div>
       <Button
         className="bg-blue-800 my-2 mx-4"
-        onClick={() => exportToExcel(data)}
+        onClick={() => exportToExcel(data, params.table)}
       >
         Export to excel
       </Button>
