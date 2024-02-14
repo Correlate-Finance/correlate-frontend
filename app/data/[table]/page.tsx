@@ -135,8 +135,6 @@ export default function Page({ params }: Readonly<TProps>) {
               <div className="flex flex-col items-center w-2/3">
                 <BrushWrapper data={filteredDataRaw} syncId="syncId" />
               </div>
-
-              <h2 className="text-white text-center">Input Data</h2>
               <div className="text-white border-white">
                 <div className="w-full">
                   <Table className="border-white">

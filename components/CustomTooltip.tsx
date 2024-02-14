@@ -1,4 +1,4 @@
-import { DataFormatter } from '@/lib/utils';
+import { formatNumber } from '@/lib/utils';
 import { TooltipProps } from 'recharts';
 import {
   NameType,
@@ -15,10 +15,10 @@ const CustomTooltip = ({
       <div className="bg-neutral-100">
         <p className="text-black">{`Date: ${label}`}</p>
         <p className="text-[#AA4A44]">
-          {`Revenue: ${DataFormatter(Number(payload[0]?.value))}`}{' '}
+          {`Revenue: ${formatNumber(Number(payload[0]?.value))}`}{' '}
         </p>
         <p className="text-[#82ca9d]">
-          {`Dataset: ${DataFormatter(Number(payload[1]?.value))}`}{' '}
+          {`Dataset: ${formatNumber(Number(payload[1]?.value))}`}{' '}
         </p>
       </div>
     );

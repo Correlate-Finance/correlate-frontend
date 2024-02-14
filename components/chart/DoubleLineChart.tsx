@@ -1,6 +1,6 @@
 'use client';
 
-import { DataFormatter } from '@/lib/utils';
+import { formatNumber } from '@/lib/utils';
 import React from 'react';
 import {
   CartesianGrid,
@@ -38,12 +38,8 @@ const DoubleLineChart: React.FC<MyComponentProps> = ({ data }) => {
     >
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="date" />
-      <YAxis yAxisId="left" tickFormatter={DataFormatter} />
-      <YAxis
-        yAxisId="right"
-        orientation="right"
-        tickFormatter={DataFormatter}
-      />
+      <YAxis yAxisId="left" tickFormatter={formatNumber} />
+      <YAxis yAxisId="right" orientation="right" tickFormatter={formatNumber} />
       <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
       <Legend />
       <Line
