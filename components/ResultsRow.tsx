@@ -81,11 +81,11 @@ const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
           className="hover:bg-inherit"
         >
           <TableCell colSpan={100}>
-            <div className="flex flex-row justify-between items-end">
+            <div className="flex flex-row">
               <DoubleLineChart data={graphData(dp)} />{' '}
               <Button
                 onClick={() => router.push(`/data/${dp.title}`)}
-                className="text-white"
+                className="text-white bg-blue-700 hover:bg-blue-900"
               >
                 See More
               </Button>
