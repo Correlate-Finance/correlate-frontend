@@ -1,6 +1,7 @@
 'use client';
 
 import BarLineChart from '@/components/chart/BarLineChart';
+import BarLineChartFutureExtrapolation from '@/components/chart/BarLineChartFutureExtrapolation';
 import BrushWrapper from '@/components/chart/BrushWrapper';
 import { Button } from '@/components/ui/button';
 import { MultiSelect } from '@/components/ui/multiselect';
@@ -104,6 +105,7 @@ export default function Page({ params }: { params: { table: string } }) {
                   lineChartKey="YoYGrowth"
                   lineChartKeyFormat="percentage"
                   syncId="syncId"
+                  title="Raw data vs Y/Y growth"
                 />
                 <BarLineChart
                   data={filteredDataRaw}
@@ -112,10 +114,21 @@ export default function Page({ params }: { params: { table: string } }) {
                   lineChartKey={activeStack}
                   lineChartKeyFormat="percentage"
                   syncId="syncId"
+                  title={`Raw data vs ${activeStack}`}
                 />
               </div>
               <div className="flex flex-col items-center w-full">
                 <BrushWrapper data={filteredDataRaw} syncId="syncId" />
+              </div>
+              <div className="flex flex-row justify-center">
+                <BarLineChartFutureExtrapolation
+                  data={filteredDataRaw}
+                  barChartKey={activeStack}
+                  barChartKeyFormat="percentage"
+                  lineChartKey="YoYGrowth"
+                  lineChartKeyFormat="percentage"
+                  title={`CAGR vs Y/Y growth for ${activeStack}`}
+                />
               </div>
               <h2 className="text-white text-center">Input Data</h2>
               <div className="text-white border-white">
@@ -139,8 +152,9 @@ export default function Page({ params }: { params: { table: string } }) {
                         <TableHead className="w-[100px]">
                           T12M YoY Growth
                         </TableHead>
-                        <TableHead className="w-[100px]">Stack2Y</TableHead>
-                        <TableHead className="w-[100px]">Stack3Y</TableHead>
+                        <TableHead className="w-[100px]">
+                          {activeStack}
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                   </Table>
@@ -180,10 +194,7 @@ export default function Page({ params }: { params: { table: string } }) {
                               {formatPercentage(dp.T12M_YoYGrowth)}
                             </TableCell>
                             <TableCell className="w-[100px]">
-                              {formatPercentage(dp.Stack2Y)}
-                            </TableCell>
-                            <TableCell className="w-[100px]">
-                              {formatPercentage(dp.Stack3Y)}
+                              {formatPercentage(dp[activeStack] as number)}
                             </TableCell>
                           </TableRow>
                         );
@@ -220,6 +231,7 @@ export default function Page({ params }: { params: { table: string } }) {
                   barChartKeyFormat="percentage"
                   lineChartKey="DeltaSeasonality"
                   lineChartKeyFormat="percentage"
+                  title="MoM Growth vs Delta Seasonality"
                 />
               </div>
               <div className="text-white border-white flex justify-between gap-20">
@@ -245,7 +257,7 @@ export default function Page({ params }: { params: { table: string } }) {
                         {data.map((dp, index) => {
                           // If we have calculated seasonal data, use that to calculate delta seasonality
                           const deltaSeasonality =
-                            seasonalData.length > 0
+                            seasonalData.length > 0 && dp.MoMGrowth
                               ? dp.MoMGrowth -
                                 seasonalData[11 - dayjs(dp.Date).month()].value
                               : dp.DeltaSeasonality;

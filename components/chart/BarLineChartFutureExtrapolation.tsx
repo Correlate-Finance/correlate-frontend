@@ -2,10 +2,11 @@
 
 import { DataTrendPoint } from '@/app/api/schema';
 import { formatNumber, formatPercentage } from '@/lib/utils';
+import dayjs from 'dayjs';
 import React from 'react';
 import {
   Bar,
-  Brush,
+  Cell,
   ComposedChart,
   Legend,
   Line,
@@ -24,7 +25,7 @@ interface MyComponentProps {
   title: string;
 }
 
-const BarLineChart: React.FC<MyComponentProps> = ({
+const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
   data,
   barChartKey,
   lineChartKey,
@@ -33,13 +34,48 @@ const BarLineChart: React.FC<MyComponentProps> = ({
   syncId,
   title,
 }: MyComponentProps) => {
-  data = data.slice().reverse();
-  const dataLength = data.length;
+  // Add 6 future months of data to extrapolate the trend
+
+  if (data.length < 12) {
+    return null;
+  }
+
+  const dataEndDate = data[0].Date;
+  console.log('dataEndDate', dataEndDate);
+
+  // Add 6 months of future data to the data array
+  let futureData: DataTrendPoint[] = [];
+  for (let i = 0; i < 6; i++) {
+    const dp: DataTrendPoint = {
+      Date: dayjs(dataEndDate)
+        .add(i + 1, 'month')
+        .format('MM-DD-YYYY'),
+      Value: 0,
+    };
+    futureData.unshift(dp);
+  }
+
+  futureData = futureData.concat(data);
+  futureData = futureData.map((dp, index) => {
+    return {
+      ...dp,
+      [barChartKey]:
+        index + 12 < futureData.length
+          ? futureData[index + 12][barChartKey]
+          : undefined,
+    };
+  });
+
+  console.log('futureData', futureData);
+  futureData = futureData.slice().reverse();
+  const dataLength = futureData.length;
+  futureData = futureData.slice(dataLength - 25);
+
   return (
     <ComposedChart
       width={500}
       height={400}
-      data={data}
+      data={futureData}
       margin={{
         top: 20,
         right: 20,
@@ -48,7 +84,6 @@ const BarLineChart: React.FC<MyComponentProps> = ({
       }}
       {...(syncId && { syncId })}
     >
-      {/* <CartesianGrid stroke="#f5f5f5" /> */}
       <XAxis
         dataKey="Date"
         scale="band"
@@ -106,23 +141,40 @@ const BarLineChart: React.FC<MyComponentProps> = ({
         }}
       />
       <Legend />
-      <Bar yAxisId="left" dataKey={barChartKey} barSize={10} fill="#413ea0" />
+      <defs>
+        <pattern
+          id="stripe"
+          width="4"
+          height="4"
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(45)"
+        >
+          <rect width="3" height="4" fill="#413ea0" />
+          <rect x="3" y="0" width="1" height="4" fill="white" />
+        </pattern>
+      </defs>
+      <Bar yAxisId="left" dataKey={barChartKey} barSize={10}>
+        {futureData.map((entry) => {
+          console.log('entry.Date', entry.Date);
+          return (
+            <Cell
+              key={entry.Date}
+              fill={
+                dayjs(entry.Date) > dayjs(dataEndDate)
+                  ? 'url(#stripe)'
+                  : '#413ea0'
+              }
+            />
+          );
+        })}
+      </Bar>
       <Line
         yAxisId="right"
         type="monotone"
         dataKey={lineChartKey}
         stroke="#ff7300"
       />
-      <Brush
-        dataKey="Date"
-        height={30}
-        stroke="#8884d8"
-        startIndex={dataLength - 20}
-        travellerWidth={0}
-        data={data}
-        className="hidden"
-      />
     </ComposedChart>
   );
 };
-export default BarLineChart;
+export default BarLineChartFutureExtrapolation;

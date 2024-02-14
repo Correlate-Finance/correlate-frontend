@@ -20,9 +20,9 @@ export const calculateSeasonality = (
     (acc, dp) => {
       const month = dayjs(dp.Date).format('MMMM');
       if (acc[month]) {
-        acc[month].push(dp.MoMGrowth);
+        acc[month].push(dp.MoMGrowth ? dp.MoMGrowth : 0);
       } else {
-        acc[month] = [dp.MoMGrowth];
+        acc[month] = [dp.MoMGrowth ? dp.MoMGrowth : 0];
       }
       return acc;
     },
