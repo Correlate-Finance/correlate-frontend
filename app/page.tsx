@@ -36,9 +36,7 @@ const Page = () => {
   const [hasData, setHasData] = useState<boolean>(() => {
     return false;
   });
-  const [dataArray, setDataArray] = useState<CorrelationDataPoint[]>(() => {
-    return [];
-  });
+  const [dataArray, setDataArray] = useState<CorrelationDataPoint[]>([]);
   const [revenueData, setRevenueData] = useState<string[][]>();
   const [fiscalYearEnd, setFiscalYearEnd] = useState<string>('December');
   const [timeIncrement, setTimeIncrement] = useState<string>('Quarterly');

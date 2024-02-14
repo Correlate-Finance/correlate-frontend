@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import * as Sentry from '@sentry/nextjs';
 import Link from 'next/link';
 import { useEffect } from 'react';
 
@@ -13,7 +12,7 @@ type ErrorBoundaryProps = {
 export default function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
   useEffect(() => {
     // Log the error to Sentry
-    Sentry.captureException(error);
+    // Sentry.captureException(error);
   }, [error]);
   return (
     <div>

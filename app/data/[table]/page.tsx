@@ -3,6 +3,7 @@
 import BarLineChart from '@/components/chart/BarLineChart';
 import BrushWrapper from '@/components/chart/BrushWrapper';
 import { Button } from '@/components/ui/button';
+import { MultiSelect } from '@/components/ui/multiselect';
 import {
   Select,
   SelectContent,
@@ -21,19 +22,21 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { exportToExcel, formatNumber, formatPercentage } from '@/lib/utils';
 import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 import {
+  useAllYearsArray,
   useFetchData,
   useFilterData,
-  useLastFiveYearsArray,
   useLocalStorage,
 } from './hooks';
+import { MonthlySeasonality, calculateSeasonality } from './seasonality';
 
 type TActiveStack = 'Stack2Y' | 'Stack3Y' | 'Stack4Y' | 'Stack5Y';
 type TActiveTab = 'Raw' | 'Seasonal';
 
 export default function Page({ params }: { params: { table: string } }) {
   const data = useFetchData(params);
-  const lastFiveYearsArray = useLastFiveYearsArray();
+  const allYearsArray = useAllYearsArray(data);
   const [activeStack, setActiveStack] = useLocalStorage(
     'activeStack',
     'Stack3Y',
@@ -48,6 +51,16 @@ export default function Page({ params }: { params: { table: string } }) {
     data,
     selectedYear,
   );
+  const [seasonalData, setSeasonalData] = useState<MonthlySeasonality[]>([]);
+
+  const [selected, setSelected] = useState<string[]>([]);
+  useEffect(() => {
+    setSelected(allYearsArray.slice(0, 5));
+  }, [allYearsArray]);
+
+  useEffect(() => {
+    setSeasonalData(calculateSeasonality(data, selected));
+  }, [selected]);
 
   return (
     <div>
@@ -195,7 +208,7 @@ export default function Page({ params }: { params: { table: string } }) {
           <div className="flex flex-row gap-4 mb-4 items-center">
             <p className="text-white text-center">Year Selector</p>
             <div className="w-30">
-              <Select
+              {/* <Select
                 onValueChange={(e: string) => setSelectedYear(e)}
                 value={selectedYear}
               >
@@ -212,7 +225,15 @@ export default function Page({ params }: { params: { table: string } }) {
                     );
                   })}
                 </SelectContent>
-              </Select>
+              </Select> */}
+              <MultiSelect
+                options={allYearsArray.map((year) => {
+                  return { value: year, label: year };
+                })}
+                selected={selected}
+                onChange={setSelected}
+                className="w-[560px]"
+              />
             </div>
           </div>
           {data ? (
@@ -247,6 +268,12 @@ export default function Page({ params }: { params: { table: string } }) {
                     <Table className="w-full">
                       <TableBody>
                         {data.map((dp, index) => {
+                          // If we have calculated seasonal data, use that to calculate delta seasonality
+                          const deltaSeasonality =
+                            seasonalData.length > 0
+                              ? dp.MoMGrowth -
+                                seasonalData[11 - dayjs(dp.Date).month()].value
+                              : dp.DeltaSeasonality;
                           return (
                             <TableRow key={index}>
                               <TableCell className="w-[20px]">
@@ -262,7 +289,7 @@ export default function Page({ params }: { params: { table: string } }) {
                                 {formatPercentage(dp.MoMGrowth)}
                               </TableCell>
                               <TableCell className="w-[75px]">
-                                {formatPercentage(dp.DeltaSeasonality)}
+                                {formatPercentage(deltaSeasonality)}
                               </TableCell>
                             </TableRow>
                           );
@@ -283,14 +310,14 @@ export default function Page({ params }: { params: { table: string } }) {
                   <div className="max-h-[90vh] overflow-y-auto">
                     <Table className="w-full">
                       <TableBody>
-                        {data.map((dp, index) => {
+                        {seasonalData.map((dp, index) => {
                           return (
                             <TableRow key={index}>
                               <TableCell className="whitespace-nowrap w-[150px]">
-                                {dayjs(dp.Date).format('MMMM YYYY')}
+                                {dp.month}
                               </TableCell>
                               <TableCell className="whitespace-nowrap w-[100px]">
-                                {formatPercentage(dp.averageMoM)}
+                                {formatPercentage(dp.value)}
                               </TableCell>
                             </TableRow>
                           );

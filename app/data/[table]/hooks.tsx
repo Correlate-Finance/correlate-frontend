@@ -43,14 +43,14 @@ export const useFilterData = (data: DataTrendPoint[], selectedYear: string) => {
 };
 
 // Custom hook for generating last five years array
-export const useLastFiveYearsArray = () => {
+export const useAllYearsArray = (data: DataTrendPoint[]) => {
   return useMemo(() => {
-    const lastFiveYears = [];
-    for (let i = 0; i < 5; i++) {
-      lastFiveYears.push(dayjs().subtract(i, 'year').format('YYYY'));
+    const years = [];
+    for (let i = 0; i < data.length / 12; i++) {
+      years.push(dayjs(data[0].Date).subtract(i, 'year').format('YYYY'));
     }
-    return lastFiveYears;
-  }, []);
+    return years;
+  }, [data]);
 };
 
 export const useLocalStorage = (key: string, initialValue: string) => {
