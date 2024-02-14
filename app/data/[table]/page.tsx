@@ -41,16 +41,9 @@ export default function Page({ params }: { params: { table: string } }) {
     'activeStack',
     'Stack3Y',
   );
-  const [selectedYear, setSelectedYear] = useLocalStorage(
-    'selectedYear',
-    'all',
-  );
   const [activeTab, setActiveTab] = useLocalStorage('activeTab', 'Raw');
 
-  const { filteredDataRaw, filteredDataSeasonal } = useFilterData(
-    data,
-    selectedYear,
-  );
+  const { filteredDataRaw, filteredDataSeasonal } = useFilterData(data);
   const [seasonalData, setSeasonalData] = useState<MonthlySeasonality[]>([]);
 
   const [selected, setSelected] = useState<string[]>([]);
@@ -60,7 +53,7 @@ export default function Page({ params }: { params: { table: string } }) {
 
   useEffect(() => {
     setSeasonalData(calculateSeasonality(data, selected));
-  }, [selected]);
+  }, [selected, data]);
 
   return (
     <div>
@@ -208,24 +201,6 @@ export default function Page({ params }: { params: { table: string } }) {
           <div className="flex flex-row gap-4 mb-4 items-center">
             <p className="text-white text-center">Year Selector</p>
             <div className="w-30">
-              {/* <Select
-                onValueChange={(e: string) => setSelectedYear(e)}
-                value={selectedYear}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  {lastFiveYearsArray.map((year, index) => {
-                    return (
-                      <SelectItem key={index} value={year}>
-                        {year}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select> */}
               <MultiSelect
                 options={allYearsArray.map((year) => {
                   return { value: year, label: year };

@@ -16,8 +16,6 @@ export const calculateSeasonality = (
     return selectedYears.includes(dayjs(dp.Date).format('YYYY'));
   });
 
-  console.log(filteredDataSeasonal.length);
-
   const seasonalData = filteredDataSeasonal.reduce(
     (acc, dp) => {
       const month = dayjs(dp.Date).format('MMMM');

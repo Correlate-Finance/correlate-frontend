@@ -25,19 +25,14 @@ export const useFetchData = (params: Tparams) => {
 };
 
 // Custom hook for filtering data
-export const useFilterData = (data: DataTrendPoint[], selectedYear: string) => {
+export const useFilterData = (data: DataTrendPoint[]) => {
   const filteredDataRaw = useMemo(() => {
     return data;
   }, [data]);
 
   const filteredDataSeasonal = useMemo(() => {
-    if (selectedYear === 'all') {
-      return data;
-    }
-    return data.filter((dp) => {
-      return dayjs(dp.Date).format('YYYY') === selectedYear;
-    });
-  }, [data, selectedYear]);
+    return data;
+  }, [data]);
 
   return { filteredDataRaw, filteredDataSeasonal };
 };
