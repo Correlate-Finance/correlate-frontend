@@ -69,7 +69,7 @@ const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
   futureData = futureData.slice(dataLength - 20);
   return (
     <ComposedChart
-      width={500}
+      width={450}
       height={400}
       data={futureData}
       margin={{
@@ -114,7 +114,7 @@ const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
         }}
       />
       <text
-        x={500 / 2}
+        x={450 / 2}
         y={10}
         fill="white"
         textAnchor="middle"

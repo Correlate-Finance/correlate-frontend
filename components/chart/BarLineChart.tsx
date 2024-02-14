@@ -37,7 +37,7 @@ const BarLineChart: React.FC<MyComponentProps> = ({
   const dataLength = data.length;
   return (
     <ComposedChart
-      width={500}
+      width={450}
       height={400}
       data={data}
       margin={{
@@ -83,7 +83,7 @@ const BarLineChart: React.FC<MyComponentProps> = ({
         }}
       />
       <text
-        x={500 / 2}
+        x={450 / 2}
         y={10}
         fill="white"
         textAnchor="middle"

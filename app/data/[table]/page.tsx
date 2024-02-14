@@ -97,30 +97,27 @@ export default function Page({ params }: { params: { table: string } }) {
           </div>
           {data ? (
             <div>
-              <div className="flex flex-row justify-center gap-10">
-                <BarLineChart
-                  data={filteredDataRaw}
-                  barChartKey="Value"
-                  barChartKeyFormat="number"
-                  lineChartKey="YoYGrowth"
-                  lineChartKeyFormat="percentage"
-                  syncId="syncId"
-                  title="Raw data vs Y/Y growth"
-                />
-                <BarLineChart
-                  data={filteredDataRaw}
-                  barChartKey="Value"
-                  barChartKeyFormat="number"
-                  lineChartKey={activeStack}
-                  lineChartKeyFormat="percentage"
-                  syncId="syncId"
-                  title={`Raw data vs ${activeStack}`}
-                />
-              </div>
-              <div className="flex flex-col items-center w-full">
-                <BrushWrapper data={filteredDataRaw} syncId="syncId" />
-              </div>
               <div className="flex flex-row justify-center">
+                <div className="flex flex-row justify-center gap-10">
+                  <BarLineChart
+                    data={filteredDataRaw}
+                    barChartKey="Value"
+                    barChartKeyFormat="number"
+                    lineChartKey="YoYGrowth"
+                    lineChartKeyFormat="percentage"
+                    syncId="syncId"
+                    title="Raw data vs Y/Y growth"
+                  />
+                  <BarLineChart
+                    data={filteredDataRaw}
+                    barChartKey="Value"
+                    barChartKeyFormat="number"
+                    lineChartKey={activeStack}
+                    lineChartKeyFormat="percentage"
+                    syncId="syncId"
+                    title={`Raw data vs ${activeStack}`}
+                  />
+                </div>
                 <BarLineChartFutureExtrapolation
                   data={filteredDataRaw}
                   barChartKey={activeStack}
@@ -130,6 +127,10 @@ export default function Page({ params }: { params: { table: string } }) {
                   title={`CAGR vs Y/Y growth for ${activeStack}`}
                 />
               </div>
+              <div className="flex flex-col items-center w-2/3">
+                <BrushWrapper data={filteredDataRaw} syncId="syncId" />
+              </div>
+
               <h2 className="text-white text-center">Input Data</h2>
               <div className="text-white border-white">
                 <div className="w-full">
