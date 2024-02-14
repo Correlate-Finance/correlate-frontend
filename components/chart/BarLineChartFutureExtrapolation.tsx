@@ -66,7 +66,7 @@ const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
 
   futureData = futureData.slice().reverse();
   const dataLength = futureData.length;
-  futureData = futureData.slice(dataLength - 25);
+  futureData = futureData.slice(dataLength - 20);
   return (
     <ComposedChart
       width={500}
