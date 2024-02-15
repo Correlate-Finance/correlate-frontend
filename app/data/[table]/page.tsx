@@ -50,16 +50,26 @@ export default function Page({ params }: Readonly<TProps>) {
   const [activeTab, setActiveTab] = useLocalStorage('activeTab', 'Raw');
 
   const { filteredDataRaw, filteredDataSeasonal } = useFilterData(data);
-  const [seasonalData, setSeasonalData] = useState<MonthlySeasonality[]>([]);
+  const [seasonalMonthlyAverage, setSeasonalMonthlyAverage] = useState<
+    MonthlySeasonality[]
+  >([]);
 
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selectedYears, setSelectedYears] = useState<string[]>([]);
   useEffect(() => {
-    setSelected(allYearsArray.slice(0, 5));
+    setSelectedYears(allYearsArray.slice(0, 5));
   }, [allYearsArray]);
 
   useEffect(() => {
-    setSeasonalData(calculateSeasonality(data, selected));
-  }, [selected, data]);
+    const newSeasonalAverages = calculateSeasonality(data, selectedYears);
+    setSeasonalMonthlyAverage(newSeasonalAverages);
+    filteredDataSeasonal.map((dp) => {
+      dp.DeltaSeasonality =
+        seasonalMonthlyAverage.length > 0 && dp.MoMGrowth
+          ? dp.MoMGrowth -
+            newSeasonalAverages[11 - dayjs(dp.Date).month()].value
+          : dp.DeltaSeasonality;
+    });
+  }, [selectedYears, data]);
 
   return (
     <div>
@@ -220,8 +230,8 @@ export default function Page({ params }: Readonly<TProps>) {
                 options={allYearsArray.map((year) => {
                   return { value: year, label: year };
                 })}
-                selected={selected}
-                onChange={setSelected}
+                selected={selectedYears}
+                onChange={setSelectedYears}
                 className="w-[560px]"
               />
             </div>
@@ -258,13 +268,8 @@ export default function Page({ params }: Readonly<TProps>) {
                   <div className="max-h-[90vh] overflow-y-auto">
                     <Table className="w-full">
                       <TableBody>
-                        {data.map((dp, index) => {
+                        {filteredDataSeasonal.map((dp, index) => {
                           // If we have calculated seasonal data, use that to calculate delta seasonality
-                          const deltaSeasonality =
-                            seasonalData.length > 0 && dp.MoMGrowth
-                              ? dp.MoMGrowth -
-                                seasonalData[11 - dayjs(dp.Date).month()].value
-                              : dp.DeltaSeasonality;
                           return (
                             <TableRow key={index}>
                               <TableCell className="w-[20px]">
@@ -280,7 +285,7 @@ export default function Page({ params }: Readonly<TProps>) {
                                 {formatPercentage(dp.MoMGrowth)}
                               </TableCell>
                               <TableCell className="w-[75px]">
-                                {formatPercentage(deltaSeasonality)}
+                                {formatPercentage(dp.DeltaSeasonality)}
                               </TableCell>
                             </TableRow>
                           );
@@ -301,7 +306,7 @@ export default function Page({ params }: Readonly<TProps>) {
                   <div className="max-h-[90vh] overflow-y-auto">
                     <Table className="w-full">
                       <TableBody>
-                        {seasonalData.map((dp, index) => {
+                        {seasonalMonthlyAverage.map((dp, index) => {
                           return (
                             <TableRow key={index}>
                               <TableCell className="whitespace-nowrap w-[150px]">
