@@ -72,7 +72,7 @@ export default function Page({ params }: Readonly<TProps>) {
             newSeasonalAverages[11 - dayjs(dp.Date).month()].value
           : dp.DeltaSeasonality;
     });
-  }, [selectedYears, filteredDataSeasonal]);
+  }, [selectedYears, filteredDataSeasonal, seasonalMonthlyAverage]);
 
   return (
     <div>
