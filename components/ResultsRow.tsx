@@ -21,11 +21,11 @@ const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
 
   const getColorClass = (value: number) => {
     if (Math.abs(value) > 0.8) {
-      return 'text-green-400'; // Bright green
+      return 'text-green-600 dark:text-green-400'; // Bright green
     } else if (Math.abs(value) < 0.2) {
       return 'text-red-200'; // Red
     } else {
-      return 'text-white'; // Default color or any other color you prefer
+      return 'dark:text-white'; // Default color or any other color you prefer
     }
   };
 
@@ -69,7 +69,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
         <TableCell onClick={(e) => e.stopPropagation()}>
           <div title="Export to Excel">
             <DownloadIcon
-              className="w-6 h-6 text-white cursor-pointer hover:text-green-400 transition-colors duration-300 ease-in-out"
+              className="w-6 h-6 dark:text-white cursor-pointer hover:text-green-400 transition-colors duration-300 ease-in-out"
               onClick={() => handleClickIcon()}
             />
           </div>
@@ -85,7 +85,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
               <DoubleLineChart data={graphData(dp)} />{' '}
               <Button
                 onClick={() => router.push(`/data/${dp.title}`)}
-                className="text-white bg-blue-700 hover:bg-blue-900"
+                className="dark:text-white bg-blue-700 hover:bg-blue-900"
               >
                 See More
               </Button>

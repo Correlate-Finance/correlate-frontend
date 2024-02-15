@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Logout from './Logout';
+import ThemeSwitch from './ThemeSwitch';
 import { Separator } from './ui/separator';
 
 const Header = () => {
@@ -21,8 +22,9 @@ const Header = () => {
     <header className="flex-row justify-items-center">
       <div className="flex flex-row justify-between items-center">
         <Link href="/">
-          <h1 className="text-[28px] text-white mx-6">Correlate</h1>
+          <h1 className="text-[28px] dark:text-white mx-6">Correlate</h1>
         </Link>
+        <ThemeSwitch />
         {loggedIn && <Logout />}
       </div>
       <Separator className="bg-neutral-700" />

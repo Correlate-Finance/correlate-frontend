@@ -3,6 +3,7 @@
 import { DataTrendPoint } from '@/app/api/schema';
 import { formatNumber, formatPercentage } from '@/lib/utils';
 import dayjs from 'dayjs';
+import { useTheme } from 'next-themes';
 import React from 'react';
 import {
   Bar,
@@ -37,6 +38,7 @@ const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
   const dataLength = data.length;
   let futureData: DataTrendPoint[] = [];
   let dataEndDate: string | undefined = undefined;
+  const { resolvedTheme } = useTheme();
   if (dataLength > 0) {
     dataEndDate = data[0].Date;
 
@@ -82,7 +84,7 @@ const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
       <text
         x={450 / 2}
         y={10}
-        fill="white"
+        fill={resolvedTheme === 'dark' ? 'white' : 'black'}
         textAnchor="middle"
         dominantBaseline="central"
       >
@@ -97,7 +99,7 @@ const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
             textAnchor="end"
             tick={{
               fontSize: 10,
-              fill: '#ffffff',
+              fill: resolvedTheme === 'dark' ? 'white' : 'black',
             }}
             height={50}
             tickFormatter={(date) => dayjs(date).format('MMM YYYY')}

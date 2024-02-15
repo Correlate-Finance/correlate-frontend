@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 // import { Inter } from 'next/font/google';
 import './globals.css';
+import { Providers } from './providers';
 
 // TODO: Remove the unused variable assignment
 // const inter = Inter({ subsets: ['latin'] });
@@ -18,10 +19,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="min-h-screen font-poppins bg-[#131319]">
-        <Header />
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen font-poppins dark:bg-[#131319]">
+        <Providers>
+          <Header />
+          {children}
+        </Providers>
       </body>
     </html>
   );
