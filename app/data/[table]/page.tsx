@@ -60,7 +60,10 @@ export default function Page({ params }: Readonly<TProps>) {
   }, [allYearsArray]);
 
   useEffect(() => {
-    const newSeasonalAverages = calculateSeasonality(data, selectedYears);
+    const newSeasonalAverages = calculateSeasonality(
+      filteredDataSeasonal,
+      selectedYears,
+    );
     setSeasonalMonthlyAverage(newSeasonalAverages);
     filteredDataSeasonal.map((dp) => {
       dp.DeltaSeasonality =
