@@ -81,7 +81,7 @@ export default function Page({ params }: Readonly<TProps>) {
         <TabsContent value="Raw">
           <div className="flex justify-between items-center">
             <div className="flex flex-row gap-4 mb-4 items-center">
-              <p className="text-white text-center">Multi-year stack</p>
+              <p className="dark:text-white text-center">Multi-year stack</p>
               <div className="w-30">
                 <Select
                   onValueChange={(e) => setActiveStack(e as TActiveStack)}
@@ -135,7 +135,7 @@ export default function Page({ params }: Readonly<TProps>) {
               <div className="flex flex-col items-center w-2/3">
                 <BrushWrapper data={filteredDataRaw} syncId="syncId" />
               </div>
-              <div className="text-white border-white">
+              <div className="dark:text-white border-white">
                 <div className="w-full">
                   <Table className="border-white">
                     <TableHeader>
@@ -214,7 +214,7 @@ export default function Page({ params }: Readonly<TProps>) {
         </TabsContent>
         <TabsContent value="Seasonal">
           <div className="flex flex-row gap-4 mb-4 items-center">
-            <p className="text-white text-center">Year Selector</p>
+            <p className="dark:text-white text-center">Year Selector</p>
             <div className="w-30">
               <MultiSelect
                 options={allYearsArray.map((year) => {
@@ -238,7 +238,7 @@ export default function Page({ params }: Readonly<TProps>) {
                   title="MoM Growth vs Delta Seasonality"
                 />
               </div>
-              <div className="text-white border-white flex justify-between gap-20">
+              <div className="dark:text-white border-white flex justify-between gap-20">
                 <div>
                   <div className="w-full">
                     <Table className="border-white">

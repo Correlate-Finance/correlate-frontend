@@ -27,8 +27,8 @@ export type CorrelationDataPoint = {
 const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
   return (
     <>
-      <h2 className="text-white text-center">Correlations</h2>
-      <div className="text-white border-white">
+      <h2 className="dark:text-white text-center">Correlations</h2>
+      <div className="dark:text-white border-white">
         <Table>
           <TableCaption>Top Correlations with the data.</TableCaption>
           <TableHeader>

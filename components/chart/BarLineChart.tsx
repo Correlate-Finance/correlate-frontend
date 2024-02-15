@@ -3,6 +3,7 @@
 import { DataTrendPoint } from '@/app/api/schema';
 import { formatNumber, formatPercentage } from '@/lib/utils';
 import dayjs from 'dayjs';
+import { useTheme } from 'next-themes';
 import React from 'react';
 import {
   Bar,
@@ -36,6 +37,7 @@ const BarLineChart: React.FC<MyComponentProps> = ({
 }: MyComponentProps) => {
   data = data.slice().reverse();
   const dataLength = data.length;
+  const { resolvedTheme } = useTheme();
   return (
     <ComposedChart
       width={450}
@@ -46,7 +48,7 @@ const BarLineChart: React.FC<MyComponentProps> = ({
       <text
         x={450 / 2}
         y={10}
-        fill="white"
+        fill={resolvedTheme === 'dark' ? 'white' : 'black'}
         textAnchor="middle"
         dominantBaseline="central"
       >
@@ -60,7 +62,7 @@ const BarLineChart: React.FC<MyComponentProps> = ({
             textAnchor="end"
             tick={{
               fontSize: 10,
-              fill: '#ffffff',
+              fill: resolvedTheme === 'dark' ? 'white' : 'black',
             }}
             minTickGap={0}
             tickFormatter={(date) => dayjs(date).format('MMM YYYY')}

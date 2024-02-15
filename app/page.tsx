@@ -260,7 +260,7 @@ const Page = () => {
 
   return (
     <main className="flex flex-col w-full items-center">
-      <Card className="bg-[#1b1b26] flex flex-col justify-center m-4 w-3/4 border-neutral-700">
+      <Card className="dark:bg-[#1b1b26] flex flex-col justify-center m-4 w-3/4 border-neutral-700">
         <CardContent>
           <Tabs
             value={tabValue}
@@ -282,7 +282,7 @@ const Page = () => {
                     name="ticker"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white text-opacity-80">
+                        <FormLabel className="dark:text-white text-opacity-80">
                           Ticker
                         </FormLabel>
                         <FormControl>
@@ -297,7 +297,7 @@ const Page = () => {
                     name="startYear"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white text-opacity-80">
+                        <FormLabel className="dark:text-white text-opacity-80">
                           Start Year
                         </FormLabel>
                         <FormControl>
@@ -312,7 +312,7 @@ const Page = () => {
                     name="aggregationPeriod"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white text-opacity-80">
+                        <FormLabel className="dark:text-white text-opacity-80">
                           Aggregation Period
                         </FormLabel>
                         <Select
@@ -338,7 +338,7 @@ const Page = () => {
                     name="lagPeriods"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white text-opacity-80">
+                        <FormLabel className="dark:text-white text-opacity-80">
                           Lag Periods
                         </FormLabel>
                         <Select
@@ -371,7 +371,7 @@ const Page = () => {
                     render={({ field }) => (
                       <FormItem>
                         <div className="space-y-0.5">
-                          <FormLabel className="text-white text-opacity-80">
+                          <FormLabel className="dark:text-white text-opacity-80">
                             High Level Datasets
                           </FormLabel>
                         </div>
@@ -406,7 +406,7 @@ const Page = () => {
               className="flex flex-col md:flex-row justify-around [&>*]:mx-2 [&>*]:whitespace-nowrap"
             >
               <div className="">
-                <p className="text-white text-sm mb-2 text-opacity-80">
+                <p className="dark:text-white text-sm mb-2 text-opacity-80">
                   Input Data
                 </p>
                 <Textarea
@@ -416,7 +416,7 @@ const Page = () => {
                 />
               </div>
               <div>
-                <p className="text-white text-sm mb-2 text-opacity-80">
+                <p className="dark:text-white text-sm mb-2 text-opacity-80">
                   Fiscal Year End
                 </p>
                 <Select
@@ -443,7 +443,7 @@ const Page = () => {
                 </Select>
               </div>
               <div>
-                <p className="text-white text-sm mb-2 text-opacity-80">
+                <p className="dark:text-white text-sm mb-2 text-opacity-80">
                   Aggregation Period
                 </p>
                 <Select
@@ -460,7 +460,7 @@ const Page = () => {
                 </Select>
               </div>
               <div>
-                <p className="text-white text-sm mb-2 text-opacity-80">
+                <p className="dark:text-white text-sm mb-2 text-opacity-80">
                   Lag Periods
                 </p>
                 <Select
@@ -480,7 +480,7 @@ const Page = () => {
                 </Select>
               </div>
               <div>
-                <p className="text-white text-sm mb-2 text-opacity-80">
+                <p className="dark:text-white text-sm mb-2 text-opacity-80">
                   High Level Datasets
                 </p>
                 <Switch
