@@ -7,8 +7,10 @@ import DoubleLineChart from './chart/DoubleLineChart';
 
 import { TableCell, TableRow } from '@/components/ui/table';
 import { exportToExcel } from '@/lib/utils';
+import { BellIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
+import { useToast } from './ui/use-toast';
 
 interface MyComponentProps {
   dp: CorrelationDataPoint;
@@ -16,8 +18,10 @@ interface MyComponentProps {
 }
 
 const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
-  const [expanded, setexpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const getColorClass = (value: number) => {
     if (Math.abs(value) > 0.8) {
@@ -45,7 +49,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
 
   const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
-    setexpanded(!expanded);
+    setExpanded(!expanded);
   };
 
   const handleClickIcon = () => {
@@ -73,6 +77,28 @@ const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
               onClick={() => handleClickIcon()}
             />
           </div>
+        </TableCell>
+        <TableCell>
+          <BellIcon
+            className={`w-6 h-6 cursor-pointer }`}
+            fill={isClicked ? '#166534' : 'currentColor'}
+            stroke={isClicked ? '#166534' : 'currentColor'}
+            onClick={(e) => {
+              if (!isClicked) {
+                toast({
+                  title: 'Enabled Alerts for',
+                  description: `${dp.title}`,
+                });
+              } else {
+                toast({
+                  title: 'Disabled Alerts for',
+                  description: `${dp.title}`,
+                });
+              }
+              setIsClicked(!isClicked);
+              e.stopPropagation();
+            }}
+          />
         </TableCell>
       </TableRow>
       {expanded && (
