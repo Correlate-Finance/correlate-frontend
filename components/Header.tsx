@@ -24,8 +24,10 @@ const Header = () => {
         <Link href="/">
           <h1 className="text-[28px] dark:text-white mx-6">Correlate</h1>
         </Link>
-        <ThemeSwitch />
-        {loggedIn && <Logout />}
+        <div className="flex flex-row justify-end w-1/5 items-center">
+          <ThemeSwitch />
+          {loggedIn && <Logout />}
+        </div>
       </div>
       <Separator className="bg-neutral-700" />
     </header>
