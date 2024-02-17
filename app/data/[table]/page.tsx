@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import SkeletonComp from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -37,7 +38,7 @@ type TProps = {
 };
 
 export default function Page({ params }: Readonly<TProps>) {
-  const data = useFetchData(params);
+  const { data, loading } = useFetchData(params);
   const allYearsArray = useAllYearsArray(data);
   const [activeStack, setActiveStack] = useLocalStorage(
     'activeStack',
@@ -109,7 +110,7 @@ export default function Page({ params }: Readonly<TProps>) {
               </div>
             </div>
           </div>
-          {data ? (
+          {data && !loading ? (
             <div>
               <div className="flex flex-row justify-center">
                 <div className="flex flex-row justify-center gap-10">
@@ -218,11 +219,11 @@ export default function Page({ params }: Readonly<TProps>) {
               </div>
             </div>
           ) : (
-            'Loading...'
+            <SkeletonComp count={3} width="30vw" height="30vh" inline />
           )}
         </TabsContent>
         <TabsContent value="Seasonal">
-          {data ? (
+          {data && !loading ? (
             <div className="mt-8">
               <div className="flex flex-row justify-end">
                 <BarLineChart
@@ -326,7 +327,7 @@ export default function Page({ params }: Readonly<TProps>) {
               </div>
             </div>
           ) : (
-            'Loading...'
+            <SkeletonComp count={1} width="50vw" height="50vh" inline />
           )}
         </TabsContent>
       </Tabs>

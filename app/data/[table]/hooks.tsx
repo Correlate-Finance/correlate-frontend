@@ -8,6 +8,7 @@ type Tparams = {
 // Custom hook for fetching data
 export const useFetchData = (params: Tparams) => {
   const [data, setData] = useState<DataTrendPoint[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`/api/dataset/`, {
@@ -18,10 +19,11 @@ export const useFetchData = (params: Tparams) => {
       .then((json) => setData(JSON.parse(json.data).toReversed()))
       .catch((err) => {
         alert('Error: ' + err);
-      });
+      })
+      .finally(() => setLoading(false));
   }, [params.table]);
 
-  return data;
+  return { data, loading };
 };
 
 // Custom hook for filtering data
