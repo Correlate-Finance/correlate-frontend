@@ -63,7 +63,7 @@ export default function Page({ params }: Readonly<TProps>) {
     setSeasonalMonthlyAverage(newSeasonalAverages);
     filteredDataSeasonal.map((dp) => {
       dp.DeltaSeasonality =
-        seasonalMonthlyAverage.length > 0 && dp.MoMGrowth
+        newSeasonalAverages.length > 0 && dp.MoMGrowth
           ? dp.MoMGrowth -
             newSeasonalAverages[11 - dayjs(dp.Date).month()].value
           : dp.DeltaSeasonality;
