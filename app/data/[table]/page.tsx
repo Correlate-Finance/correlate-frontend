@@ -68,7 +68,7 @@ export default function Page({ params }: Readonly<TProps>) {
             newSeasonalAverages[11 - dayjs(dp.Date).month()].value
           : dp.DeltaSeasonality;
     });
-  }, [selectedYears, filteredDataSeasonal, seasonalMonthlyAverage]);
+  }, [filteredDataSeasonal, seasonalMonthlyAverage.length, selectedYears]);
 
   return (
     <div>
@@ -223,114 +223,108 @@ export default function Page({ params }: Readonly<TProps>) {
         </TabsContent>
         <TabsContent value="Seasonal">
           {data ? (
-            <>
-              <div className="mt-8">
-                <div className="flex flex-row justify-end">
-                  <BarLineChart
-                    data={filteredDataSeasonal}
-                    barChartKey="MoMGrowth"
-                    barChartKeyFormat="percentage"
-                    lineChartKey="DeltaSeasonality"
-                    lineChartKeyFormat="percentage"
-                    title="MoM Growth vs Delta Seasonality"
-                  />
-                  <div className="flex flex-col mb-4 items-end">
-                    <p className="dark:text-white text-center mr-12 mb-2">
-                      Year Selector
-                    </p>
-                    <div className="w-[200px]">
-                      <MultiSelect
-                        options={allYearsArray.map((year) => {
-                          return { value: year, label: year };
-                        })}
-                        selected={selectedYears}
-                        onChange={setSelectedYears}
-                        className="w-full"
-                      />
-                    </div>
+            <div className="mt-8">
+              <div className="flex flex-row justify-end">
+                <BarLineChart
+                  data={filteredDataSeasonal}
+                  barChartKey="MoMGrowth"
+                  barChartKeyFormat="percentage"
+                  lineChartKey="DeltaSeasonality"
+                  lineChartKeyFormat="percentage"
+                  title="MoM Growth vs Delta Seasonality"
+                />
+                <div className="flex flex-col mb-4 items-end">
+                  <p className="dark:text-white text-center mr-12 mb-2">
+                    Year Selector
+                  </p>
+                  <div className="w-[200px]">
+                    <MultiSelect
+                      options={allYearsArray.map((year) => {
+                        return { value: year, label: year };
+                      })}
+                      selected={selectedYears}
+                      onChange={setSelectedYears}
+                      className="w-full"
+                    />
                   </div>
                 </div>
-                <div className="dark:text-white border-white flex justify-between gap-20">
-                  <div>
-                    <div className="w-full">
-                      <Table className="border-white">
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="w-[20px]">Index</TableHead>
-                            <TableHead className="w-[120px]">Date</TableHead>
-                            <TableHead className="w-[100px]">Value</TableHead>
-                            <TableHead className="w-[50px]">
-                              MoM Growth
-                            </TableHead>
-                            <TableHead className="w-[75px]">
-                              Delta Seasonality
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                      </Table>
-                    </div>
-                    <div className="max-h-[90vh] overflow-y-auto">
-                      <Table className="w-full">
-                        <TableBody>
-                          {filteredDataSeasonal.map((dp, index) => {
-                            // If we have calculated seasonal data, use that to calculate delta seasonality
-                            return (
-                              <TableRow key={index}>
-                                <TableCell className="w-[20px]">
-                                  {index}
-                                </TableCell>
-                                <TableCell className="w-[120px]">
-                                  {dp.Date}
-                                </TableCell>
-                                <TableCell className="w-[100px]">
-                                  {dp.Value}
-                                </TableCell>
-                                <TableCell className="w-[50px]">
-                                  {formatPercentage(dp.MoMGrowth)}
-                                </TableCell>
-                                <TableCell className="w-[75px]">
-                                  {formatPercentage(dp.DeltaSeasonality)}
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
-                  <div>
-                    <Table className="border-white w-full">
+              </div>
+              <div className="dark:text-white border-white flex justify-between gap-20">
+                <div>
+                  <div className="w-full">
+                    <Table className="border-white">
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="w-[150px]">Month</TableHead>
-                          <TableHead className="w-[100px]">
-                            Average MoM
+                          <TableHead className="w-[20px]">Index</TableHead>
+                          <TableHead className="w-[120px]">Date</TableHead>
+                          <TableHead className="w-[100px]">Value</TableHead>
+                          <TableHead className="w-[50px]">MoM Growth</TableHead>
+                          <TableHead className="w-[75px]">
+                            Delta Seasonality
                           </TableHead>
                         </TableRow>
                       </TableHeader>
                     </Table>
-                    <div className="max-h-[90vh] overflow-y-auto">
-                      <Table className="w-full">
-                        <TableBody>
-                          {seasonalMonthlyAverage.map((dp, index) => {
-                            return (
-                              <TableRow key={index}>
-                                <TableCell className="whitespace-nowrap w-[150px]">
-                                  {dp.month}
-                                </TableCell>
-                                <TableCell className="whitespace-nowrap w-[100px]">
-                                  {formatPercentage(dp.value)}
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    </div>
+                  </div>
+                  <div className="max-h-[90vh] overflow-y-auto">
+                    <Table className="w-full">
+                      <TableBody>
+                        {filteredDataSeasonal.map((dp, index) => {
+                          // If we have calculated seasonal data, use that to calculate delta seasonality
+                          return (
+                            <TableRow key={index}>
+                              <TableCell className="w-[20px]">
+                                {index}
+                              </TableCell>
+                              <TableCell className="w-[120px]">
+                                {dp.Date}
+                              </TableCell>
+                              <TableCell className="w-[100px]">
+                                {dp.Value}
+                              </TableCell>
+                              <TableCell className="w-[50px]">
+                                {formatPercentage(dp.MoMGrowth)}
+                              </TableCell>
+                              <TableCell className="w-[75px]">
+                                {formatPercentage(dp.DeltaSeasonality)}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+                <div>
+                  <Table className="border-white w-full">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[150px]">Month</TableHead>
+                        <TableHead className="w-[100px]">Average MoM</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                  </Table>
+                  <div className="max-h-[90vh] overflow-y-auto">
+                    <Table className="w-full">
+                      <TableBody>
+                        {seasonalMonthlyAverage.map((dp, index) => {
+                          return (
+                            <TableRow key={index}>
+                              <TableCell className="whitespace-nowrap w-[150px]">
+                                {dp.month}
+                              </TableCell>
+                              <TableCell className="whitespace-nowrap w-[100px]">
+                                {formatPercentage(dp.value)}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           ) : (
             'Loading...'
           )}
