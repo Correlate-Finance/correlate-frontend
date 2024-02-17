@@ -47,23 +47,3 @@ export const useAllYearsArray = (data: DataTrendPoint[]) => {
     return years;
   }, [data]);
 };
-
-export const useLocalStorage = (key: string, initialValue: string) => {
-  const [storedValue, setStoredValue] = useState(initialValue);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const item = window.localStorage.getItem(key);
-      setStoredValue(item ?? initialValue);
-    }
-  }, [key, initialValue]);
-
-  const setValue = (value: string) => {
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(key, value);
-    }
-    setStoredValue(value);
-  };
-
-  return [storedValue, setValue] as const;
-};

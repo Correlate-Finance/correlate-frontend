@@ -10,7 +10,7 @@
   "plugins": ["react", "jsx-a11y", "prettier"],
   "parser": "@typescript-eslint/parser",
   "rules": {
-    "no-unused-vars": "error",
+    "no-unused-vars": ["error", { "args": "none" }],
     "no-console": "warn",
     "react/react-in-jsx-scope": "off",
     "prettier/prettier": ["error", {}, { "usePrettierrc": true }],

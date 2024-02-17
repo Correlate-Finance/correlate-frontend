@@ -1,7 +1,7 @@
 'use client';
 
 import InputData from '@/components/InputData';
-import Results, { CorrelationDataPoint } from '@/components/Results';
+import Results from '@/components/Results';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -23,211 +23,38 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import {
+  formSchema,
+  useCorrelateInputText,
+  useSubmitForm,
+} from '@/hooks/usePage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ReloadIcon } from '@radix-ui/react-icons';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { RevenueResponseSchema } from './api/schema';
 
 const Page = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [hasData, setHasData] = useState<boolean>(() => {
-    return false;
-  });
-  const [dataArray, setDataArray] = useState<CorrelationDataPoint[]>([]);
-  const [revenueData, setRevenueData] = useState<string[][]>();
-  const [fiscalYearEnd, setFiscalYearEnd] = useState<string>('December');
-  const [timeIncrement, setTimeIncrement] = useState<string>('Quarterly');
-  const [lagPeriods, setLagPeriods] = useState<number>(() => {
-    return 0;
-  });
-  const [inputData, setInputData] = useState(() => {
-    return '';
-  });
-  const [tabValue, setTabValue] = useState(() => {
-    return 'Manual';
-  });
-  const [firstRender, setFirstRender] = useState(true);
-  const [highLevelOnly, setHighLevelOnly] = useState(false);
-
-  // Fetch initial props from local storage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storageHasData = localStorage.getItem('hasData');
-      if (storageHasData !== null) {
-        setHasData(JSON.parse(storageHasData));
-      }
-      const storageDataArray = localStorage.getItem('dataArray');
-      if (storageDataArray !== null) {
-        setDataArray(JSON.parse(storageDataArray));
-      }
-      const storageRevenueData = localStorage.getItem('revenueData');
-      if (storageRevenueData !== null) {
-        setRevenueData(JSON.parse(storageRevenueData));
-      }
-      const storageLagPeriods = localStorage.getItem('lagPeriods');
-      if (storageLagPeriods !== null) {
-        setLagPeriods(JSON.parse(storageLagPeriods));
-      }
-      const storageInputData = localStorage.getItem('inputData');
-      if (storageInputData !== null) {
-        setInputData(JSON.parse(storageInputData));
-      }
-      const storageTabValue = localStorage.getItem('tabValue');
-      if (storageTabValue !== null) {
-        setTabValue(JSON.parse(storageTabValue));
-      }
-      const storageHighLevelOnly = localStorage.getItem('highLevelOnly');
-      if (storageHighLevelOnly !== null) {
-        setHighLevelOnly(JSON.parse(storageHighLevelOnly));
-      }
-    }
-  }, []);
-
-  // Set data to local storage whenever state changes.
-  useEffect(() => {
-    if (revenueData !== undefined) {
-      localStorage.setItem('revenueData', JSON.stringify(revenueData));
-    }
-  }, [revenueData, firstRender]);
-  useEffect(() => {
-    if (firstRender) {
-      setFirstRender(false);
-      return;
-    }
-    localStorage.setItem('hasData', JSON.stringify(hasData));
-  }, [hasData, firstRender]);
-  useEffect(() => {
-    if (firstRender) {
-      setFirstRender(false);
-      return;
-    }
-    localStorage.setItem('inputData', JSON.stringify(inputData));
-  }, [inputData, firstRender]);
-  useEffect(() => {
-    if (firstRender) {
-      setFirstRender(false);
-      return;
-    }
-    localStorage.setItem('dataArray', JSON.stringify(dataArray));
-  }, [dataArray, firstRender]);
-  useEffect(() => {
-    if (firstRender) {
-      setFirstRender(false);
-      return;
-    }
-    localStorage.setItem('lagPeriods', JSON.stringify(lagPeriods));
-  }, [lagPeriods, firstRender]);
-  useEffect(() => {
-    if (firstRender) {
-      setFirstRender(false);
-      return;
-    }
-    localStorage.setItem('tabValue', JSON.stringify(tabValue));
-  }, [tabValue, firstRender]);
-  useEffect(() => {
-    if (firstRender) {
-      setFirstRender(false);
-      return;
-    }
-    localStorage.setItem('highLevelOnly', JSON.stringify(highLevelOnly));
-  }, [highLevelOnly, firstRender]);
-
-  const formSchema = z.object({
-    ticker: z.string().min(1, {
-      message: 'Stock Ticker must be at least 1 character long.',
-    }),
-    startYear: z.coerce
-      .number()
-      .max(2023, { message: 'Year needs to be lower than 2023' })
-      .min(2000, { message: 'Year needs to be higher than 2000' }),
-    aggregationPeriod: z.string(),
-    lagPeriods: z.coerce.number(),
-    highLevelOnly: z.boolean().default(false),
-  });
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    getRevenueData(values);
-    setLoading(true);
-
-    try {
-      const res = await fetch(
-        `api/fetch?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}&lagPeriods=${values.lagPeriods}&highLevelOnly=${highLevelOnly}`,
-        {
-          credentials: 'include',
-        },
-      );
-      const jsonData = await res.json();
-
-      setLoading(false);
-      const arrData = jsonData.data.data as CorrelationDataPoint[];
-      setDataArray(arrData);
-      setHasData(true);
-    } catch (e) {
-      alert('Error fetching data');
-      setLoading(false);
-      setDataArray([]);
-      setHasData(false);
-    }
-  }
-
-  async function getRevenueData(values: z.infer<typeof formSchema>) {
-    setLoading(true);
-
-    try {
-      const res = await fetch(
-        `api/revenue?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}`,
-        {
-          credentials: 'include',
-        },
-      );
-      const jsonData = await res.json();
-
-      const parsed = RevenueResponseSchema.parse(jsonData.data);
-
-      const parsedData = parsed.map((x) => [x.date, x.value]);
-      setRevenueData(parsedData);
-    } catch (e) {
-      alert('Error fetching revenue data');
-      setLoading(false);
-      setRevenueData([]);
-    }
-  }
+  const [tabValue, setTabValue] = useLocalStorage('tabValue', 'Manual');
+  const [inputData, setInputData] = useLocalStorage('inputData', '');
+  const [lagPeriods, setLagPeriods] = useLocalStorage<number>('lagPeriods', 0);
+  const [highLevelOnly, setHighLevelOnly] = useLocalStorage<boolean>(
+    'highLevelOnly',
+    false,
+  );
+  const { onSubmit, loading, dataArray, hasData, revenueData } =
+    useSubmitForm();
+  const {
+    onCHangeFiscalYearEnd,
+    onChangeTimeIncrement,
+    correlateInputText,
+    loading: loadingCorelate,
+  } = useCorrelateInputText();
 
   function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
     e.preventDefault();
     setInputData(e.target.value);
-  }
-
-  async function correlateInputText() {
-    setLoading(true);
-
-    try {
-      const res = await fetch(
-        `api/correlateinputdata?fiscalYearEnd=${fiscalYearEnd}&timeIncrement=${timeIncrement}&lagPeriods=${lagPeriods}&highLevelOnly=${highLevelOnly}`,
-        {
-          method: 'POST',
-          body: inputData,
-          headers: {
-            'Content-Type': 'text/html; charset=utf-8',
-          },
-          credentials: 'include',
-        },
-      );
-
-      const jsonData = await res.json();
-
-      setLoading(false);
-      const arrData = jsonData.data.data as CorrelationDataPoint[];
-      setDataArray(arrData);
-      setHasData(true);
-    } catch (e) {
-      alert('Error correlating data');
-      setLoading(false);
-      setDataArray([]);
-      setHasData(false);
-    }
   }
 
   function generateTabularData() {
@@ -420,7 +247,7 @@ const Page = () => {
                   Fiscal Year End
                 </p>
                 <Select
-                  onValueChange={(e: string) => setFiscalYearEnd(e)}
+                  onValueChange={(e: string) => onCHangeFiscalYearEnd(e)}
                   defaultValue="December"
                 >
                   <SelectTrigger>
@@ -447,7 +274,7 @@ const Page = () => {
                   Aggregation Period
                 </p>
                 <Select
-                  onValueChange={(e: string) => setTimeIncrement(e)}
+                  onValueChange={(e: string) => onChangeTimeIncrement(e)}
                   defaultValue="Quarterly"
                 >
                   <SelectTrigger>
@@ -492,11 +319,11 @@ const Page = () => {
               <div>
                 <p className="text-[#1b1b26] text-sm mb-2">button</p>
                 <Button
-                  onClick={correlateInputText}
+                  onClick={() => correlateInputText(inputData)}
                   className="top-4 bg-green-600 hover:bg-green-900"
                 >
                   {' '}
-                  {loading && (
+                  {loadingCorelate && (
                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />
                   )}{' '}
                   Correlate

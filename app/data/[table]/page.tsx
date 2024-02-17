@@ -21,15 +21,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { exportToExcel, formatNumber, formatPercentage } from '@/lib/utils';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import {
-  useAllYearsArray,
-  useFetchData,
-  useFilterData,
-  useLocalStorage,
-} from './hooks';
+import { useAllYearsArray, useFetchData, useFilterData } from './hooks';
 import { MonthlySeasonality, calculateSeasonality } from './seasonality';
 
 type TActiveStack = 'Stack2Y' | 'Stack3Y' | 'Stack4Y' | 'Stack5Y';
