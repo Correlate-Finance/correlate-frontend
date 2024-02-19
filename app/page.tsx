@@ -46,7 +46,7 @@ const Page = () => {
   const { onSubmit, loading, dataArray, hasData, revenueData } =
     useSubmitForm();
   const {
-    onCHangeFiscalYearEnd,
+    onChangeFiscalYearEnd,
     onChangeTimeIncrement,
     correlateInputText,
     loading: loadingCorelate,
@@ -250,7 +250,7 @@ const Page = () => {
                   Fiscal Year End
                 </p>
                 <Select
-                  onValueChange={(e: string) => onCHangeFiscalYearEnd(e)}
+                  onValueChange={(e: string) => onChangeFiscalYearEnd(e)}
                   defaultValue="December"
                 >
                   <SelectTrigger data-testid="fiscal-year-end">

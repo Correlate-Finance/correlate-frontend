@@ -98,7 +98,7 @@ export const useCorrelateInputText = () => {
   const [fiscalYearEnd, setFiscalYearEnd] = useState<string>('December');
   const [timeIncrement, setTimeIncrement] = useState<string>('Quarterly');
 
-  const onCHangeFiscalYearEnd = (e: string) => {
+  const onChangeFiscalYearEnd = (e: string) => {
     setFiscalYearEnd(e);
   };
 
@@ -141,7 +141,7 @@ export const useCorrelateInputText = () => {
     loading,
     dataArray,
     hasData,
-    onCHangeFiscalYearEnd,
+    onChangeFiscalYearEnd,
     onChangeTimeIncrement,
   };
 };
