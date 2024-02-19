@@ -31,6 +31,7 @@ import {
 } from '@/hooks/usePage';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ReloadIcon } from '@radix-ui/react-icons';
+import DOMPurify from 'isomorphic-dompurify';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -52,14 +53,39 @@ const Page = () => {
     loading: loadingCorelate,
   } = useCorrelateInputText();
 
-  function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
+  async function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
     e.preventDefault();
     setInputData(e.target.value);
   }
 
+  async function handlePaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
+    e.preventDefault();
+    const items = await navigator.clipboard.read();
+    const html = await items[0].getType('text/html');
+    const htmlText = await html.text();
+
+    let table: string[][] = [];
+    const tempContainer = document.createElement('div');
+    tempContainer.innerHTML = DOMPurify.sanitize(htmlText, {
+      USE_PROFILES: { html: true },
+    });
+    const tableElement = tempContainer.querySelector('table');
+
+    tableElement?.querySelectorAll('tr').forEach((row) => {
+      const rowArray: string[] = [];
+      // Iterate over cells in the row
+      row.querySelectorAll('td').forEach((cell) => {
+        if (cell.textContent) rowArray.push(cell.textContent);
+      });
+      table.push(rowArray);
+    });
+    tempContainer.remove();
+
+    setInputData(table.map((row) => row.join('\t')).join('\n'));
+  }
+
   function generateTabularData() {
     let rows = inputData.split('\n');
-
     let table: string[][] = [];
 
     for (let y in rows) {
@@ -241,8 +267,10 @@ const Page = () => {
                 </p>
                 <Textarea
                   onChange={updateInputText}
+                  onPaste={handlePaste}
                   placeholder="Paste excel data here"
                   className=""
+                  value={inputData}
                 />
               </div>
               <div>
