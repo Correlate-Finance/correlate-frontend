@@ -36,7 +36,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-const Page = () => {
+const HomePage = () => {
   const [tabValue, setTabValue] = useLocalStorage('tabValue', 'Manual');
   const [inputData, setInputData] = useLocalStorage('inputData', '');
   const [lagPeriods, setLagPeriods] = useLocalStorage<number>('lagPeriods', 0);
@@ -381,4 +381,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default HomePage;

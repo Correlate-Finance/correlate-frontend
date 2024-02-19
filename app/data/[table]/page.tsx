@@ -51,7 +51,7 @@ type TProps = {
   };
 };
 
-export default function Page({ params }: Readonly<TProps>) {
+export default function DataTrendPage({ params }: Readonly<TProps>) {
   const { data, loading } = useFetchData(params);
   const allYearsArray = useAllYearsArray(data);
   const [activeStack, setActiveStack] = useLocalStorage(
