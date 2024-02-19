@@ -206,7 +206,6 @@ const Page = () => {
     const items = await navigator.clipboard.read();
     const html = await items[0].getType('text/html');
     const htmlText = await html.text();
-    console.log('htmlText', htmlText);
 
     let table: string[][] = [];
     const tempContainer = document.createElement('div');
