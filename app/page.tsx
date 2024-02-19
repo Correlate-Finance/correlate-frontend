@@ -176,7 +176,10 @@ const Page = () => {
                           value={lagPeriods.toString()}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger
+                              data-testid="automatic-lag-periods"
+                              id="lagPeriods"
+                            >
                               <SelectValue />
                             </SelectTrigger>
                           </FormControl>
@@ -250,7 +253,7 @@ const Page = () => {
                   onValueChange={(e: string) => onCHangeFiscalYearEnd(e)}
                   defaultValue="December"
                 >
-                  <SelectTrigger>
+                  <SelectTrigger data-testid="fiscal-year-end">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -277,7 +280,7 @@ const Page = () => {
                   onValueChange={(e: string) => onChangeTimeIncrement(e)}
                   defaultValue="Quarterly"
                 >
-                  <SelectTrigger>
+                  <SelectTrigger data-testid="quarterly">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -294,7 +297,7 @@ const Page = () => {
                   onValueChange={(e: string) => setLagPeriods(Number(e))}
                   value={lagPeriods.toString()}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger data-testid="lag-periods">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -321,6 +324,7 @@ const Page = () => {
                 <Button
                   onClick={() => correlateInputText(inputData)}
                   className="top-4 bg-green-600 hover:bg-green-900"
+                  data-testid="manual-correlate-button"
                 >
                   {' '}
                   {loadingCorelate && (
