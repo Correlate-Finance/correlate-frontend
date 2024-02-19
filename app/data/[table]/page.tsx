@@ -1,7 +1,5 @@
 'use client';
 
-import BarLineChart from '@/components/chart/BarLineChart';
-import BarLineChartFutureExtrapolation from '@/components/chart/BarLineChartFutureExtrapolation';
 import BrushWrapper from '@/components/chart/BrushWrapper';
 import { Button } from '@/components/ui/button';
 import { MultiSelect } from '@/components/ui/multiselect';
@@ -14,7 +12,6 @@ import {
 } from '@/components/ui/select';
 import SkeletonComp from '@/components/ui/skeleton';
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -25,9 +22,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { exportToExcel, formatNumber, formatPercentage } from '@/lib/utils';
 import dayjs from 'dayjs';
+import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { useAllYearsArray, useFetchData, useFilterData } from './hooks';
 import { MonthlySeasonality, calculateSeasonality } from './seasonality';
+
+const BarLineChart = dynamic(() => import('@/components/chart/BarLineChart'), {
+  loading: () => <SkeletonComp count={1} width="30vw" height="30vh" inline />,
+});
+const BarLineChartFutureExtrapolation = dynamic(
+  () => import('@/components/chart/BarLineChartFutureExtrapolation'),
+  {
+    loading: () => <SkeletonComp count={1} width="30vw" height="30vh" inline />,
+  },
+);
+const Table = dynamic(
+  () => import('@/components/ui/table').then((mod) => mod.Table),
+  {
+    loading: () => <SkeletonComp count={5} />,
+  },
+);
 
 type TActiveStack = 'Stack2Y' | 'Stack3Y' | 'Stack4Y' | 'Stack5Y';
 type TActiveTab = 'Raw' | 'Seasonal';
