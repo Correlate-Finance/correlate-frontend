@@ -7,9 +7,15 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
     if (typeof window !== 'undefined') {
       const item = window.localStorage.getItem(key);
       if (item) {
-        const parsedItem = JSON.parse(item);
-        if (JSON.stringify(parsedItem) !== JSON.stringify(storedValue)) {
-          setStoredValue(parsedItem);
+        try {
+          const parsedItem = JSON.parse(item);
+
+          if (JSON.stringify(parsedItem) !== JSON.stringify(storedValue)) {
+            setStoredValue(parsedItem);
+          }
+        } catch (error) {
+          // If the item is not a valid JSON, remove it from localStorage
+          window.localStorage.removeItem(key);
         }
       }
     }
