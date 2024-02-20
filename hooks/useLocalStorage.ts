@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 
-export const useLocalStorage = <T>(key: string, initialValue: T) => {
+export const useLocalStorage = <T>(
+  key: string,
+  initialValue: T,
+): [T, (t: T) => void] => {
   const [storedValue, setStoredValue] = useState<T>(initialValue);
 
   useEffect(() => {
@@ -19,14 +22,14 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
         }
       }
     }
-  }, [key, storedValue]);
+  }, []);
 
   const setValue = (value: T) => {
+    setStoredValue(value);
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(key, JSON.stringify(value));
-      setStoredValue(value);
     }
   };
 
-  return [storedValue, setValue] as const;
+  return [storedValue, setValue];
 };

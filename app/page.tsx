@@ -27,6 +27,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import {
   formSchema,
   useCorrelateInputText,
+  useCorrelateResponseData,
   useSubmitForm,
 } from '@/hooks/usePage';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -44,14 +45,17 @@ const HomePage = () => {
     'highLevelOnly',
     false,
   );
-  const { onSubmit, loading, dataArray, hasData, revenueData } =
-    useSubmitForm();
+  const { correlateResponseData, setCorrelateResponseData } =
+    useCorrelateResponseData();
+  const { onSubmit, loading, hasData, revenueData } = useSubmitForm(
+    setCorrelateResponseData,
+  );
   const {
     onChangeFiscalYearEnd,
     onChangeTimeIncrement,
     correlateInputText,
     loading: loadingCorelate,
-  } = useCorrelateInputText();
+  } = useCorrelateInputText(setCorrelateResponseData);
 
   async function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
     e.preventDefault();
@@ -374,7 +378,9 @@ const HomePage = () => {
             (revenueData && <InputData data={revenueData} tab={tabValue} />)}
         </div>
         <div className="w-min">
-          {hasData && <Results data={dataArray} lagPeriods={lagPeriods} />}
+          {hasData && (
+            <Results data={correlateResponseData} lagPeriods={lagPeriods} />
+          )}
         </div>
       </div>
     </main>

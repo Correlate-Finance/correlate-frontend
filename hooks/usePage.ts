@@ -16,6 +16,13 @@ export const formSchema = z.object({
   highLevelOnly: z.boolean().default(false),
 });
 
+export function useCorrelateResponseData() {
+  const [correlateResponseData, setCorrelateResponseData] = useLocalStorage<
+    CorrelationDataPoint[]
+  >('correlateResponseData', []);
+  return { correlateResponseData, setCorrelateResponseData };
+}
+
 export function useFetchRevenueData() {
   const [revenueData, setRevenueData] = useLocalStorage<string[][]>(
     'revenueData',
@@ -47,12 +54,10 @@ export function useFetchRevenueData() {
   return { revenueData, loading, fetchRevenueData };
 }
 
-export const useSubmitForm = () => {
+export const useSubmitForm = (
+  setCorrelateResponseData: (arrData: CorrelationDataPoint[]) => void,
+) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [dataArray, setDataArray] = useLocalStorage<CorrelationDataPoint[]>(
-    'dataArray',
-    [],
-  );
   const [hasData, setHasData] = useLocalStorage<boolean>('hasData', false);
   const { fetchRevenueData, revenueData } = useFetchRevenueData();
 
@@ -73,25 +78,23 @@ export const useSubmitForm = () => {
 
       setLoading(false);
       const arrData: CorrelationDataPoint[] = jsonData.data.data;
-      setDataArray(arrData);
+      setCorrelateResponseData(arrData);
       setHasData(true);
     } catch (e) {
       alert('Error fetching data');
       setLoading(false);
-      setDataArray([]);
+      setCorrelateResponseData([]);
       setHasData(false);
     }
   };
 
-  return { onSubmit, loading, dataArray, hasData, revenueData };
+  return { onSubmit, loading, hasData, revenueData };
 };
 
-export const useCorrelateInputText = () => {
+export const useCorrelateInputText = (
+  setCorrelateResponseData: (arrData: CorrelationDataPoint[]) => void,
+) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [dataArray, setDataArray] = useLocalStorage<CorrelationDataPoint[]>(
-    'dataArray',
-    [],
-  );
   const [hasData, setHasData] = useLocalStorage<boolean>('hasData', false);
   const [lagPeriods] = useLocalStorage<number>('lagPeriods', 0);
   const [highLevelOnly] = useLocalStorage<boolean>('highLevelOnly', false);
@@ -126,12 +129,12 @@ export const useCorrelateInputText = () => {
 
       setLoading(false);
       const arrData: CorrelationDataPoint[] = jsonData.data.data;
-      setDataArray(arrData);
+      setCorrelateResponseData(arrData);
       setHasData(true);
     } catch (e) {
       alert('Error correlating data');
       setLoading(false);
-      setDataArray([]);
+      setCorrelateResponseData([]);
       setHasData(false);
     }
   };
@@ -139,7 +142,6 @@ export const useCorrelateInputText = () => {
   return {
     correlateInputText,
     loading,
-    dataArray,
     hasData,
     onChangeFiscalYearEnd,
     onChangeTimeIncrement,
