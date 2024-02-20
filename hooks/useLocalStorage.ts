@@ -9,7 +9,6 @@ export const useLocalStorage = <T>(key: string, initialValue: T) => {
       if (item) {
         try {
           const parsedItem = JSON.parse(item);
-          setStoredValue(parsedItem);
 
           if (JSON.stringify(parsedItem) !== JSON.stringify(storedValue)) {
             setStoredValue(parsedItem);
