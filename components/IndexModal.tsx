@@ -1,11 +1,14 @@
+import { correlateIndex } from '@/app/api/actions';
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { CorrelationData } from './Results';
@@ -21,6 +24,8 @@ export default function IndexModal({
   data: CorrelationData;
   checkedRows: Set<number>;
 }) {
+  const [correlationValue, setCorrelationValue] = useState(0);
+
   const correlateIndexFormSchema = z
     .object({
       indexName: z.string().min(1),
@@ -33,7 +38,7 @@ export default function IndexModal({
         const sum = data.percentages.reduce((acc, curr) => {
           return acc + Number(curr);
         }, 0);
-        return sum > 0.99 && sum <= 1.0;
+        return sum >= 0.99 && sum <= 1.0;
       },
       {
         message: 'The sum should be 1',
@@ -51,7 +56,15 @@ export default function IndexModal({
     },
   });
 
-  const onSubmit = (values: z.infer<typeof correlateIndexFormSchema>) => {};
+  const onSubmit = async (values: z.infer<typeof correlateIndexFormSchema>) => {
+    try {
+      const result = await correlateIndex(values, data, checkedRows);
+      console.log(result);
+      setCorrelationValue(result.data[0].pearson_value);
+    } catch (e) {
+      alert(e);
+    }
+  };
 
   return (
     <div>
@@ -135,6 +148,16 @@ export default function IndexModal({
               </form>
             </Form>
           </DialogHeader>
+          <DialogFooter>
+            {correlationValue != 0 && (
+              <div className="w-full flex justify-center">
+                <p className="text-white text-lg">
+                  Correlation Value: {correlationValue.toFixed(3)}
+                </p>
+              </div>
+              
+            )}
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
