@@ -27,6 +27,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import {
   formSchema,
   useCorrelateInputText,
+  useCorrelateResponseData,
   useSubmitForm,
 } from '@/hooks/usePage';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -44,14 +45,20 @@ const HomePage = () => {
     'highLevelOnly',
     false,
   );
-  const { onSubmit, loading, dataArray, hasData, revenueData } =
-    useSubmitForm();
+
+  const { correlateResponseData, setCorrelateResponseData } =
+    useCorrelateResponseData();
+  const { onSubmit, loading, hasData, revenueData } = useSubmitForm(
+    setCorrelateResponseData,
+  );
   const {
     onChangeFiscalYearEnd,
     onChangeTimeIncrement,
     correlateInputText,
     loading: loadingCorelate,
-  } = useCorrelateInputText();
+    correlateMetric,
+    setCorrelateMetric,
+  } = useCorrelateInputText(setCorrelateResponseData);
 
   async function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
     e.preventDefault();
@@ -108,6 +115,7 @@ const HomePage = () => {
       aggregationPeriod: 'Annually',
       lagPeriods: 0,
       highLevelOnly: false,
+      correlationMetric: 'RAW_VALUE',
     },
   });
 
@@ -180,6 +188,34 @@ const HomePage = () => {
                           <SelectContent>
                             <SelectItem value="Annually">Annually</SelectItem>
                             <SelectItem value="Quarterly">Quarterly</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="correlationMetric"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="dark:text-white text-opacity-80">
+                          Correlation Metric
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue="RAW_VALUE"
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="RAW_VALUE">Raw Value</SelectItem>
+                            <SelectItem value="YOY_GROWTH">
+                              Y/Y Growth Rate
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -319,6 +355,23 @@ const HomePage = () => {
               </div>
               <div>
                 <p className="dark:text-white text-sm mb-2 text-opacity-80">
+                  Correlation Metric
+                </p>
+                <Select
+                  onValueChange={(e: string) => setCorrelateMetric(e)}
+                  defaultValue={correlateMetric}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="RAW_VALUE">Raw Value</SelectItem>
+                    <SelectItem value="YOY_GROWTH">Y/Y Growth Rate</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <p className="dark:text-white text-sm mb-2 text-opacity-80">
                   Lag Periods
                 </p>
                 <Select
@@ -368,13 +421,17 @@ const HomePage = () => {
       {/* <Separator orientation="vertical" className="my-40 w-4 border-white" /> */}
       <div className="m-5 flex flex-row justify-between w-3/4">
         <div className="w-min">
-          {(inputData && (
+          {(inputData && tabValue === 'Manual' && (
             <InputData data={generateTabularData()} tab={tabValue} />
           )) ||
-            (revenueData && <InputData data={revenueData} tab={tabValue} />)}
+            (revenueData && tabValue === 'Automatic' && (
+              <InputData data={revenueData} tab={tabValue} />
+            ))}
         </div>
         <div className="w-min">
-          {hasData && <Results data={dataArray} lagPeriods={lagPeriods} />}
+          {hasData && (
+            <Results data={correlateResponseData} lagPeriods={lagPeriods} />
+          )}
         </div>
       </div>
     </main>
