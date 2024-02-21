@@ -7,7 +7,7 @@ import DoubleLineChart from './chart/DoubleLineChart';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { exportToExcel } from '@/lib/utils';
+import { convertToGraphData, exportToExcel } from '@/lib/utils';
 import { BellIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
@@ -39,20 +39,6 @@ const ResultsRow: React.FC<MyComponentProps> = ({
     } else {
       return 'dark:text-white'; // Default color or any other color you prefer
     }
-  };
-
-  const graphData = (dp: CorrelationDataPoint) => {
-    const total = dp.dates.length;
-    const combinedList = dp.dates.map((date, index) => {
-      return {
-        date,
-        // For revenue we want to remove items from the bottom of the list.
-        revenue: index < dp.lag ? null : dp.input_data[index],
-        // for dataset we want to remove items from the top.
-        dataset: index >= total - dp.lag ? null : dp.dataset_data[index],
-      };
-    });
-    return combinedList;
   };
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -126,7 +112,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
         >
           <TableCell colSpan={100}>
             <div className="flex flex-row items-end">
-              <DoubleLineChart data={graphData(dp)} />{' '}
+              <DoubleLineChart data={convertToGraphData(dp)} />{' '}
               <Button
                 onClick={() => router.push(`/data/${dp.title}`)}
                 className="dark:text-white bg-blue-700 hover:bg-blue-900"

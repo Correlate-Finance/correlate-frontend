@@ -3,7 +3,7 @@ import { CorrelationData } from '@/components/Results';
 import { getBaseUrl } from './util';
 
 export async function correlateIndex(
-  values: { indexName: string; percentages: string[] },
+  values: { indexName?: string; percentages: string[] },
   data: CorrelationData,
   checkedRows: Set<number>,
 ): Promise<CorrelationData> {
@@ -32,7 +32,6 @@ export async function correlateIndex(
         credentials: 'include',
       },
     );
-
     const json = await response.json();
     return json;
   } catch (error) {

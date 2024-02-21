@@ -7,15 +7,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { convertToGraphData } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { CorrelationData } from './Results';
+import { CorrelationData, CorrelationDataPoint } from './Results';
+import DoubleLineChart from './chart/DoubleLineChart';
 import { Button } from './ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
 import { Input } from './ui/input';
 import { Separator } from './ui/separator';
+import { useToast } from './ui/use-toast';
 
 export default function IndexModal({
   data,
@@ -24,11 +27,14 @@ export default function IndexModal({
   data: CorrelationData;
   checkedRows: Set<number>;
 }) {
-  const [correlationValue, setCorrelationValue] = useState(0);
+  const [correlationDataPoint, setCorrelationDataPoint] = useState<
+    CorrelationDataPoint | undefined
+  >();
+  const { toast } = useToast();
 
   const correlateIndexFormSchema = z
     .object({
-      indexName: z.string().min(1),
+      indexName: z.string().optional(),
       percentages: z
         .array(z.string().default((1 / checkedRows.size).toFixed(2)))
         .min(checkedRows.size),
@@ -59,9 +65,12 @@ export default function IndexModal({
   const onSubmit = async (values: z.infer<typeof correlateIndexFormSchema>) => {
     try {
       const result = await correlateIndex(values, data, checkedRows);
-      setCorrelationValue(result.data[0].pearson_value);
+      setCorrelationDataPoint(result.data[0]);
     } catch (e) {
-      alert(e);
+      toast({
+        title: 'Error fetching correlation data',
+        description: `${e}`,
+      });
     }
   };
 
@@ -69,14 +78,14 @@ export default function IndexModal({
     <div>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="bg-blue-800 text-white">Create Index</Button>
+          <Button className="bg-blue-800">Create Index</Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader className="w-full">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
                 <DialogTitle>
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="indexName"
                     render={({ field }) => (
@@ -91,7 +100,8 @@ export default function IndexModal({
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
+                  <p>Create Correlation Index</p>
                   <Separator className="mt-2 bg-white" />
                 </DialogTitle>
 
@@ -148,11 +158,15 @@ export default function IndexModal({
             </Form>
           </DialogHeader>
           <DialogFooter>
-            {correlationValue != 0 && (
-              <div className="w-full flex justify-center">
-                <p className="text-white text-lg">
-                  Correlation Value: {correlationValue.toFixed(3)}
+            {correlationDataPoint && (
+              <div className="w-full flex-col items-center justify-center">
+                <p className="text-lg text-center">
+                  Correlation Value:{' '}
+                  {correlationDataPoint.pearson_value.toFixed(3)}
                 </p>
+                <DoubleLineChart
+                  data={convertToGraphData(correlationDataPoint)}
+                />
               </div>
             )}
           </DialogFooter>
