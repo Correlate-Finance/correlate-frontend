@@ -78,7 +78,12 @@ export default function IndexModal({
     <div>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="bg-blue-800">Create Index</Button>
+          <Button
+            className="bg-blue-800 text-white"
+            disabled={checkedRows.size === 0}
+          >
+            Create Index
+          </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader className="w-full">
