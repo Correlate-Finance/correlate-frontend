@@ -421,10 +421,12 @@ const HomePage = () => {
       {/* <Separator orientation="vertical" className="my-40 w-4 border-white" /> */}
       <div className="m-5 flex flex-row justify-between w-3/4">
         <div className="w-min">
-          {(inputData && (
+          {(inputData && tabValue === 'Manual' && (
             <InputData data={generateTabularData()} tab={tabValue} />
           )) ||
-            (revenueData && <InputData data={revenueData} tab={tabValue} />)}
+            (revenueData && tabValue === 'Automatic' && (
+              <InputData data={revenueData} tab={tabValue} />
+            ))}
         </div>
         <div className="w-min">
           {hasData && (
