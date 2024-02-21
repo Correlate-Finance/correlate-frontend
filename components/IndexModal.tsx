@@ -51,9 +51,7 @@ export default function IndexModal({
     },
   });
 
-  const onSubmit = (values: z.infer<typeof correlateIndexFormSchema>) => {
-    console.log(values);
-  };
+  const onSubmit = (values: z.infer<typeof correlateIndexFormSchema>) => {};
 
   return (
     <div>
