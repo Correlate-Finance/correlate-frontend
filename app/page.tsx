@@ -4,14 +4,6 @@ import InputData from '@/components/InputData';
 import Results from '@/components/Results';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -30,11 +22,9 @@ import {
   useCorrelateResponseData,
   useSubmitForm,
 } from '@/hooks/usePage';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import DOMPurify from 'isomorphic-dompurify';
 import React from 'react';
-import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const HomePage = () => {
@@ -45,6 +35,16 @@ const HomePage = () => {
     'highLevelOnly',
     false,
   );
+  const [inputDataAutomatic, setInputDataAutomatic] = useLocalStorage<
+    z.infer<typeof formSchema>
+  >('inputDataAutomatic', {
+    ticker: 'AAPL',
+    startYear: 2010,
+    aggregationPeriod: 'Annually',
+    lagPeriods: 0,
+    highLevelOnly: false,
+    correlationMetric: 'RAW_VALUE',
+  });
 
   const { correlateResponseData, setCorrelateResponseData } =
     useCorrelateResponseData();
@@ -107,18 +107,6 @@ const HomePage = () => {
     return table;
   }
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      ticker: 'AAPL',
-      startYear: 2010,
-      aggregationPeriod: 'Annually',
-      lagPeriods: 0,
-      highLevelOnly: false,
-      correlationMetric: 'RAW_VALUE',
-    },
-  });
-
   return (
     <main className="flex flex-col w-full items-center">
       <Card className="dark:bg-[#1b1b26] flex flex-col justify-center m-4 w-3/4 border-neutral-700">
@@ -132,166 +120,137 @@ const HomePage = () => {
               <TabsTrigger value="Manual">Manual</TabsTrigger>
               <TabsTrigger value="Automatic">Automatic</TabsTrigger>
             </TabsList>
-            <TabsContent value="Automatic">
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="flex md:flex-row flex-col justify-center items-center w-full [&>*]:mx-2 [&>*]:whitespace-nowrap"
+            <TabsContent
+              value="Automatic"
+              className="flex flex-col md:flex-row justify-around [&>*]:mx-2 [&>*]:whitespace-nowrap"
+            >
+              <div>
+                <p className="dark:text-white text-sm mb-2 text-opacity-80">
+                  Ticker
+                </p>
+                <Input
+                  placeholder="AAPL"
+                  onChange={(e) => {
+                    setInputDataAutomatic({
+                      ...inputDataAutomatic,
+                      ticker: e.target.value,
+                    });
+                  }}
+                  defaultValue={inputDataAutomatic.ticker}
+                  data-testid="automatic-ticker"
+                />
+              </div>
+              <div>
+                <p className="dark:text-white text-sm mb-2 text-opacity-80">
+                  Start Year
+                </p>
+                <Input
+                  placeholder="2010"
+                  onChange={(e) => {
+                    setInputDataAutomatic({
+                      ...inputDataAutomatic,
+                      startYear: Number(e.target.value),
+                    });
+                  }}
+                  defaultValue={inputDataAutomatic.startYear.toString()}
+                  data-testid="automatic-start-year"
+                />
+              </div>
+              <div>
+                <p className="dark:text-white text-sm mb-2 text-opacity-80">
+                  Aggregation Period
+                </p>
+                <Select
+                  defaultValue={inputDataAutomatic.aggregationPeriod}
+                  onValueChange={(e: string) => {
+                    setInputDataAutomatic({
+                      ...inputDataAutomatic,
+                      aggregationPeriod: e,
+                    });
+                  }}
                 >
-                  <FormField
-                    control={form.control}
-                    name="ticker"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="dark:text-white text-opacity-80">
-                          Ticker
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="AAPL" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="startYear"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="dark:text-white text-opacity-80">
-                          Start Year
-                        </FormLabel>
-                        <FormControl>
-                          <Input placeholder="2010" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="aggregationPeriod"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="dark:text-white text-opacity-80">
-                          Aggregation Period
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue="Annually"
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Annually">Annually</SelectItem>
-                            <SelectItem value="Quarterly">Quarterly</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="correlationMetric"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="dark:text-white text-opacity-80">
-                          Correlation Metric
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue="RAW_VALUE"
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="RAW_VALUE">Raw Value</SelectItem>
-                            <SelectItem value="YOY_GROWTH">
-                              Y/Y Growth Rate
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="lagPeriods"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="dark:text-white text-opacity-80">
-                          Lag Periods
-                        </FormLabel>
-                        <Select
-                          onValueChange={(e: string) => {
-                            setLagPeriods(Number(e));
-                            field.onChange(e);
-                          }}
-                          value={lagPeriods.toString()}
-                        >
-                          <FormControl>
-                            <SelectTrigger
-                              data-testid="automatic-lag-periods"
-                              id="lagPeriods"
-                            >
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="0">0</SelectItem>
-                            <SelectItem value="1">1</SelectItem>
-                            <SelectItem value="2">2</SelectItem>
-                            <SelectItem value="3">3</SelectItem>
-                            <SelectItem value="4">4</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="highLevelOnly"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="space-y-0.5">
-                          <FormLabel className="dark:text-white text-opacity-80">
-                            High Level Datasets
-                          </FormLabel>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-neutral-400"
-                            checked={field.value}
-                            onCheckedChange={(e: boolean) => {
-                              setHighLevelOnly(e);
-                              field.onChange(e);
-                            }}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="submit"
-                    className="mt-8 bg-green-600 hover:bg-green-900 self-center"
-                  >
-                    {' '}
-                    {loading && (
-                      <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />
-                    )}{' '}
-                    Correlate
-                  </Button>
-                </form>
-              </Form>
+                  <SelectTrigger data-testid="automatic-aggregation-period">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Annually">Annually</SelectItem>
+                    <SelectItem value="Quarterly">Quarterly</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <p className="dark:text-white text-sm mb-2 text-opacity-80">
+                  Correlation Metric
+                </p>
+                <Select
+                  defaultValue={inputDataAutomatic.correlationMetric}
+                  onValueChange={(e: string) => {
+                    setInputDataAutomatic({
+                      ...inputDataAutomatic,
+                      correlationMetric: e,
+                    });
+                  }}
+                >
+                  <SelectTrigger data-testid="automatic-correlation-metric">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="RAW_VALUE">Raw Value</SelectItem>
+                    <SelectItem value="YOY_GROWTH">Y/Y Growth Rate</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <p className="dark:text-white text-sm mb-2 text-opacity-80">
+                  Lag Periods
+                </p>
+                <Select
+                  defaultValue={inputDataAutomatic.lagPeriods.toString()}
+                  onValueChange={(e: string) => {
+                    setInputDataAutomatic({
+                      ...inputDataAutomatic,
+                      lagPeriods: Number(e),
+                    });
+                  }}
+                >
+                  <SelectTrigger data-testid="automatic-lag-periods">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">0</SelectItem>
+                    <SelectItem value="1">1</SelectItem>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
+                    <SelectItem value="4">4</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <p className="dark:text-white text-sm mb-2 text-opacity-80">
+                  High Level Datasets
+                </p>
+                <Switch
+                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-neutral-400"
+                  checked={inputDataAutomatic.highLevelOnly}
+                  onCheckedChange={(e: boolean) => {
+                    setInputDataAutomatic({
+                      ...inputDataAutomatic,
+                      highLevelOnly: e,
+                    });
+                  }}
+                />
+              </div>
+              <Button
+                className="mt-6 bg-green-600 hover:bg-green-900 self-center"
+                onClick={() => onSubmit(inputDataAutomatic)}
+                data-testid="automatic-correlate-button"
+              >
+                {' '}
+                {loading && (
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />
+                )}{' '}
+                Correlate
+              </Button>
             </TabsContent>
             <TabsContent
               value="Manual"
