@@ -24,7 +24,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-const formSchema = z
+const inputFieldsSchema = z
   .object({
     email: z.string().min(1).max(255),
     name: z.string().min(1).max(255),
@@ -44,8 +44,8 @@ const formSchema = z
 const Page = () => {
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof inputFieldsSchema>>({
+    resolver: zodResolver(inputFieldsSchema),
     defaultValues: {
       email: '',
       password: '',
@@ -54,7 +54,7 @@ const Page = () => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof inputFieldsSchema>) {
     try {
       const res = await fetch('api/register', {
         method: 'POST',
