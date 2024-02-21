@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { z } from 'zod';
 import { useLocalStorage } from './useLocalStorage';
 
-export const formSchema = z.object({
+export const inputFieldsSchema = z.object({
   ticker: z.string().optional(),
   inputData: z.string().optional(),
   startYear: z.coerce
@@ -34,7 +34,9 @@ export function useFetchRevenueData() {
   );
   const [loading, setLoading] = useState(false);
 
-  const fetchRevenueData = async (values: z.infer<typeof formSchema>) => {
+  const fetchRevenueData = async (
+    values: z.infer<typeof inputFieldsSchema>,
+  ) => {
     setLoading(true);
 
     try {
@@ -65,7 +67,7 @@ export const useSubmitForm = (
   const [hasData, setHasData] = useLocalStorage<boolean>('hasData', false);
   const { fetchRevenueData, revenueData } = useFetchRevenueData();
 
-  const onSubmit = async (inputFields: z.infer<typeof formSchema>) => {
+  const onSubmit = async (inputFields: z.infer<typeof inputFieldsSchema>) => {
     fetchRevenueData(inputFields);
     setLoading(true);
     const {
@@ -114,7 +116,7 @@ export const useCorrelateInputText = (
   const [hasData, setHasData] = useLocalStorage<boolean>('hasData', false);
 
   const correlateInputText = async (
-    inputFields: z.infer<typeof formSchema>,
+    inputFields: z.infer<typeof inputFieldsSchema>,
   ) => {
     if (!inputFields.inputData) {
       alert('No input data');

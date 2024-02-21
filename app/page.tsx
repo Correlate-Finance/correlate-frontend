@@ -2,6 +2,7 @@
 
 import InputData from '@/components/InputData';
 import Results from '@/components/Results';
+import SharedInputFieldsHomePage from '@/components/SharedInputFieldsHomePage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,12 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import {
-  formSchema,
+  inputFieldsSchema,
   useCorrelateInputText,
   useCorrelateResponseData,
   useSubmitForm,
@@ -30,7 +30,7 @@ import { z } from 'zod';
 const HomePage = () => {
   const [tabValue, setTabValue] = useLocalStorage('tabValue', 'Manual');
   const [inputFields, setInputFields] = useLocalStorage<
-    z.infer<typeof formSchema>
+    z.infer<typeof inputFieldsSchema>
   >('inputFields', {
     ticker: 'AAPL',
     inputData: '',
@@ -150,90 +150,10 @@ const HomePage = () => {
                   data-testid="automatic-start-year"
                 />
               </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Aggregation Period
-                </p>
-                <Select
-                  defaultValue={inputFields.aggregationPeriod}
-                  onValueChange={(e: string) => {
-                    setInputFields({
-                      ...inputFields,
-                      aggregationPeriod: e,
-                    });
-                  }}
-                >
-                  <SelectTrigger data-testid="automatic-aggregation-period">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Annually">Annually</SelectItem>
-                    <SelectItem value="Quarterly">Quarterly</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Correlation Metric
-                </p>
-                <Select
-                  defaultValue={inputFields.correlationMetric}
-                  onValueChange={(e: string) => {
-                    setInputFields({
-                      ...inputFields,
-                      correlationMetric: e,
-                    });
-                  }}
-                >
-                  <SelectTrigger data-testid="automatic-correlation-metric">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="RAW_VALUE">Raw Value</SelectItem>
-                    <SelectItem value="YOY_GROWTH">Y/Y Growth Rate</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Lag Periods
-                </p>
-                <Select
-                  defaultValue={inputFields.lagPeriods.toString()}
-                  onValueChange={(e: string) => {
-                    setInputFields({
-                      ...inputFields,
-                      lagPeriods: Number(e),
-                    });
-                  }}
-                >
-                  <SelectTrigger data-testid="automatic-lag-periods">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">0</SelectItem>
-                    <SelectItem value="1">1</SelectItem>
-                    <SelectItem value="2">2</SelectItem>
-                    <SelectItem value="3">3</SelectItem>
-                    <SelectItem value="4">4</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  High Level Datasets
-                </p>
-                <Switch
-                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-neutral-400"
-                  checked={inputFields.highLevelOnly}
-                  onCheckedChange={(e) => {
-                    setInputFields({
-                      ...inputFields,
-                      highLevelOnly: e,
-                    });
-                  }}
-                />
-              </div>
+              <SharedInputFieldsHomePage
+                inputFields={inputFields}
+                setInputFields={setInputFields}
+              />
               <Button
                 className="mt-6 bg-green-600 hover:bg-green-900 self-center"
                 onClick={() => onSubmit(inputFields)}
@@ -291,84 +211,10 @@ const HomePage = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Aggregation Period
-                </p>
-                <Select
-                  onValueChange={(e: string) =>
-                    setInputFields({ ...inputFields, aggregationPeriod: e })
-                  }
-                  defaultValue={inputFields.aggregationPeriod}
-                >
-                  <SelectTrigger data-testid="quarterly">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Quarterly">Quarterly</SelectItem>
-                    <SelectItem value="Annually">Annually</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Correlation Metric
-                </p>
-                <Select
-                  onValueChange={(e: string) =>
-                    setInputFields({ ...inputFields, correlationMetric: e })
-                  }
-                  value={inputFields.correlationMetric}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="RAW_VALUE">Raw Value</SelectItem>
-                    <SelectItem value="YOY_GROWTH">Y/Y Growth Rate</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Lag Periods
-                </p>
-                <Select
-                  onValueChange={(e: string) => {
-                    setInputFields({
-                      ...inputFields,
-                      lagPeriods: Number(e),
-                    });
-                  }}
-                  value={inputFields.lagPeriods.toString()}
-                >
-                  <SelectTrigger data-testid="lag-periods">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">0</SelectItem>
-                    <SelectItem value="1">1</SelectItem>
-                    <SelectItem value="2">2</SelectItem>
-                    <SelectItem value="3">3</SelectItem>
-                    <SelectItem value="4">4</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  High Level Datasets
-                </p>
-                <Switch
-                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-neutral-400"
-                  checked={inputFields.highLevelOnly}
-                  onCheckedChange={(e) => {
-                    setInputFields({
-                      ...inputFields,
-                      highLevelOnly: e,
-                    });
-                  }}
-                />
-              </div>
+              <SharedInputFieldsHomePage
+                inputFields={inputFields}
+                setInputFields={setInputFields}
+              />
               <div>
                 <p className="text-[#1b1b26] text-sm mb-2">button</p>
                 <Button
