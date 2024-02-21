@@ -122,9 +122,9 @@ describe('usePage All Hooks Test', () => {
 
       await waitFor(() => {
         expect(result.current.hasData).toBeTruthy();
-        expect(correlateResult.current.correlateResponseData).toEqual([
-          { correlation: 0.9, year: 2020 },
-        ]);
+        expect(correlateResult.current.correlateResponseData).toEqual({
+          data: [{ correlation: 0.9, year: 2020 }],
+        });
       });
     });
 
@@ -153,7 +153,6 @@ describe('usePage All Hooks Test', () => {
         expect(global.fetch).toHaveBeenCalled();
         expect(result.current.loading).toBeFalsy();
         expect(result.current.hasData).toBeFalsy();
-        expect(correlateResult.current.correlateResponseData).toEqual([]);
       });
     });
   });
@@ -192,9 +191,9 @@ describe('usePage All Hooks Test', () => {
         expect(global.fetch).toHaveBeenCalled();
         expect(result.current.loading).toBe(false);
         expect(result.current.hasData).toBe(true);
-        expect(correlateResult.current.correlateResponseData).toEqual([
-          { correlation: 0.9, year: 2020 },
-        ]);
+        expect(correlateResult.current.correlateResponseData).toEqual({
+          data: [{ correlation: 0.9, year: 2020 }],
+        });
       });
     });
 
@@ -216,7 +215,6 @@ describe('usePage All Hooks Test', () => {
         expect(global.fetch).toHaveBeenCalled();
         expect(result.current.loading).toBe(false);
         expect(result.current.hasData).toBe(false);
-        expect(correlateResult.current.correlateResponseData).toEqual([]);
       });
     });
 

@@ -1,4 +1,4 @@
-import { CorrelationDataPoint } from '@/components/Results';
+import { CorrelationData } from '@/components/Results';
 import { useState } from 'react';
 import { z } from 'zod';
 import { useLocalStorage } from './useLocalStorage';
@@ -18,9 +18,12 @@ export const formSchema = z.object({
 });
 
 export function useCorrelateResponseData() {
-  const [correlateResponseData, setCorrelateResponseData] = useLocalStorage<
-    CorrelationDataPoint[]
-  >('correlateResponseData', []);
+  const [correlateResponseData, setCorrelateResponseData] =
+    useLocalStorage<CorrelationData>('correlateResponseData', {
+      data: [],
+      aggregationPeriod: '',
+      correlationMetric: '',
+    });
   return { correlateResponseData, setCorrelateResponseData };
 }
 
@@ -56,7 +59,7 @@ export function useFetchRevenueData() {
 }
 
 export const useSubmitForm = (
-  setCorrelateResponseData: (arrData: CorrelationDataPoint[]) => void,
+  setCorrelateResponseData: (correlationData: CorrelationData) => void,
 ) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [hasData, setHasData] = useLocalStorage<boolean>('hasData', false);
@@ -89,13 +92,12 @@ export const useSubmitForm = (
       const jsonData = await res.json();
 
       setLoading(false);
-      const arrData: CorrelationDataPoint[] = jsonData.data.data;
-      setCorrelateResponseData(arrData);
+      const correlationData: CorrelationData = jsonData.data;
+      setCorrelateResponseData(correlationData);
       setHasData(true);
     } catch (e) {
       alert('Error fetching data');
       setLoading(false);
-      setCorrelateResponseData([]);
       setHasData(false);
     }
   };
@@ -104,7 +106,7 @@ export const useSubmitForm = (
 };
 
 export const useCorrelateInputText = (
-  setCorrelateResponseData: (arrData: CorrelationDataPoint[]) => void,
+  setCorrelateResponseData: (correlationData: CorrelationData) => void,
 ) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [hasData, setHasData] = useLocalStorage<boolean>('hasData', false);
@@ -151,13 +153,12 @@ export const useCorrelateInputText = (
       const jsonData = await res.json();
 
       setLoading(false);
-      const arrData: CorrelationDataPoint[] = jsonData.data.data;
-      setCorrelateResponseData(arrData);
+      const correlationData: CorrelationData = jsonData.data;
+      setCorrelateResponseData(correlationData);
       setHasData(true);
     } catch (e) {
       alert('Error correlating data');
       setLoading(false);
-      setCorrelateResponseData([]);
       setHasData(false);
     }
   };
