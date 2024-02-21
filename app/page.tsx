@@ -45,7 +45,7 @@ const HomePage = () => {
     'highLevelOnly',
     false,
   );
-  
+
   const { correlateResponseData, setCorrelateResponseData } =
     useCorrelateResponseData();
   const { onSubmit, loading, hasData, revenueData } = useSubmitForm(
