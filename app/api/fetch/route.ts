@@ -4,15 +4,10 @@ import { getBaseUrl } from '../util';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const stock = searchParams.get('stock');
-  const startYear = searchParams.get('startYear');
-  const aggregationPeriod = searchParams.get('aggregationPeriod');
-  const lagPeriods = searchParams.get('lagPeriods');
-  const highLevelOnly = searchParams.get('highLevelOnly');
 
   try {
     const res = await fetch(
-      `${getBaseUrl()}/correlate?stock=${stock}&startYear=${startYear}&aggregationPeriod=${aggregationPeriod}&lag_periods=${lagPeriods}&high_level_only=${highLevelOnly}`,
+      `${getBaseUrl()}/correlate?${searchParams.toString()}`,
       {
         headers: headers(),
         credentials: 'include',
@@ -27,7 +22,6 @@ export async function GET(request: NextRequest) {
 
     return Response.json({ data });
   } catch (error) {
-    alert('Error: ' + error);
     return Promise.reject(error);
   }
 }

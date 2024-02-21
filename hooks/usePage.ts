@@ -14,6 +14,7 @@ export const formSchema = z.object({
   aggregationPeriod: z.string(),
   lagPeriods: z.coerce.number(),
   highLevelOnly: z.boolean().default(false),
+  correlationMetric: z.string(),
 });
 
 export function useCorrelateResponseData() {
@@ -64,16 +65,27 @@ export const useSubmitForm = (
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     fetchRevenueData(values);
     setLoading(true);
-    const { ticker, startYear, aggregationPeriod, lagPeriods, highLevelOnly } =
-      values;
+    const {
+      ticker,
+      startYear,
+      aggregationPeriod,
+      lagPeriods,
+      highLevelOnly,
+      correlationMetric,
+    } = values;
 
     try {
-      const res = await fetch(
-        `api/fetch?stock=${ticker}&startYear=${startYear}&aggregationPeriod=${aggregationPeriod}&lagPeriods=${lagPeriods}&highLevelOnly=${highLevelOnly}`,
-        {
-          credentials: 'include',
-        },
-      );
+      const urlParams = new URLSearchParams({
+        stock: ticker,
+        start_year: startYear.toString(),
+        aggregation_period: aggregationPeriod,
+        lag_periods: lagPeriods.toString(),
+        high_level_only: highLevelOnly.toString(),
+        correlation_metric: correlationMetric,
+      });
+      const res = await fetch(`api/fetch?${urlParams.toString()}`, {
+        credentials: 'include',
+      });
       const jsonData = await res.json();
 
       setLoading(false);
@@ -100,6 +112,10 @@ export const useCorrelateInputText = (
   const [highLevelOnly] = useLocalStorage<boolean>('highLevelOnly', false);
   const [fiscalYearEnd, setFiscalYearEnd] = useState<string>('December');
   const [timeIncrement, setTimeIncrement] = useState<string>('Quarterly');
+  const [correlateMetric, setCorrelateMetric] = useLocalStorage<string>(
+    'correlate_metric',
+    'RAW_VALUE',
+  );
 
   const onChangeFiscalYearEnd = (e: string) => {
     setFiscalYearEnd(e);
@@ -113,8 +129,15 @@ export const useCorrelateInputText = (
     setLoading(true);
 
     try {
+      const urlParams = new URLSearchParams({
+        fiscal_year_end: fiscalYearEnd,
+        aggregation_period: timeIncrement,
+        lag_periods: lagPeriods.toString(),
+        high_level_only: highLevelOnly.toString(),
+        correlation_metric: correlateMetric,
+      });
       const res = await fetch(
-        `api/correlateinputdata?fiscalYearEnd=${fiscalYearEnd}&timeIncrement=${timeIncrement}&lagPeriods=${lagPeriods}&highLevelOnly=${highLevelOnly}`,
+        `api/correlateinputdata?${urlParams.toString()}`,
         {
           method: 'POST',
           body: inputData,
@@ -145,5 +168,7 @@ export const useCorrelateInputText = (
     hasData,
     onChangeFiscalYearEnd,
     onChangeTimeIncrement,
+    correlateMetric,
+    setCorrelateMetric,
   };
 };
