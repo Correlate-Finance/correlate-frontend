@@ -33,7 +33,7 @@ export default function SharedInputFieldsHomePage({
             });
           }}
         >
-          <SelectTrigger data-testid="automatic-aggregation-period">
+          <SelectTrigger data-testid="aggregation-period">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -55,7 +55,7 @@ export default function SharedInputFieldsHomePage({
             });
           }}
         >
-          <SelectTrigger data-testid="automatic-correlation-metric">
+          <SelectTrigger data-testid="correlation-metric">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -77,7 +77,7 @@ export default function SharedInputFieldsHomePage({
             });
           }}
         >
-          <SelectTrigger data-testid="automatic-lag-periods">
+          <SelectTrigger data-testid="lag-periods">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
