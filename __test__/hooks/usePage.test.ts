@@ -1,5 +1,6 @@
 import {
   useCorrelateInputText,
+  useCorrelateResponseData,
   useFetchRevenueData,
   useSubmitForm,
 } from '@/hooks/usePage';
@@ -48,6 +49,7 @@ describe('usePage All Hooks Test', () => {
           aggregationPeriod: 'monthly',
           lagPeriods: 0,
           highLevelOnly: false,
+          correlationMetric: 'RAW_VALUE',
         });
       });
 
@@ -69,6 +71,7 @@ describe('usePage All Hooks Test', () => {
           aggregationPeriod: 'monthly',
           lagPeriods: 0,
           highLevelOnly: false,
+          correlationMetric: 'RAW_VALUE',
         });
       });
 
@@ -101,7 +104,10 @@ describe('usePage All Hooks Test', () => {
         }),
       );
 
-      const { result } = renderHook(() => useSubmitForm());
+      const { result: correlateResult } = renderHook(useCorrelateResponseData);
+      const { result } = renderHook(() =>
+        useSubmitForm(correlateResult.current.setCorrelateResponseData),
+      );
 
       await act(async () => {
         result.current.onSubmit({
@@ -110,12 +116,13 @@ describe('usePage All Hooks Test', () => {
           aggregationPeriod: 'monthly',
           lagPeriods: 2,
           highLevelOnly: false,
+          correlationMetric: 'RAW_VALUE',
         });
       });
 
       await waitFor(() => {
         expect(result.current.hasData).toBeTruthy();
-        expect(result.current.dataArray).toEqual([
+        expect(correlateResult.current.correlateResponseData).toEqual([
           { correlation: 0.9, year: 2020 },
         ]);
       });
@@ -126,7 +133,10 @@ describe('usePage All Hooks Test', () => {
         Promise.reject('API is down'),
       );
 
-      const { result } = renderHook(() => useSubmitForm());
+      const { result: correlateResult } = renderHook(useCorrelateResponseData);
+      const { result } = renderHook(() =>
+        useSubmitForm(correlateResult.current.setCorrelateResponseData),
+      );
 
       await act(async () => {
         result.current.onSubmit({
@@ -135,6 +145,7 @@ describe('usePage All Hooks Test', () => {
           aggregationPeriod: 'monthly',
           lagPeriods: 2,
           highLevelOnly: false,
+          correlationMetric: 'RAW_VALUE',
         });
       });
 
@@ -142,7 +153,7 @@ describe('usePage All Hooks Test', () => {
         expect(global.fetch).toHaveBeenCalled();
         expect(result.current.loading).toBeFalsy();
         expect(result.current.hasData).toBeFalsy();
-        expect(result.current.dataArray).toEqual([]);
+        expect(correlateResult.current.correlateResponseData).toEqual([]);
       });
     });
   });
@@ -167,7 +178,11 @@ describe('usePage All Hooks Test', () => {
             }),
         }),
       );
-      const { result } = renderHook(() => useCorrelateInputText());
+
+      const { result: correlateResult } = renderHook(useCorrelateResponseData);
+      const { result } = renderHook(() =>
+        useCorrelateInputText(correlateResult.current.setCorrelateResponseData),
+      );
 
       await act(async () => {
         result.current.correlateInputText('some input data');
@@ -177,7 +192,7 @@ describe('usePage All Hooks Test', () => {
         expect(global.fetch).toHaveBeenCalled();
         expect(result.current.loading).toBe(false);
         expect(result.current.hasData).toBe(true);
-        expect(result.current.dataArray).toEqual([
+        expect(correlateResult.current.correlateResponseData).toEqual([
           { correlation: 0.9, year: 2020 },
         ]);
       });
@@ -188,7 +203,10 @@ describe('usePage All Hooks Test', () => {
         Promise.reject('Error correlating data'),
       );
 
-      const { result } = renderHook(() => useCorrelateInputText());
+      const { result: correlateResult } = renderHook(useCorrelateResponseData);
+      const { result } = renderHook(() =>
+        useCorrelateInputText(correlateResult.current.setCorrelateResponseData),
+      );
 
       await act(async () => {
         result.current.correlateInputText('some input data');
@@ -198,12 +216,15 @@ describe('usePage All Hooks Test', () => {
         expect(global.fetch).toHaveBeenCalled();
         expect(result.current.loading).toBe(false);
         expect(result.current.hasData).toBe(false);
-        expect(result.current.dataArray).toEqual([]);
+        expect(correlateResult.current.correlateResponseData).toEqual([]);
       });
     });
 
     it('updates fiscalYearEnd on change', async () => {
-      const { result } = renderHook(() => useCorrelateInputText());
+      const { result: correlateResult } = renderHook(useCorrelateResponseData);
+      const { result } = renderHook(() =>
+        useCorrelateInputText(correlateResult.current.setCorrelateResponseData),
+      );
 
       act(() => {
         result.current.onChangeFiscalYearEnd('January');
@@ -211,7 +232,10 @@ describe('usePage All Hooks Test', () => {
     });
 
     it('updates timeIncrement on change', async () => {
-      const { result } = renderHook(() => useCorrelateInputText());
+      const { result: correlateResult } = renderHook(useCorrelateResponseData);
+      const { result } = renderHook(() =>
+        useCorrelateInputText(correlateResult.current.setCorrelateResponseData),
+      );
 
       act(() => {
         result.current.onChangeTimeIncrement('Monthly');
