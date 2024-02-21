@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import Page from '../../app/page';
@@ -21,7 +21,8 @@ describe('Page', () => {
 
   test('renders form fields in Automatic tab', async () => {
     render(<Page />);
-    userEvent.click(screen.getByText('Automatic'));
+    await act(async () => userEvent.click(screen.getByText('Automatic')));
+
     await waitFor(() => {
       expect(screen.getByPlaceholderText('AAPL')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('2010')).toBeInTheDocument();
