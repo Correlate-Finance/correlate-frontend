@@ -59,7 +59,6 @@ export default function IndexModal({
   const onSubmit = async (values: z.infer<typeof correlateIndexFormSchema>) => {
     try {
       const result = await correlateIndex(values, data, checkedRows);
-      console.log(result);
       setCorrelationValue(result.data[0].pearson_value);
     } catch (e) {
       alert(e);
@@ -155,7 +154,6 @@ export default function IndexModal({
                   Correlation Value: {correlationValue.toFixed(3)}
                 </p>
               </div>
-              
             )}
           </DialogFooter>
         </DialogContent>

@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import IndexModal from './IndexModal';
 import ResultsRow from './ResultsRow';
 import { Button } from './ui/button';
@@ -46,6 +46,10 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
 
     setCheckedRows(newCheckedRows);
   };
+
+  useEffect(() => {
+    setCheckedRows(new Set());
+  }, [data]);
 
   return (
     <>
