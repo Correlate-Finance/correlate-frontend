@@ -13,7 +13,7 @@ export default function IndexModal() {
     <div>
       <Dialog>
         <DialogTrigger asChild>
-          <Button>Create Index</Button>
+          <Button className="bg-blue-800 text-white">Create Index</Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>

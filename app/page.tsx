@@ -1,6 +1,5 @@
 'use client';
 
-import IndexModal from '@/components/IndexModal';
 import InputData from '@/components/InputData';
 import Results from '@/components/Results';
 import { Button } from '@/components/ui/button';
@@ -419,7 +418,6 @@ const HomePage = () => {
           </Tabs>
         </CardContent>
       </Card>
-      <IndexModal />
       {/* <Separator orientation="vertical" className="my-40 w-4 border-white" /> */}
       <div className="m-5 flex flex-row justify-between w-3/4">
         <div className="w-min">

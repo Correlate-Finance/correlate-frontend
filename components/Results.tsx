@@ -7,7 +7,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import React from 'react';
+import IndexModal from './IndexModal';
 import ResultsRow from './ResultsRow';
+import { Button } from './ui/button';
 
 interface MyComponentProps {
   data: CorrelationDataPoint[];
@@ -27,7 +29,13 @@ export type CorrelationDataPoint = {
 const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
   return (
     <>
-      <h2 className="dark:text-white text-center">Correlations</h2>
+      <div className="flex flex-row gap-1">
+        <h2 className="dark:text-white text-center flex-1">Correlations</h2>
+        <IndexModal />
+        <Button className="mx-8 bg-blue-800 text-white" disabled>
+          Download
+        </Button>
+      </div>
       <div className="dark:text-white border-white">
         <Table>
           <TableCaption>Top Correlations with the data.</TableCaption>
