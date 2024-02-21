@@ -91,11 +91,9 @@ const HomePage = () => {
     let rows = inputFields.inputData?.split('\n');
     let table: string[][] = [];
 
-    for (let row in rows) {
-      let cells = row.split('\t');
-      table.push(cells);
-    }
-
+    rows?.forEach((row) => {
+      table.push(row.split('\t'));
+    });
     // Transpose table
     if (table.length == 2) {
       table = table[0].map((_, colIndex) => table.map((row) => row[colIndex]));
