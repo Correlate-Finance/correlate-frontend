@@ -1,10 +1,11 @@
 'use client';
 
 import { DownloadIcon } from '@radix-ui/react-icons';
-import React, { useState } from 'react';
+import React, { MouseEventHandler, useState } from 'react';
 import { CorrelationDataPoint } from './Results';
 import DoubleLineChart from './chart/DoubleLineChart';
 
+import { Checkbox } from '@/components/ui/checkbox';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { exportToExcel } from '@/lib/utils';
 import { BellIcon } from 'lucide-react';
@@ -15,9 +16,16 @@ import { useToast } from './ui/use-toast';
 interface MyComponentProps {
   dp: CorrelationDataPoint;
   lagPeriods: number;
+  toggleCheckbox: (id: number, checked: boolean) => void;
+  index: number;
 }
 
-const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
+const ResultsRow: React.FC<MyComponentProps> = ({
+  dp,
+  lagPeriods,
+  index,
+  toggleCheckbox,
+}) => {
   const [expanded, setExpanded] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const router = useRouter();
@@ -47,7 +55,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
     return combinedList;
   };
 
-  const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
+  const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
     setExpanded(!expanded);
   };
@@ -65,6 +73,16 @@ const ResultsRow: React.FC<MyComponentProps> = ({ dp, lagPeriods }) => {
   return (
     <>
       <TableRow key={`${dp.title}-${dp.lag}`} onClick={handleClick}>
+        <TableCell className="flex mt-1">
+          <Checkbox
+            onCheckedChange={(e) => {
+              if (e !== 'indeterminate') {
+                toggleCheckbox(index, e);
+              }
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </TableCell>
         <TableCell className="font-medium">{dp.title}</TableCell>
         {lagPeriods > 0 && <TableCell>{dp.lag}</TableCell>}
         <TableCell className={`${getColorClass(dp.pearson_value)}`}>
