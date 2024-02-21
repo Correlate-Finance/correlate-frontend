@@ -1,3 +1,4 @@
+import { CorrelationDataPoint } from '@/components/Results';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import * as XLSX from 'xlsx';
@@ -75,4 +76,18 @@ export const formatPercentage = (number: number | bigint | undefined) => {
     }).format(number);
   }
   return '';
+};
+
+export const convertToGraphData = (dp: CorrelationDataPoint) => {
+  const total = dp.dates.length;
+  const combinedList = dp.dates.map((date, index) => {
+    return {
+      date,
+      // For revenue we want to remove items from the bottom of the list.
+      revenue: index < dp.lag ? null : dp.input_data[index],
+      // for dataset we want to remove items from the top.
+      dataset: index >= total - dp.lag ? null : dp.dataset_data[index],
+    };
+  });
+  return combinedList;
 };
