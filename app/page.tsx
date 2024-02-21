@@ -45,6 +45,7 @@ const HomePage = () => {
     'highLevelOnly',
     false,
   );
+  
   const { correlateResponseData, setCorrelateResponseData } =
     useCorrelateResponseData();
   const { onSubmit, loading, hasData, revenueData } = useSubmitForm(
@@ -55,6 +56,8 @@ const HomePage = () => {
     onChangeTimeIncrement,
     correlateInputText,
     loading: loadingCorelate,
+    correlateMetric,
+    setCorrelateMetric,
   } = useCorrelateInputText(setCorrelateResponseData);
 
   async function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -112,6 +115,7 @@ const HomePage = () => {
       aggregationPeriod: 'Annually',
       lagPeriods: 0,
       highLevelOnly: false,
+      correlationMetric: 'RAW_VALUE',
     },
   });
 
@@ -184,6 +188,34 @@ const HomePage = () => {
                           <SelectContent>
                             <SelectItem value="Annually">Annually</SelectItem>
                             <SelectItem value="Quarterly">Quarterly</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="correlationMetric"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="dark:text-white text-opacity-80">
+                          Correlation Metric
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue="RAW_VALUE"
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="RAW_VALUE">Raw Value</SelectItem>
+                            <SelectItem value="YOY_GROWTH">
+                              Y/Y Growth Rate
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -318,6 +350,23 @@ const HomePage = () => {
                   <SelectContent>
                     <SelectItem value="Quarterly">Quarterly</SelectItem>
                     <SelectItem value="Annually">Annually</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <p className="dark:text-white text-sm mb-2 text-opacity-80">
+                  Correlation Metric
+                </p>
+                <Select
+                  onValueChange={(e: string) => setCorrelateMetric(e)}
+                  defaultValue={correlateMetric}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="RAW_VALUE">Raw Value</SelectItem>
+                    <SelectItem value="YOY_GROWTH">Y/Y Growth Rate</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
