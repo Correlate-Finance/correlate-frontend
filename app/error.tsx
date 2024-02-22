@@ -16,13 +16,13 @@ export default function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
   }, [error]);
   return (
     <div>
-      <h1 className="dark:text-white text-center text-4xl font-bold mt-20">
+      <h1 className="text-center text-4xl font-bold mt-20">
         There was a problem
       </h1>
-      <h3 className="dark:text-white text-center text-2xl font-bold mt-20">
+      <h3 className="text-center text-2xl font-bold mt-20">
         {error.message || 'Something went wrong'}
       </h3>
-      <p className="dark:text-white text-center text-xl mt-8">
+      <p className="text-center text-xl mt-8">
         Please try again later and if the problem persists, contact support.
       </p>
       <div className="flex justify-center space-x-4 mt-8">

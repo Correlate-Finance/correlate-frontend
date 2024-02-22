@@ -119,9 +119,7 @@ const HomePage = () => {
               className="flex flex-col md:flex-row justify-around [&>*]:mx-2 [&>*]:whitespace-nowrap"
             >
               <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Ticker
-                </p>
+                <p className="text-sm mb-2 text-opacity-80">Ticker</p>
                 <Input
                   placeholder="AAPL"
                   onChange={(e) => {
@@ -135,9 +133,7 @@ const HomePage = () => {
                 />
               </div>
               <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Start Year
-                </p>
+                <p className="text-sm mb-2 text-opacity-80">Start Year</p>
                 <Input
                   placeholder="2010"
                   onChange={(e) => {
@@ -171,9 +167,7 @@ const HomePage = () => {
               className="flex flex-col md:flex-row justify-around [&>*]:mx-2 [&>*]:whitespace-nowrap"
             >
               <div className="">
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Input Data
-                </p>
+                <p className="text-sm mb-2 text-opacity-80">Input Data</p>
                 <Textarea
                   onChange={updateInputText}
                   onPaste={handlePaste}
@@ -183,9 +177,7 @@ const HomePage = () => {
                 />
               </div>
               <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Fiscal Year End
-                </p>
+                <p className="text-sm mb-2 text-opacity-80">Fiscal Year End</p>
                 <Select
                   onValueChange={(e: string) =>
                     setInputFields({ ...inputFields, fiscalYearEnd: e })

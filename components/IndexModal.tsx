@@ -105,7 +105,7 @@ export default function IndexModal({
                   <Separator className="mt-2 bg-white" />
                 </DialogTitle>
 
-                <ul className="text-white w-full">
+                <ul className="w-full">
                   {[...checkedRows].map((index, i) => (
                     <li key={index}>
                       <div className="flex flex-row justify-between m-1 w-full">

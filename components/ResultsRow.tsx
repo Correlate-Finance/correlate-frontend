@@ -37,7 +37,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
     } else if (Math.abs(value) < 0.2) {
       return 'text-red-200'; // Red
     } else {
-      return 'dark:text-white'; // Default color or any other color you prefer
+      return ''; // Default color or any other color you prefer
     }
   };
 
@@ -77,7 +77,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
         <TableCell onClick={(e) => e.stopPropagation()}>
           <div title="Export to Excel">
             <DownloadIcon
-              className="w-6 h-6 dark:text-white cursor-pointer hover:text-green-400 transition-colors duration-300 ease-in-out"
+              className="w-6 h-6 cursor-pointer hover:text-green-400 transition-colors duration-300 ease-in-out"
               onClick={() => handleClickIcon()}
             />
           </div>
@@ -115,7 +115,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
               <DoubleLineChart data={convertToGraphData(dp)} />{' '}
               <Button
                 onClick={() => router.push(`/data/${dp.title}`)}
-                className="dark:text-white bg-blue-700 hover:bg-blue-900"
+                className="bg-blue-700 hover:bg-blue-900"
               >
                 See More
               </Button>
