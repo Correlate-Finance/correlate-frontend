@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import Page from '../../app/page';
@@ -21,13 +21,14 @@ describe('Page', () => {
 
   test('renders form fields in Automatic tab', async () => {
     render(<Page />);
-    userEvent.click(screen.getByText('Automatic'));
+    await act(async () => userEvent.click(screen.getByText('Automatic')));
+
     await waitFor(() => {
       expect(screen.getByPlaceholderText('AAPL')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('2010')).toBeInTheDocument();
     });
 
-    userEvent.click(screen.getByTestId('automatic-lag-periods'));
+    userEvent.click(screen.getByTestId('lag-periods'));
     await waitFor(() => {
       expect(screen.getAllByText('0')).toHaveLength(2);
       expect(screen.getByText('1')).toBeInTheDocument();
@@ -74,7 +75,7 @@ describe('Page', () => {
     });
 
     // Test for Select Time Seasonality
-    userEvent.click(screen.getByTestId('quarterly'));
+    userEvent.click(screen.getByTestId('aggregation-period'));
     await waitFor(() => {
       expect(screen.getAllByText('Quarterly')).toHaveLength(2);
       expect(screen.getByText('Annually')).toBeInTheDocument();
@@ -82,7 +83,9 @@ describe('Page', () => {
     const clickedAnnually = userEvent.click(screen.getByText('Annually'));
     expect(clickedAnnually).toBeTruthy();
     await waitFor(() => {
-      expect(screen.getByTestId('quarterly')).toHaveTextContent('Annually');
+      expect(screen.getByTestId('aggregation-period')).toHaveTextContent(
+        'Annually',
+      );
     });
 
     // Test for Select Lag Periods

@@ -26,7 +26,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { getBaseUrl } from '../api/util';
 
-const formSchema = z.object({
+const inputFieldsSchema = z.object({
   email: z.string().min(1).max(255),
   password: z.string().min(1).max(255),
 });
@@ -34,15 +34,15 @@ const formSchema = z.object({
 const Page = () => {
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof inputFieldsSchema>>({
+    resolver: zodResolver(inputFieldsSchema),
     defaultValues: {
       email: '',
       password: '',
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof inputFieldsSchema>) {
     try {
       const response = await fetch(`${getBaseUrl()}/users/login/`, {
         method: 'POST',

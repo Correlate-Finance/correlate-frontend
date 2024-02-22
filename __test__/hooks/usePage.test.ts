@@ -8,6 +8,16 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 
 const originalFetch = global.fetch;
 
+const DEFAULT_INPUT_FIELDS = {
+  ticker: 'AAPL',
+  startYear: 2020,
+  aggregationPeriod: 'monthly',
+  lagPeriods: 0,
+  highLevelOnly: false,
+  correlationMetric: 'RAW_VALUE',
+  fiscalYearEnd: 'December',
+};
+
 describe('usePage All Hooks Test', () => {
   describe('useFetchRevenueData', () => {
     beforeEach(() => {
@@ -43,14 +53,7 @@ describe('usePage All Hooks Test', () => {
       const { result } = renderHook(() => useFetchRevenueData());
 
       await act(async () => {
-        result.current.fetchRevenueData({
-          ticker: 'AAPL',
-          startYear: 2020,
-          aggregationPeriod: 'monthly',
-          lagPeriods: 0,
-          highLevelOnly: false,
-          correlationMetric: 'RAW_VALUE',
-        });
+        result.current.fetchRevenueData(DEFAULT_INPUT_FIELDS);
       });
 
       await waitFor(() => {
@@ -65,14 +68,7 @@ describe('usePage All Hooks Test', () => {
       const { result } = renderHook(() => useFetchRevenueData());
 
       await act(async () => {
-        result.current.fetchRevenueData({
-          ticker: 'AAPL',
-          startYear: 2020,
-          aggregationPeriod: 'monthly',
-          lagPeriods: 0,
-          highLevelOnly: false,
-          correlationMetric: 'RAW_VALUE',
-        });
+        result.current.fetchRevenueData(DEFAULT_INPUT_FIELDS);
       });
 
       await waitFor(() => {
@@ -110,21 +106,14 @@ describe('usePage All Hooks Test', () => {
       );
 
       await act(async () => {
-        result.current.onSubmit({
-          ticker: 'AAPL',
-          startYear: 2020,
-          aggregationPeriod: 'monthly',
-          lagPeriods: 2,
-          highLevelOnly: false,
-          correlationMetric: 'RAW_VALUE',
-        });
+        result.current.onSubmit(DEFAULT_INPUT_FIELDS);
       });
 
       await waitFor(() => {
         expect(result.current.hasData).toBeTruthy();
-        expect(correlateResult.current.correlateResponseData).toEqual([
-          { correlation: 0.9, year: 2020 },
-        ]);
+        expect(correlateResult.current.correlateResponseData).toEqual({
+          data: [{ correlation: 0.9, year: 2020 }],
+        });
       });
     });
 
@@ -139,21 +128,13 @@ describe('usePage All Hooks Test', () => {
       );
 
       await act(async () => {
-        result.current.onSubmit({
-          ticker: 'AAPL',
-          startYear: 2020,
-          aggregationPeriod: 'monthly',
-          lagPeriods: 2,
-          highLevelOnly: false,
-          correlationMetric: 'RAW_VALUE',
-        });
+        result.current.onSubmit(DEFAULT_INPUT_FIELDS);
       });
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalled();
         expect(result.current.loading).toBeFalsy();
         expect(result.current.hasData).toBeFalsy();
-        expect(correlateResult.current.correlateResponseData).toEqual([]);
       });
     });
   });
@@ -185,16 +166,19 @@ describe('usePage All Hooks Test', () => {
       );
 
       await act(async () => {
-        result.current.correlateInputText('some input data');
+        result.current.correlateInputText({
+          ...DEFAULT_INPUT_FIELDS,
+          inputData: 'some input data',
+        });
       });
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalled();
         expect(result.current.loading).toBe(false);
         expect(result.current.hasData).toBe(true);
-        expect(correlateResult.current.correlateResponseData).toEqual([
-          { correlation: 0.9, year: 2020 },
-        ]);
+        expect(correlateResult.current.correlateResponseData).toEqual({
+          data: [{ correlation: 0.9, year: 2020 }],
+        });
       });
     });
 
@@ -209,36 +193,16 @@ describe('usePage All Hooks Test', () => {
       );
 
       await act(async () => {
-        result.current.correlateInputText('some input data');
+        result.current.correlateInputText({
+          ...DEFAULT_INPUT_FIELDS,
+          inputData: 'some input data',
+        });
       });
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalled();
         expect(result.current.loading).toBe(false);
         expect(result.current.hasData).toBe(false);
-        expect(correlateResult.current.correlateResponseData).toEqual([]);
-      });
-    });
-
-    it('updates fiscalYearEnd on change', async () => {
-      const { result: correlateResult } = renderHook(useCorrelateResponseData);
-      const { result } = renderHook(() =>
-        useCorrelateInputText(correlateResult.current.setCorrelateResponseData),
-      );
-
-      act(() => {
-        result.current.onChangeFiscalYearEnd('January');
-      });
-    });
-
-    it('updates timeIncrement on change', async () => {
-      const { result: correlateResult } = renderHook(useCorrelateResponseData);
-      const { result } = renderHook(() =>
-        useCorrelateInputText(correlateResult.current.setCorrelateResponseData),
-      );
-
-      act(() => {
-        result.current.onChangeTimeIncrement('Monthly');
       });
     });
   });

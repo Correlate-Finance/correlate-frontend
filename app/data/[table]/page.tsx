@@ -105,7 +105,7 @@ export default function DataTrendPage({ params }: Readonly<TProps>) {
         <TabsContent value="Raw">
           <div className="flex justify-between items-center">
             <div className="flex flex-row gap-4 mb-4 items-center">
-              <p className="dark:text-white text-center">Multi-year stack</p>
+              <p className="text-center">Multi-year stack</p>
               <div className="w-30">
                 <Select
                   onValueChange={(e) => setActiveStack(e as TActiveStack)}
@@ -159,7 +159,7 @@ export default function DataTrendPage({ params }: Readonly<TProps>) {
               <div className="flex flex-col items-center w-2/3">
                 <BrushWrapper data={filteredDataRaw} syncId="syncId" />
               </div>
-              <div className="dark:text-white border-white">
+              <div className="border-white">
                 <div className="w-full">
                   <Table className="border-white">
                     <TableHeader>
@@ -249,9 +249,7 @@ export default function DataTrendPage({ params }: Readonly<TProps>) {
                   title="MoM Growth vs Delta Seasonality"
                 />
                 <div className="flex flex-col mb-4 items-end">
-                  <p className="dark:text-white text-center mr-12 mb-2">
-                    Year Selector
-                  </p>
+                  <p className="text-center mr-12 mb-2">Year Selector</p>
                   <div className="w-[200px]">
                     <MultiSelect
                       options={allYearsArray.map((year) => {
@@ -264,7 +262,7 @@ export default function DataTrendPage({ params }: Readonly<TProps>) {
                   </div>
                 </div>
               </div>
-              <div className="dark:text-white border-white flex justify-between gap-20">
+              <div className="border-white flex justify-between gap-20">
                 <div>
                   <div className="w-full">
                     <Table className="border-white">

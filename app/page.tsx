@@ -2,6 +2,7 @@
 
 import InputData from '@/components/InputData';
 import Results from '@/components/Results';
+import SharedInputFieldsHomePage from '@/components/SharedInputFieldsHomePage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,12 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import {
-  formSchema,
+  inputFieldsSchema,
   useCorrelateInputText,
   useCorrelateResponseData,
   useSubmitForm,
@@ -29,21 +29,17 @@ import { z } from 'zod';
 
 const HomePage = () => {
   const [tabValue, setTabValue] = useLocalStorage('tabValue', 'Manual');
-  const [inputData, setInputData] = useLocalStorage('inputData', '');
-  const [lagPeriods, setLagPeriods] = useLocalStorage<number>('lagPeriods', 0);
-  const [highLevelOnly, setHighLevelOnly] = useLocalStorage<boolean>(
-    'highLevelOnly',
-    false,
-  );
-  const [inputDataAutomatic, setInputDataAutomatic] = useLocalStorage<
-    z.infer<typeof formSchema>
-  >('inputDataAutomatic', {
+  const [inputFields, setInputFields] = useLocalStorage<
+    z.infer<typeof inputFieldsSchema>
+  >('inputFields', {
     ticker: 'AAPL',
+    inputData: '',
+    fiscalYearEnd: 'December',
     startYear: 2010,
-    aggregationPeriod: 'Annually',
-    lagPeriods: 0,
-    highLevelOnly: false,
+    aggregationPeriod: 'Quarterly',
     correlationMetric: 'RAW_VALUE',
+    lagPeriods: 0,
+    highLevelOnly: true,
   });
 
   const { correlateResponseData, setCorrelateResponseData } =
@@ -51,18 +47,15 @@ const HomePage = () => {
   const { onSubmit, loading, hasData, revenueData } = useSubmitForm(
     setCorrelateResponseData,
   );
-  const {
-    onChangeFiscalYearEnd,
-    onChangeTimeIncrement,
-    correlateInputText,
-    loading: loadingCorelate,
-    correlateMetric,
-    setCorrelateMetric,
-  } = useCorrelateInputText(setCorrelateResponseData);
+  const { correlateInputText, loading: loadingCorrelate } =
+    useCorrelateInputText(setCorrelateResponseData);
 
   async function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
     e.preventDefault();
-    setInputData(e.target.value);
+    setInputFields({
+      ...inputFields,
+      inputData: e.target.value,
+    });
   }
 
   async function handlePaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
@@ -88,18 +81,19 @@ const HomePage = () => {
     });
     tempContainer.remove();
 
-    setInputData(table.map((row) => row.join('\t')).join('\n'));
+    setInputFields({
+      ...inputFields,
+      inputData: table.map((row) => row.join('\t')).join('\n'),
+    });
   }
 
   function generateTabularData() {
-    let rows = inputData.split('\n');
+    let rows = inputFields.inputData?.split('\n');
     let table: string[][] = [];
 
-    for (let y in rows) {
-      let cells = rows[y].split('\t');
-      table.push(cells);
-    }
-
+    rows?.forEach((row) => {
+      table.push(row.split('\t'));
+    });
     // Transpose table
     if (table.length == 2) {
       table = table[0].map((_, colIndex) => table.map((row) => row[colIndex]));
@@ -125,124 +119,40 @@ const HomePage = () => {
               className="flex flex-col md:flex-row justify-around [&>*]:mx-2 [&>*]:whitespace-nowrap"
             >
               <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Ticker
-                </p>
+                <p className="text-sm mb-2 text-opacity-80">Ticker</p>
                 <Input
                   placeholder="AAPL"
                   onChange={(e) => {
-                    setInputDataAutomatic({
-                      ...inputDataAutomatic,
+                    setInputFields({
+                      ...inputFields,
                       ticker: e.target.value,
                     });
                   }}
-                  defaultValue={inputDataAutomatic.ticker}
+                  defaultValue={inputFields.ticker}
                   data-testid="automatic-ticker"
                 />
               </div>
               <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Start Year
-                </p>
+                <p className="text-sm mb-2 text-opacity-80">Start Year</p>
                 <Input
                   placeholder="2010"
                   onChange={(e) => {
-                    setInputDataAutomatic({
-                      ...inputDataAutomatic,
+                    setInputFields({
+                      ...inputFields,
                       startYear: Number(e.target.value),
                     });
                   }}
-                  defaultValue={inputDataAutomatic.startYear.toString()}
+                  defaultValue={inputFields.startYear.toString()}
                   data-testid="automatic-start-year"
                 />
               </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Aggregation Period
-                </p>
-                <Select
-                  defaultValue={inputDataAutomatic.aggregationPeriod}
-                  onValueChange={(e: string) => {
-                    setInputDataAutomatic({
-                      ...inputDataAutomatic,
-                      aggregationPeriod: e,
-                    });
-                  }}
-                >
-                  <SelectTrigger data-testid="automatic-aggregation-period">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Annually">Annually</SelectItem>
-                    <SelectItem value="Quarterly">Quarterly</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Correlation Metric
-                </p>
-                <Select
-                  defaultValue={inputDataAutomatic.correlationMetric}
-                  onValueChange={(e: string) => {
-                    setInputDataAutomatic({
-                      ...inputDataAutomatic,
-                      correlationMetric: e,
-                    });
-                  }}
-                >
-                  <SelectTrigger data-testid="automatic-correlation-metric">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="RAW_VALUE">Raw Value</SelectItem>
-                    <SelectItem value="YOY_GROWTH">Y/Y Growth Rate</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Lag Periods
-                </p>
-                <Select
-                  defaultValue={inputDataAutomatic.lagPeriods.toString()}
-                  onValueChange={(e: string) => {
-                    setInputDataAutomatic({
-                      ...inputDataAutomatic,
-                      lagPeriods: Number(e),
-                    });
-                  }}
-                >
-                  <SelectTrigger data-testid="automatic-lag-periods">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">0</SelectItem>
-                    <SelectItem value="1">1</SelectItem>
-                    <SelectItem value="2">2</SelectItem>
-                    <SelectItem value="3">3</SelectItem>
-                    <SelectItem value="4">4</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  High Level Datasets
-                </p>
-                <Switch
-                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-neutral-400"
-                  checked={inputDataAutomatic.highLevelOnly}
-                  onCheckedChange={(e: boolean) => {
-                    setInputDataAutomatic({
-                      ...inputDataAutomatic,
-                      highLevelOnly: e,
-                    });
-                  }}
-                />
-              </div>
+              <SharedInputFieldsHomePage
+                inputFields={inputFields}
+                setInputFields={setInputFields}
+              />
               <Button
                 className="mt-6 bg-green-600 hover:bg-green-900 self-center"
-                onClick={() => onSubmit(inputDataAutomatic)}
+                onClick={() => onSubmit(inputFields)}
                 data-testid="automatic-correlate-button"
               >
                 {' '}
@@ -257,24 +167,22 @@ const HomePage = () => {
               className="flex flex-col md:flex-row justify-around [&>*]:mx-2 [&>*]:whitespace-nowrap"
             >
               <div className="">
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Input Data
-                </p>
+                <p className="text-sm mb-2 text-opacity-80">Input Data</p>
                 <Textarea
                   onChange={updateInputText}
                   onPaste={handlePaste}
                   placeholder="Paste excel data here"
                   className=""
-                  value={inputData}
+                  value={inputFields.inputData}
                 />
               </div>
               <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Fiscal Year End
-                </p>
+                <p className="text-sm mb-2 text-opacity-80">Fiscal Year End</p>
                 <Select
-                  onValueChange={(e: string) => onChangeFiscalYearEnd(e)}
-                  defaultValue="December"
+                  onValueChange={(e: string) =>
+                    setInputFields({ ...inputFields, fiscalYearEnd: e })
+                  }
+                  defaultValue={inputFields.fiscalYearEnd}
                 >
                   <SelectTrigger data-testid="fiscal-year-end">
                     <SelectValue />
@@ -295,79 +203,19 @@ const HomePage = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Aggregation Period
-                </p>
-                <Select
-                  onValueChange={(e: string) => onChangeTimeIncrement(e)}
-                  defaultValue="Quarterly"
-                >
-                  <SelectTrigger data-testid="quarterly">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Quarterly">Quarterly</SelectItem>
-                    <SelectItem value="Annually">Annually</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Correlation Metric
-                </p>
-                <Select
-                  onValueChange={(e: string) => setCorrelateMetric(e)}
-                  defaultValue={correlateMetric}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="RAW_VALUE">Raw Value</SelectItem>
-                    <SelectItem value="YOY_GROWTH">Y/Y Growth Rate</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  Lag Periods
-                </p>
-                <Select
-                  onValueChange={(e: string) => setLagPeriods(Number(e))}
-                  value={lagPeriods.toString()}
-                >
-                  <SelectTrigger data-testid="lag-periods">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">0</SelectItem>
-                    <SelectItem value="1">1</SelectItem>
-                    <SelectItem value="2">2</SelectItem>
-                    <SelectItem value="3">3</SelectItem>
-                    <SelectItem value="4">4</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <p className="dark:text-white text-sm mb-2 text-opacity-80">
-                  High Level Datasets
-                </p>
-                <Switch
-                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-neutral-400"
-                  checked={highLevelOnly}
-                  onCheckedChange={setHighLevelOnly}
-                />
-              </div>
+              <SharedInputFieldsHomePage
+                inputFields={inputFields}
+                setInputFields={setInputFields}
+              />
               <div>
                 <p className="text-[#1b1b26] text-sm mb-2">button</p>
                 <Button
-                  onClick={() => correlateInputText(inputData)}
+                  onClick={() => correlateInputText(inputFields)}
                   className="top-4 bg-green-600 hover:bg-green-900"
                   data-testid="manual-correlate-button"
                 >
                   {' '}
-                  {loadingCorelate && (
+                  {loadingCorrelate && (
                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />
                   )}{' '}
                   Correlate
@@ -380,7 +228,7 @@ const HomePage = () => {
       {/* <Separator orientation="vertical" className="my-40 w-4 border-white" /> */}
       <div className="m-5 flex flex-row justify-between w-3/4">
         <div className="w-min">
-          {(inputData && tabValue === 'Manual' && (
+          {(inputFields.inputData && tabValue === 'Manual' && (
             <InputData data={generateTabularData()} tab={tabValue} />
           )) ||
             (revenueData && tabValue === 'Automatic' && (
@@ -389,7 +237,10 @@ const HomePage = () => {
         </div>
         <div className="w-min">
           {hasData && (
-            <Results data={correlateResponseData} lagPeriods={lagPeriods} />
+            <Results
+              data={correlateResponseData}
+              lagPeriods={inputFields.lagPeriods}
+            />
           )}
         </div>
       </div>
