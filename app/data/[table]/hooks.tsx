@@ -1,4 +1,5 @@
 import { DataTrendPoint } from '@/app/api/schema';
+import handleResponseStatus from '@/lib/handleResponse';
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -15,10 +16,10 @@ export const useFetchData = (params: Tparams) => {
       method: 'POST',
       body: params.table,
     })
-      .then((res) => res.json())
+      .then((res) => handleResponseStatus(res))
       .then((json) => setData(JSON.parse(json.data).toReversed()))
       .catch((err) => {
-        alert('Error: ' + err);
+        setData([]);
       })
       .finally(() => setLoading(false));
   }, [params.table]);

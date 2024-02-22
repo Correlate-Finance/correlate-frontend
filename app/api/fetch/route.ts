@@ -15,13 +15,23 @@ export async function GET(request: NextRequest) {
     );
 
     if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
+      return new Response(JSON.stringify({ error: res.statusText }), {
+        status: res.status,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
     }
 
     const data = await res.json();
 
     return Response.json({ data });
   } catch (error) {
-    return Promise.reject(error);
+    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   }
 }
