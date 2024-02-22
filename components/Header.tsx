@@ -22,7 +22,7 @@ const Header = () => {
     <header className="flex-row justify-items-center">
       <div className="flex flex-row justify-between items-center">
         <Link href="/">
-          <h1 className="text-[28px] dark:text-white mx-6">Correlate</h1>
+          <h1 className="text-[28px] mx-6">Correlate</h1>
         </Link>
         <div className="flex flex-row justify-end w-1/5 items-center">
           <ThemeSwitch />

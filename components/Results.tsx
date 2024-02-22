@@ -73,7 +73,7 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
   return (
     <>
       <div className="flex flex-row gap-1">
-        <h2 className="dark:text-white text-center flex-1">Correlations</h2>
+        <h2 className="text-center flex-1">Correlations</h2>
         <IndexModal data={data} checkedRows={checkedRows} />
         <Button
           className="mx-8 bg-blue-800 text-white"
@@ -83,7 +83,7 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
           Download
         </Button>
       </div>
-      <div className="dark:text-white border-white">
+      <div className="border-white">
         <Table>
           <TableCaption>Top Correlations with the data.</TableCaption>
           <TableHeader>
