@@ -86,11 +86,12 @@ export default function IndexModal({
           </Button>
         </DialogTrigger>
         <DialogContent>
-          <DialogHeader className="w-full">
+          <DialogHeader>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
+              <form onSubmit={form.handleSubmit(onSubmit)}>
                 <DialogTitle>
-                  {/* <FormField
+                  {/* Leaving this in because we will be adding this very soon.
+                  <FormField
                     control={form.control}
                     name="indexName"
                     render={({ field }) => (
@@ -107,15 +108,15 @@ export default function IndexModal({
                     )}
                   /> */}
                   <p>Create Correlation Index</p>
-                  <Separator className="mt-2 bg-white" />
+                  <Separator className="mt-2 dark:bg-white" />
                 </DialogTitle>
 
-                <ul className="w-full">
+                <ul>
                   {[...checkedRows].map((index, i) => (
                     <li key={index}>
-                      <div className="flex flex-row justify-between m-1 w-full">
-                        <div className="flex flex-col w-4/5">
-                          <p className="text-sm truncate ... whitespace-nowrap">
+                      <div className="flex flex-row justify-between m-1">
+                        <div className="flex flex-col  w-4/5">
+                          <p className="text-sm truncate ...">
                             {data.data[index].title}
                           </p>
                           <p className="text-sm text-gray-500 ">
@@ -123,7 +124,7 @@ export default function IndexModal({
                             {data.data[index].pearson_value.toFixed(3)}
                           </p>
                         </div>
-                        <div className="w-1/5">
+                        <div className="w-1/5 shrink-0">
                           <FormField
                             control={form.control}
                             name={`percentages.${i}`}
@@ -132,14 +133,13 @@ export default function IndexModal({
                                 <FormControl>
                                   <Input
                                     placeholder="Percentage"
-                                    className="w-full"
                                     defaultValue={(
                                       1 / checkedRows.size
                                     ).toFixed(2)}
                                     {...field}
                                   />
                                 </FormControl>
-                                <FormMessage className="w-full" />
+                                <FormMessage />
                               </FormItem>
                             )}
                           />
@@ -151,9 +151,7 @@ export default function IndexModal({
                     </li>
                   ))}
                 </ul>
-
-                <Separator className="mt-2 bg-white" />
-
+                <Separator className="mt-2 dark:bg-white" />
                 <div className="flex justify-center">
                   <Button className="bg-blue-800 text-white my-2" type="submit">
                     Correlate
@@ -166,8 +164,7 @@ export default function IndexModal({
             {correlationDataPoint && (
               <div className="w-full flex-col items-center justify-center">
                 <p className="text-lg text-center">
-                  Correlation Value:{' '}
-                  {correlationDataPoint.pearson_value.toFixed(3)}
+                  {`Correlation Value: ${correlationDataPoint.pearson_value.toFixed(3)}`}
                 </p>
                 <DoubleLineChart
                   data={convertToGraphData(correlationDataPoint)}

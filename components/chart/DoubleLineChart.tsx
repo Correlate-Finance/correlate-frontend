@@ -7,6 +7,7 @@ import {
   Legend,
   Line,
   LineChart,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -25,41 +26,45 @@ interface MyComponentProps {
 
 const DoubleLineChart: React.FC<MyComponentProps> = ({ data }) => {
   return (
-    <LineChart
-      width={500}
-      height={300}
-      data={data}
-      margin={{
-        top: 5,
-        right: 30,
-        left: 20,
-        bottom: 5,
-      }}
-    >
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="date" />
-      <YAxis yAxisId="left" tickFormatter={formatNumber} />
-      <YAxis yAxisId="right" orientation="right" tickFormatter={formatNumber} />
-      <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
-      <Legend />
-      <Line
-        yAxisId="left"
-        type="monotone"
-        dataKey="revenue"
-        stroke="#AA4A44"
-        dot={{
-          r: 1,
-          fill: '#AA4A44',
+    <ResponsiveContainer aspect={5 / 3}>
+      <LineChart
+        data={data}
+        margin={{
+          top: 5,
+          right: 30,
+          left: 20,
+          bottom: 5,
         }}
-      />
-      <Line
-        yAxisId="right"
-        type="monotone"
-        dataKey="dataset"
-        stroke="#82ca9d"
-        dot={{ r: 1, fill: '#82ca9d' }}
-      />
-    </LineChart>
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="date" />
+        <YAxis yAxisId="left" tickFormatter={formatNumber} />
+        <YAxis
+          yAxisId="right"
+          orientation="right"
+          tickFormatter={formatNumber}
+        />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+        <Legend />
+        <Line
+          yAxisId="left"
+          type="monotone"
+          dataKey="revenue"
+          stroke="#AA4A44"
+          dot={{
+            r: 1,
+            fill: '#AA4A44',
+          }}
+        />
+        <Line
+          yAxisId="right"
+          type="monotone"
+          dataKey="dataset"
+          stroke="#82ca9d"
+          dot={{ r: 1, fill: '#82ca9d' }}
+        />
+      </LineChart>
+    </ResponsiveContainer>
   );
 };
 

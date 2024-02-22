@@ -112,7 +112,9 @@ const ResultsRow: React.FC<MyComponentProps> = ({
         >
           <TableCell colSpan={100}>
             <div className="flex flex-row items-end">
-              <DoubleLineChart data={convertToGraphData(dp)} />{' '}
+              <div className="w-[500px]">
+                <DoubleLineChart data={convertToGraphData(dp)} />{' '}
+              </div>
               <Button
                 onClick={() => router.push(`/data/${dp.title}`)}
                 className="bg-blue-700 hover:bg-blue-900"
