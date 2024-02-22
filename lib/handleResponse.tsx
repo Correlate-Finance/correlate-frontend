@@ -1,5 +1,5 @@
+import { toast } from '@/components/ui/use-toast';
 import Cookies from 'js-cookie';
-import { toast } from '../components/ui/use-toast';
 
 export default async function handleResponseStatus(response: Response) {
   if (response.status === 401) {
