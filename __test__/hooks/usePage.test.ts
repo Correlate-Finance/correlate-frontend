@@ -137,7 +137,7 @@ describe('usePage All Hooks Test', () => {
 
     test('handles fetch error', async () => {
       (global.fetch as jest.Mock).mockImplementationOnce(() =>
-        Promise.reject('API is down'),
+        Promise.reject(new Error('API is down')),
       );
 
       const { result: correlateResult } = renderHook(useCorrelateResponseData);
@@ -202,7 +202,7 @@ describe('usePage All Hooks Test', () => {
 
     it('handles error during data correlation', async () => {
       (global.fetch as jest.Mock).mockImplementationOnce(() =>
-        Promise.reject('Error correlating data'),
+        Promise.reject(new Error('Error correlating data')),
       );
 
       const { result: correlateResult } = renderHook(useCorrelateResponseData);
