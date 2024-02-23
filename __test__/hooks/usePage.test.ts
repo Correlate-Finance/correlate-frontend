@@ -4,6 +4,7 @@ import {
   useFetchRevenueData,
   useSubmitForm,
 } from '@/hooks/usePage';
+import handleResponseStatus from '@/lib/handleResponse';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
 const originalFetch = global.fetch;
@@ -18,7 +19,24 @@ const DEFAULT_INPUT_FIELDS = {
   fiscalYearEnd: 'December',
 };
 
+jest.mock('../../lib/handleResponse', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
 describe('usePage All Hooks Test', () => {
+  beforeAll(() => {
+    (handleResponseStatus as jest.Mock).mockImplementation(
+      async (response: Response) => {
+        return await response.json();
+      },
+    );
+  });
+
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
+
   describe('useFetchRevenueData', () => {
     beforeEach(() => {
       global.fetch = jest.fn();

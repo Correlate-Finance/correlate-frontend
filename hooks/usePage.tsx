@@ -1,4 +1,5 @@
 import { CorrelationData } from '@/components/Results';
+import handleResponseStatus from '@/lib/handleResponse';
 import { useState } from 'react';
 import { z } from 'zod';
 import { useLocalStorage } from './useLocalStorage';
@@ -46,11 +47,10 @@ export function useFetchRevenueData() {
           credentials: 'include',
         },
       );
-      const jsonData = await response.json();
+      const jsonData = await handleResponseStatus(response);
       const parsedData = jsonData.data.map((x: any) => [x.date, x.value]);
       setRevenueData(parsedData);
     } catch (e) {
-      alert('Error fetching revenue data');
       setRevenueData([]);
     } finally {
       setLoading(false);
@@ -93,14 +93,13 @@ export const useSubmitForm = (
       const res = await fetch(`api/fetch?${urlParams.toString()}`, {
         credentials: 'include',
       });
-      const jsonData = await res.json();
+      const jsonData = await handleResponseStatus(res);
 
       setLoading(false);
       const correlationData: CorrelationData = jsonData.data;
       setCorrelateResponseData(correlationData);
       setHasData(true);
     } catch (e) {
-      alert('Error fetching data');
       setLoading(false);
       setHasData(false);
     }
@@ -144,14 +143,13 @@ export const useCorrelateInputText = (
         },
       );
 
-      const jsonData = await res.json();
+      const jsonData = await handleResponseStatus(res);
 
       setLoading(false);
       const correlationData: CorrelationData = jsonData.data;
       setCorrelateResponseData(correlationData);
       setHasData(true);
     } catch (e) {
-      alert('Error correlating data');
       setLoading(false);
       setHasData(false);
     }
