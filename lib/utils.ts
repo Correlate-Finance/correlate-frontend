@@ -20,7 +20,7 @@ export function createExcelSheet(
     const objValues = Object.values(item);
     return objValues;
   }) as (string | number)[][];
-  const dataObjKeys = Object.keys(data?.[0] || {});
+  const dataObjKeys = Object.keys(data?.[0]);
   const excelData = [dataObjKeys, ...dataObjValues];
 
   // Since we are pushing to the start have to append in reverse order
