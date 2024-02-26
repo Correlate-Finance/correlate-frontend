@@ -10,10 +10,14 @@ describe('useLocalStorage hook', () => {
     global.localStorage.setItem = jest.fn((key, value) => {
       store[key] = value.toString();
     });
+    global.localStorage.clear = jest.fn(() => {
+      store = {};
+    });
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    window.localStorage.clear();
   });
 
   it('initializes with initial value if no value in localStorage', () => {
@@ -42,5 +46,14 @@ describe('useLocalStorage hook', () => {
     rerender();
 
     expect(result.current[0]).toBe('newValue');
+  });
+
+  it('removes invalid JSON from localStorage', () => {
+    // Set an invalid JSON value in localStorage
+    localStorage.setItem('testKey', 'not a valid JSON');
+
+    const { result } = renderHook(() => useLocalStorage('testKey', 'initial'));
+
+    expect(result.current[0]).toBe('initial');
   });
 });

@@ -223,5 +223,22 @@ describe('usePage All Hooks Test', () => {
         expect(result.current.hasData).toBe(false);
       });
     });
+
+    it('handles missing input data', async () => {
+      const { result } = renderHook(() =>
+        useCorrelateInputText(jest.fn() as any),
+      );
+
+      await act(async () => {
+        result.current.correlateInputText({
+          ...DEFAULT_INPUT_FIELDS,
+          inputData: '',
+        });
+      });
+
+      await waitFor(() => {
+        expect(window.alert).toHaveBeenCalledWith('No input data');
+      });
+    });
   });
 });

@@ -174,6 +174,7 @@ const HomePage = () => {
                   placeholder="Paste excel data here"
                   className=""
                   value={inputFields.inputData}
+                  data-testid="manual-input-data"
                 />
               </div>
               <div>
