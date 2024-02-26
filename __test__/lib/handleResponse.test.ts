@@ -32,7 +32,8 @@ describe('handleResponseStatus', () => {
     expect(toast).toHaveBeenCalledWith(
       expect.objectContaining({
         title: 'Unauthorized',
-        description: 'Please login to access this feature',
+        description:
+          'Your credentials are invalid. Please login again to access this feature',
       }),
     );
 
