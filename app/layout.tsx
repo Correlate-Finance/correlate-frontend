@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import type { Metadata } from 'next';
 import React from 'react';
 // import { Inter } from 'next/font/google';
+import Footer from '@/components/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { Providers } from './providers';
@@ -21,11 +22,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen font-poppins dark:bg-[#131319]">
+      <body className="flex flex-col justify-between min-h-screen font-poppins dark:bg-[#131319]">
         <Providers>
           <Header />
           <Toaster />
-          {children}
+          <main className="flex-1">{children}</main>
+          <Footer />
         </Providers>
       </body>
     </html>

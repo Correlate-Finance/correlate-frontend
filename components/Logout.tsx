@@ -27,7 +27,7 @@ const Logout = () => {
   }
 
   return (
-    <Button className="mx-8 bg-blue-800 my-1 text-white" onClick={logout}>
+    <Button className="md:mx-8 bg-blue-800 my-1 text-white" onClick={logout}>
       Logout
     </Button>
   );
