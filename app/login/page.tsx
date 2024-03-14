@@ -39,10 +39,7 @@ const Page = () => {
   });
 
   async function onSubmit(values: z.infer<typeof inputFieldsSchema>) {
-    signIn('credentials', {
-      ...values,
-      callbackUrl: 'wwww.correlatefinance.com/',
-    });
+    signIn('credentials', { ...values, callbackUrl: '/' });
   }
 
   return (
