@@ -19,12 +19,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Cookies from 'js-cookie';
+import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { getBaseUrl } from '../api/util';
 
 const inputFieldsSchema = z.object({
   email: z.string().min(1).max(255),
@@ -32,8 +30,6 @@ const inputFieldsSchema = z.object({
 });
 
 const Page = () => {
-  const router = useRouter();
-
   const form = useForm<z.infer<typeof inputFieldsSchema>>({
     resolver: zodResolver(inputFieldsSchema),
     defaultValues: {
@@ -43,34 +39,7 @@ const Page = () => {
   });
 
   async function onSubmit(values: z.infer<typeof inputFieldsSchema>) {
-    try {
-      const response = await fetch(`${getBaseUrl()}/users/login/`, {
-        method: 'POST',
-        body: JSON.stringify({
-          email: values.email,
-          password: values.password,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const json = await response.json();
-        localStorage.setItem('loggedIn', 'true');
-        localStorage.setItem('session', json.token);
-        Cookies.set('session', json.token);
-
-        window.dispatchEvent(new Event('storage'));
-        router.push('/');
-      } else {
-        // Handle errors
-        throw new Error('HTTP error! Status: ' + response.status);
-      }
-    } catch (error) {
-      alert('Error: ' + error);
-    }
+    signIn('credentials', { ...values, callbackUrl: '/' });
   }
 
   return (

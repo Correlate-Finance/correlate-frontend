@@ -1,13 +1,9 @@
 import { toast } from '@/components/ui/use-toast';
 import handleResponseStatus from '@/lib/handleResponse';
-import Cookies from 'js-cookie';
 
 // Mock dependencies
 jest.mock('../../components/ui/use-toast', () => ({
   toast: jest.fn(),
-}));
-jest.mock('js-cookie', () => ({
-  remove: jest.fn(),
 }));
 
 describe('handleResponseStatus', () => {
@@ -19,7 +15,7 @@ describe('handleResponseStatus', () => {
     jest.clearAllMocks();
   });
 
-  it('should handle 401 status by showing toast, removing cookie, and redirecting to login', async () => {
+  it('should handle 401 status by showing toast, and redirecting to login', async () => {
     const mockResponse = {
       status: 401,
       statusText: 'Unauthorized',
@@ -43,7 +39,6 @@ describe('handleResponseStatus', () => {
     const actionElement = lastCallArguments.action;
 
     actionElement.props.onClick();
-    expect(Cookies.remove).toHaveBeenCalledWith('session');
     expect(window.location.href).toEqual('/login');
   });
 

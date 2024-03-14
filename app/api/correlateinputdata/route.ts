@@ -1,10 +1,16 @@
-import { headers } from 'next/headers';
-import { type NextRequest } from 'next/server';
+import { authOptions } from '@/lib/configs/authOptions';
+import { getServerSession } from 'next-auth/next';
+import { NextRequest } from 'next/server';
 import { getBaseUrl } from '../util';
 
 export async function POST(request: NextRequest) {
   const inputData = await request.text();
   const searchParams = request.nextUrl.searchParams;
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Response.json({ error: 'Unauthorized', status: 401 });
+  }
 
   try {
     const res = await fetch(
@@ -12,8 +18,10 @@ export async function POST(request: NextRequest) {
       {
         method: 'POST',
         body: inputData,
-        headers: headers(),
-        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Token ${session.user.accessToken}`,
+        },
       },
     );
 

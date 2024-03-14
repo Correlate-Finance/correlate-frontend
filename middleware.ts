@@ -1,10 +1,10 @@
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import { NextRequest, NextResponse } from 'next/server';
 
-export function middleware(request: NextRequest) {
-  const currentUser = request.cookies.get('session')?.value;
+export async function middleware(request: NextRequest) {
+  const token = await getToken({ req: request });
 
-  if (!currentUser) {
+  if (!token) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 }

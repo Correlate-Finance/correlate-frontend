@@ -1,29 +1,33 @@
 'use client';
 
 import { getBaseUrl } from '@/app/api/util';
-import Cookies from 'js-cookie';
+import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 
 const Logout = () => {
   const router = useRouter();
+  const session = useSession();
 
   async function logout() {
     try {
       const res = await fetch(`${getBaseUrl()}/users/logout/`, {
         method: 'POST',
-        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Token ${session.data?.user.accessToken}`,
+        },
       });
-      localStorage.setItem('loggedIn', 'false');
-      window.dispatchEvent(new Event('storage'));
-      Cookies.remove('session');
-      router.push('/login');
+
       if (!res.ok) {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
     } catch (error) {
       // do nothing
     }
+
+    signOut({ redirect: false });
+    router.push('/login');
   }
 
   return (

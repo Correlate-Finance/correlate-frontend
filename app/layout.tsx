@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import React from 'react';
 // import { Inter } from 'next/font/google';
 import { Toaster } from '@/components/ui/toaster';
+import { authOptions } from '@/lib/configs/authOptions';
+import { getServerSession } from 'next-auth/next';
 import './globals.css';
 import { Providers } from './providers';
 
@@ -14,15 +16,16 @@ export const metadata: Metadata = {
   description: 'Find the best data to suit your needs',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen font-poppins dark:bg-[#131319]">
-        <Providers>
+        <Providers session={session}>
           <Header />
           <Toaster />
           {children}

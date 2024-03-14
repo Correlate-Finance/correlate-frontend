@@ -1,4 +1,5 @@
-import { headers } from 'next/headers';
+import { authOptions } from '@/lib/configs/authOptions';
+import { getServerSession } from 'next-auth/next';
 import { type NextRequest } from 'next/server';
 import { getBaseUrl } from '../util';
 
@@ -8,12 +9,19 @@ export async function GET(request: NextRequest) {
   const startYear = searchParams.get('startYear');
   const aggregationPeriod = searchParams.get('aggregationPeriod');
 
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Response.json({ error: 'Unauthorized', status: 401 });
+  }
+
   try {
     const res = await fetch(
       `${getBaseUrl()}/revenue?stock=${stock}&startYear=${startYear}&aggregationPeriod=${aggregationPeriod}`,
       {
-        headers: headers(),
-        credentials: 'include',
+        headers: {
+          Authorization: `Token ${session.user.accessToken}`,
+        },
       },
     );
 
