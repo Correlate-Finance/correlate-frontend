@@ -1,5 +1,4 @@
 import { toast } from '@/components/ui/use-toast';
-import Cookies from 'js-cookie';
 
 export default async function handleResponseStatus(response: Response) {
   if (response.status === 401) {
@@ -10,10 +9,6 @@ export default async function handleResponseStatus(response: Response) {
       action: (
         <button
           onClick={() => {
-            Cookies.remove('session');
-            window.localStorage.removeItem('loggedIn');
-            window.localStorage.removeItem('session');
-            window.dispatchEvent(new Event('storage'));
             window.location.href = '/login';
           }}
           className="text-blue-500 underline"

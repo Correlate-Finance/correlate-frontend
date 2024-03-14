@@ -1,16 +1,24 @@
-import { headers } from 'next/headers';
+import { authOptions } from '@/lib/configs/authOptions';
+import { getServerSession } from 'next-auth/next';
 import { type NextRequest } from 'next/server';
 import { getBaseUrl } from '../util';
 
 export async function POST(request: NextRequest) {
   try {
     const tableName = await request.text();
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return Response.json({ error: 'Unauthorized', status: 401 });
+    }
 
     const res = await fetch(`${getBaseUrl()}/dataset/`, {
       method: 'POST',
       body: tableName,
-      headers: headers(),
-      credentials: 'include',
+      headers: {
+        Authorization: `Token ${session.user.accessToken}`,
+        'Content-Type': 'application/json',
+      },
     });
 
     if (!res.ok) {
