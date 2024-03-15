@@ -84,7 +84,7 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
         </Button>
       </div>
       <div className="border-white">
-        <Table>
+        <Table className="w-full">
           <TableCaption>Top Correlations with the data.</TableCaption>
           <TableHeader>
             <TableRow className="hover:bg-inherit">
@@ -94,7 +94,7 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
               <TableHead>Correlation</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="[&>*]:whitespace-nowrap">
+          <TableBody className="">
             {data?.data?.map((dp, index) => (
               <ResultsRow
                 dp={dp}

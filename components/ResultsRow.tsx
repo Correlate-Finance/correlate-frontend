@@ -69,10 +69,10 @@ const ResultsRow: React.FC<MyComponentProps> = ({
             onClick={(e) => e.stopPropagation()}
           />
         </TableCell>
-        <TableCell className="font-medium">{dp.title}</TableCell>
+        <TableCell className="font-medium w-3/4">{dp.title}</TableCell>
         {lagPeriods > 0 && <TableCell>{dp.lag}</TableCell>}
         <TableCell className={`${getColorClass(dp.pearson_value)}`}>
-          {dp.pearson_value}
+          {dp.pearson_value.toFixed(3)}
         </TableCell>
         <TableCell onClick={(e) => e.stopPropagation()}>
           <div title="Export to Excel">
