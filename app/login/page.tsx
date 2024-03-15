@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -30,6 +31,12 @@ const inputFieldsSchema = z.object({
 });
 
 const Page = () => {
+  const searchParams = useSearchParams();
+
+  // Check if the query object has a specific parameter
+  const hasError = searchParams.get('error') !== null;
+  const errorMessage =
+    'Sign in failed. Check the details you provided are correct.';
   const form = useForm<z.infer<typeof inputFieldsSchema>>({
     resolver: zodResolver(inputFieldsSchema),
     defaultValues: {
@@ -51,6 +58,12 @@ const Page = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {hasError && (
+          <div>
+            <p className="bg-red-800 p-1">{errorMessage}</p>
+          </div>
+        )}
+
         <Form {...form}>
           <form
             noValidate
