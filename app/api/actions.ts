@@ -1,5 +1,7 @@
 'use server';
 import { CorrelationData } from '@/components/Results';
+import { authOptions } from '@/lib/configs/authOptions';
+import { getServerSession } from 'next-auth/next';
 import { getBaseUrl } from './util';
 
 export async function correlateIndex(
@@ -11,10 +13,15 @@ export async function correlateIndex(
     aggregation_period: data.aggregationPeriod,
     correlation_metric: data.correlationMetric,
   });
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
 
   try {
     const response = await fetch(
-      `${getBaseUrl()}/correlateindex/?${urlParams.toString()}`,
+      `${getBaseUrl()}/correlate-index/?${urlParams.toString()}`,
       {
         method: 'POST',
         body: JSON.stringify({
@@ -28,8 +35,8 @@ export async function correlateIndex(
         }),
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Token ${session.user.accessToken}`,
         },
-        credentials: 'include',
       },
     );
     const json = await response.json();
@@ -37,4 +44,21 @@ export async function correlateIndex(
   } catch (error) {
     return Promise.reject(error);
   }
+}
+
+export async function getAllDatasetMetadata() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+
+  const baseUrl = getBaseUrl(); // Replace with your base URL
+  const response = await fetch(`${baseUrl}/get-all-dataset-metadata`, {
+    headers: {
+      Authorization: `Token ${session.user.accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data;
 }

@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const res = await fetch(
-      `${getBaseUrl()}/correlateInputData/?${searchParams.toString()}`,
+      `${getBaseUrl()}/correlate-input-data/?${searchParams.toString()}`,
       {
         method: 'POST',
         body: inputData,

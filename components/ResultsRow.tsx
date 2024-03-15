@@ -59,7 +59,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
   return (
     <>
       <TableRow key={`${dp.title}-${dp.lag}`} onClick={handleClick}>
-        <TableCell className="flex mt-1">
+        <TableCell>
           <Checkbox
             onCheckedChange={(e) => {
               if (e !== 'indeterminate') {

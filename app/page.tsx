@@ -226,7 +226,7 @@ const HomePage = () => {
         </CardContent>
       </Card>
       {/* <Separator orientation="vertical" className="my-40 w-4 border-white" /> */}
-      <div className="m-5 flex flex-row justify-between w-3/4 gap-2">
+      <div className="m-5 flex flex-row justify-between w-3/4 gap-8">
         <div className="w-min">
           {(inputFields.inputData && tabValue === 'Manual' && (
             <InputData data={generateTabularData()} tab={tabValue} />
