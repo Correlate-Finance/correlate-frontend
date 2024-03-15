@@ -115,7 +115,7 @@ export default function IndexModal({
                   {[...checkedRows].map((index, i) => (
                     <li key={index}>
                       <div className="flex flex-row justify-between m-1">
-                        <div className="flex flex-col  w-4/5">
+                        <div className="flex flex-col w-4/5">
                           <p className="text-sm truncate ...">
                             {data.data[index].title}
                           </p>

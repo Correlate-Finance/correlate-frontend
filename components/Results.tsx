@@ -35,7 +35,7 @@ export type CorrelationDataPoint = {
 
 const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
   const [checkedRows, setCheckedRows] = useState<Set<number>>(new Set());
-
+  const maxCheckedRows = 5;
   const toggleCheckbox = (id: number, checked: boolean) => {
     const newCheckedRows = new Set(checkedRows);
     if (checked) {
@@ -102,6 +102,7 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
                 key={`${dp.title}-${dp.lag}`}
                 index={index}
                 toggleCheckbox={toggleCheckbox}
+                uncheckedDisabled={checkedRows.size >= maxCheckedRows}
               />
             ))}
           </TableBody>

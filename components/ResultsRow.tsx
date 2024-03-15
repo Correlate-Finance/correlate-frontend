@@ -18,6 +18,7 @@ interface MyComponentProps {
   lagPeriods: number;
   toggleCheckbox: (id: number, checked: boolean) => void;
   index: number;
+  uncheckedDisabled: boolean;
 }
 
 const ResultsRow: React.FC<MyComponentProps> = ({
@@ -25,9 +26,11 @@ const ResultsRow: React.FC<MyComponentProps> = ({
   lagPeriods,
   index,
   toggleCheckbox,
+  uncheckedDisabled,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -64,9 +67,11 @@ const ResultsRow: React.FC<MyComponentProps> = ({
             onCheckedChange={(e) => {
               if (e !== 'indeterminate') {
                 toggleCheckbox(index, e);
+                setIsChecked(e);
               }
             }}
             onClick={(e) => e.stopPropagation()}
+            className={`${uncheckedDisabled && !isChecked ? 'opacity-50 pointer-events-none' : ''}`}
           />
         </TableCell>
         <TableCell className="font-medium w-3/4">{dp.title}</TableCell>

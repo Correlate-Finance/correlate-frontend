@@ -150,9 +150,7 @@ describe('Unit tests for various functions', () => {
     });
 
     it('should create and download an Excel file', () => {
-      const mockData = [
-        { dataset: [{ id: 1, value: 'A' }], filenames: 'test' },
-      ];
+      const mockData = [{ dataset: [{ id: 1, value: 'A' }], filename: 'test' }];
 
       exportToExcel(mockData, 'test-file');
 
@@ -177,11 +175,7 @@ describe('Unit tests for various functions', () => {
     });
 
     it('should not create a file if createExcelSheet returns undefined', () => {
-      const mockData = [
-        { dataset: [], filenames: 'test' }, // Empty data will cause createExcelSheet to return undefined
-      ];
-
-      exportToExcel(mockData, 'test-file');
+      exportToExcel([], 'test-file');
 
       // Verify that book_append_sheet is not called since createExcelSheet returned undefined
       expect(XLSX.utils.book_append_sheet).not.toHaveBeenCalled();
