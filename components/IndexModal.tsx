@@ -75,22 +75,21 @@ export default function IndexModal({
   };
 
   return (
-    <div>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button
-            className="bg-blue-800 text-white"
-            disabled={checkedRows.size === 0}
-          >
-            Create Index
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                <DialogTitle>
-                  {/* Leaving this in because we will be adding this very soon.
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          className="bg-blue-800 text-white"
+          disabled={checkedRows.size === 0}
+        >
+          Create Index
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <DialogTitle>
+                {/* Leaving this in because we will be adding this very soon.
                   <FormField
                     control={form.control}
                     name="indexName"
@@ -107,73 +106,72 @@ export default function IndexModal({
                       </FormItem>
                     )}
                   /> */}
-                  <p>Create Correlation Index</p>
-                  <Separator className="mt-2 dark:bg-white" />
-                </DialogTitle>
-
-                <ul>
-                  {[...checkedRows].map((index, i) => (
-                    <li key={index}>
-                      <div className="flex flex-row justify-between m-1">
-                        <div className="flex flex-col w-4/5">
-                          <p className="text-sm truncate ...">
-                            {data.data[index].title}
-                          </p>
-                          <p className="text-sm text-gray-500 ">
-                            Correlation:{' '}
-                            {data.data[index].pearson_value.toFixed(3)}
-                          </p>
-                        </div>
-                        <div className="w-1/5 shrink-0">
-                          <FormField
-                            control={form.control}
-                            name={`percentages.${i}`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <Input
-                                    placeholder="Percentage"
-                                    defaultValue={(
-                                      1 / checkedRows.size
-                                    ).toFixed(2)}
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </div>
-                      {i != checkedRows.size - 1 && (
-                        <Separator className="mt-2" />
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                <p>Create Correlation Index</p>
                 <Separator className="mt-2 dark:bg-white" />
-                <div className="flex justify-center">
-                  <Button className="bg-blue-800 text-white my-2" type="submit">
-                    Correlate
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </DialogHeader>
-          <DialogFooter>
-            {correlationDataPoint && (
-              <div className="w-full flex-col items-center justify-center">
-                <p className="text-lg text-center">
-                  {`Correlation Value: ${correlationDataPoint.pearson_value.toFixed(3)}`}
-                </p>
-                <DoubleLineChart
-                  data={convertToGraphData(correlationDataPoint)}
-                />
+              </DialogTitle>
+
+              <ul>
+                {[...checkedRows].map((index, i) => (
+                  <li key={index}>
+                    <div className="flex flex-row justify-between m-1">
+                      <div className="flex flex-col w-4/5">
+                        <p className="text-sm truncate ...">
+                          {data.data[index].title}
+                        </p>
+                        <p className="text-sm text-gray-500 ">
+                          Correlation:{' '}
+                          {data.data[index].pearson_value.toFixed(3)}
+                        </p>
+                      </div>
+                      <div className="w-1/5 shrink-0">
+                        <FormField
+                          control={form.control}
+                          name={`percentages.${i}`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Input
+                                  placeholder="Percentage"
+                                  defaultValue={(1 / checkedRows.size).toFixed(
+                                    2,
+                                  )}
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                    {i != checkedRows.size - 1 && (
+                      <Separator className="mt-2" />
+                    )}
+                  </li>
+                ))}
+              </ul>
+              <Separator className="mt-2 dark:bg-white" />
+              <div className="flex justify-center">
+                <Button className="bg-blue-800 text-white my-2" type="submit">
+                  Correlate
+                </Button>
               </div>
-            )}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+            </form>
+          </Form>
+        </DialogHeader>
+        <DialogFooter>
+          {correlationDataPoint && (
+            <div className="w-3/4 m-auto flex-col items-center justify-center">
+              <p className="text-lg text-center">
+                {`Correlation Value: ${correlationDataPoint.pearson_value.toFixed(3)}`}
+              </p>
+              <DoubleLineChart
+                data={convertToGraphData(correlationDataPoint)}
+              />
+            </div>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
