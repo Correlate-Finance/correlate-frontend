@@ -22,9 +22,7 @@ const InputData: React.FC<MyComponentProps> = ({ data, tab }) => {
 
   return (
     <>
-      <h2 className="text-center">
-        {tab === 'Automatic' ? 'Revenue' : 'Input Data'}
-      </h2>
+      <h2 className="ml-4">{tab === 'Automatic' ? 'Revenue' : 'Input Data'}</h2>
       <div className="border-white">
         <Table>
           <TableHeader>

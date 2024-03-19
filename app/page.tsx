@@ -102,24 +102,28 @@ const HomePage = () => {
   }
 
   return (
-    <main className="flex flex-col w-full items-center">
-      <Card className="dark:bg-[#1b1b26] flex flex-col justify-center m-4 w-3/4 border-neutral-700">
-        <CardContent>
+    <div className="flex overflow-scroll max-h-[90vh]">
+      <Card className="dark:bg-[#1b1b26] bg-gray-100 m-4 w-[300px] border-0 sticky top-4">
+        <CardContent className="px-4">
           <Tabs
             value={tabValue}
-            className="flex flex-col items-center my-4"
+            className="my-4"
             onValueChange={(e) => setTabValue(e)}
           >
-            <TabsList className="flex flex-row w-min">
-              <TabsTrigger value="Manual">Manual</TabsTrigger>
-              <TabsTrigger value="Automatic">Automatic</TabsTrigger>
+            <TabsList className="flex flex-row m-auto bg-inherit justify-around w-full">
+              <TabsTrigger value="Manual" className="flex-1">
+                Manual
+              </TabsTrigger>
+              <TabsTrigger value="Automatic" className="flex-1">
+                Automatic
+              </TabsTrigger>
             </TabsList>
             <TabsContent
               value="Automatic"
-              className="flex flex-col md:flex-row justify-around [&>*]:mx-2 [&>*]:whitespace-nowrap"
+              className="flex flex-col md:flex-col [&>*]:whitespace-nowrap [&>*]:mt-4 [&>*]:mx-8"
             >
               <div>
-                <p className="text-sm mb-2 text-opacity-80">Ticker</p>
+                <p className="text-sm text-opacity-80">Ticker</p>
                 <Input
                   placeholder="AAPL"
                   onChange={(e) => {
@@ -133,7 +137,7 @@ const HomePage = () => {
                 />
               </div>
               <div>
-                <p className="text-sm mb-2 text-opacity-80">Start Year</p>
+                <p className="text-sm text-opacity-80">Start Year</p>
                 <Input
                   placeholder="2010"
                   onChange={(e) => {
@@ -151,23 +155,22 @@ const HomePage = () => {
                 setInputFields={setInputFields}
               />
               <Button
-                className="mt-6 bg-green-600 hover:bg-green-900 self-center"
+                className="mt-6 bg-green-600 hover:bg-green-900 float-right"
                 onClick={() => onSubmit(inputFields)}
                 data-testid="automatic-correlate-button"
               >
-                {' '}
                 {loading && (
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />
-                )}{' '}
+                )}
                 Correlate
               </Button>
             </TabsContent>
             <TabsContent
               value="Manual"
-              className="flex flex-col md:flex-row justify-around [&>*]:mx-2 [&>*]:whitespace-nowrap"
+              className="flex flex-col md:flex-col justify-around [&>*]:whitespace-nowrap [&>*]:mt-4"
             >
               <div className="">
-                <p className="text-sm mb-2 text-opacity-80">Input Data</p>
+                <p className="text-sm text-opacity-80">Input Data</p>
                 <Textarea
                   onChange={updateInputText}
                   onPaste={handlePaste}
@@ -177,7 +180,7 @@ const HomePage = () => {
                 />
               </div>
               <div>
-                <p className="text-sm mb-2 text-opacity-80">Fiscal Year End</p>
+                <p className="text-sm mt-2 text-opacity-80">Fiscal Year End</p>
                 <Select
                   onValueChange={(e: string) =>
                     setInputFields({ ...inputFields, fiscalYearEnd: e })
@@ -207,20 +210,16 @@ const HomePage = () => {
                 inputFields={inputFields}
                 setInputFields={setInputFields}
               />
-              <div>
-                <p className="text-[#1b1b26] text-sm mb-2">button</p>
-                <Button
-                  onClick={() => correlateInputText(inputFields)}
-                  className="top-4 bg-green-600 hover:bg-green-900"
-                  data-testid="manual-correlate-button"
-                >
-                  {' '}
-                  {loadingCorrelate && (
-                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />
-                  )}{' '}
-                  Correlate
-                </Button>
-              </div>
+              <Button
+                onClick={() => correlateInputText(inputFields)}
+                className="bg-green-600 hover:bg-green-900 float-right"
+                data-testid="manual-correlate-button"
+              >
+                {loadingCorrelate && (
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin " />
+                )}
+                Correlate
+              </Button>
             </TabsContent>
           </Tabs>
         </CardContent>
@@ -244,7 +243,7 @@ const HomePage = () => {
           )}
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 

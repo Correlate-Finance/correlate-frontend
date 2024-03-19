@@ -79,7 +79,7 @@ export default function IndexModal({
       <DialogTrigger asChild>
         <Button
           className="bg-blue-800 text-white"
-          disabled={checkedRows.size === 0}
+          disabled={checkedRows.size > 5}
         >
           Create Index
         </Button>
@@ -115,9 +115,7 @@ export default function IndexModal({
                   <li key={index}>
                     <div className="flex flex-row justify-between m-1">
                       <div className="flex flex-col w-4/5">
-                        <p className="text-sm truncate ...">
-                          {data.data[index].title}
-                        </p>
+                        <p className="text-sm">{data.data[index].title}</p>
                         <p className="text-sm text-gray-500 ">
                           Correlation:{' '}
                           {data.data[index].pearson_value.toFixed(3)}

@@ -35,7 +35,6 @@ export type CorrelationDataPoint = {
 
 const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
   const [checkedRows, setCheckedRows] = useState<Set<number>>(new Set());
-  const maxCheckedRows = 5;
   const toggleCheckbox = (id: number, checked: boolean) => {
     const newCheckedRows = new Set(checkedRows);
     if (checked) {
@@ -73,15 +72,7 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
   return (
     <>
       <div className="flex flex-row gap-1">
-        <h2 className="text-center flex-1">Correlations</h2>
-        <IndexModal data={data} checkedRows={checkedRows} />
-        <Button
-          className="mx-8 bg-blue-800 text-white"
-          onClick={exportMultipleToExcel}
-          disabled={checkedRows.size === 0}
-        >
-          Download
-        </Button>
+        <h2 className="ml-4 flex-1">Correlations</h2>
       </div>
       <div className="border-white">
         <Table className="w-full">
@@ -92,6 +83,8 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
               <TableHead className="w-[100px]">Table Name</TableHead>
               {lagPeriods > 0 && <TableHead>Lag</TableHead>}
               <TableHead>Correlation</TableHead>
+              <TableHead />
+              <TableHead />
             </TableRow>
           </TableHeader>
           <TableBody className="">
@@ -102,12 +95,24 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
                 key={`${dp.title}-${dp.lag}`}
                 index={index}
                 toggleCheckbox={toggleCheckbox}
-                uncheckedDisabled={checkedRows.size >= maxCheckedRows}
               />
             ))}
           </TableBody>
         </Table>
       </div>
+
+      {checkedRows.size > 0 && (
+        <div className="sticky bottom-0 py-2 flex flex-row justify-end backdrop-blur">
+          <IndexModal data={data} checkedRows={checkedRows} />
+          <Button
+            className="mx-8 bg-blue-800 text-white"
+            onClick={exportMultipleToExcel}
+            disabled={checkedRows.size === 0}
+          >
+            Download
+          </Button>
+        </div>
+      )}
     </>
   );
 };

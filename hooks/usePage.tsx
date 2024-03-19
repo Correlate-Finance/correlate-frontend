@@ -39,6 +39,7 @@ export function useFetchRevenueData() {
     values: z.infer<typeof inputFieldsSchema>,
   ) => {
     setLoading(true);
+    setRevenueData([]);
 
     try {
       const response = await fetch(
