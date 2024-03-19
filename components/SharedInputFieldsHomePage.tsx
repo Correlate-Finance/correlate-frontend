@@ -21,7 +21,7 @@ export default function SharedInputFieldsHomePage({
   return (
     <React.Fragment>
       <div>
-        <p className="text-sm mb-2 text-opacity-80">Aggregation Period</p>
+        <p className="text-sm text-opacity-80">Aggregation Period</p>
         <Select
           defaultValue={inputFields.aggregationPeriod}
           onValueChange={(e: string) => {
@@ -41,7 +41,7 @@ export default function SharedInputFieldsHomePage({
         </Select>
       </div>
       <div>
-        <p className="text-sm mb-2 text-opacity-80">Correlation Metric</p>
+        <p className="text-sm text-opacity-80">Correlation Metric</p>
         <Select
           defaultValue={inputFields.correlationMetric}
           onValueChange={(e: string) => {
@@ -61,7 +61,7 @@ export default function SharedInputFieldsHomePage({
         </Select>
       </div>
       <div>
-        <p className="text-sm mb-2 text-opacity-80">Lag Periods</p>
+        <p className="text-sm text-opacity-80">Lag Periods</p>
         <Select
           defaultValue={inputFields.lagPeriods.toString()}
           onValueChange={(e: string) => {
@@ -84,7 +84,7 @@ export default function SharedInputFieldsHomePage({
         </Select>
       </div>
       <div>
-        <p className="text-sm mb-2 text-opacity-80">High Level Datasets</p>
+        <p className="text-sm text-opacity-80">High Level Datasets</p>
         <Switch
           className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-neutral-400"
           checked={inputFields.highLevelOnly}

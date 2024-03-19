@@ -18,7 +18,6 @@ interface MyComponentProps {
   lagPeriods: number;
   toggleCheckbox: (id: number, checked: boolean) => void;
   index: number;
-  uncheckedDisabled: boolean;
 }
 
 const ResultsRow: React.FC<MyComponentProps> = ({
@@ -26,11 +25,9 @@ const ResultsRow: React.FC<MyComponentProps> = ({
   lagPeriods,
   index,
   toggleCheckbox,
-  uncheckedDisabled,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -67,16 +64,14 @@ const ResultsRow: React.FC<MyComponentProps> = ({
             onCheckedChange={(e) => {
               if (e !== 'indeterminate') {
                 toggleCheckbox(index, e);
-                setIsChecked(e);
               }
             }}
             onClick={(e) => e.stopPropagation()}
-            className={`${uncheckedDisabled && !isChecked ? 'opacity-50 pointer-events-none' : ''}`}
           />
         </TableCell>
         <TableCell className="font-medium w-3/4">{dp.title}</TableCell>
         {lagPeriods > 0 && <TableCell>{dp.lag}</TableCell>}
-        <TableCell className={`${getColorClass(dp.pearson_value)}`}>
+        <TableCell className={`${getColorClass(dp.pearson_value)} text-center`}>
           {dp.pearson_value.toFixed(3)}
         </TableCell>
         <TableCell onClick={(e) => e.stopPropagation()}>
@@ -117,7 +112,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
         >
           <TableCell colSpan={100}>
             <div className="flex flex-row items-end">
-              <div className="w-[500px]">
+              <div className="w-full">
                 <DoubleLineChart data={convertToGraphData(dp)} />{' '}
               </div>
               <Button

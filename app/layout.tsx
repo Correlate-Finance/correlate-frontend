@@ -24,11 +24,13 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen font-poppins dark:bg-[#131319]">
+      <body className="font-poppins dark:bg-[#131319] min-h-screen">
         <Providers session={session}>
-          <Header />
-          <Toaster />
-          {children}
+          <div className="flex-col">
+            <Header />
+            <Toaster />
+            <div className="flex-1 mb-4">{children}</div>
+          </div>
         </Providers>
       </body>
     </html>
