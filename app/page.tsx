@@ -120,7 +120,7 @@ const HomePage = () => {
             </TabsList>
             <TabsContent
               value="Automatic"
-              className="flex flex-col md:flex-col [&>*]:whitespace-nowrap [&>*]:mt-4 [&>*]:mx-8"
+              className="flex flex-col md:flex-col [&>*]:whitespace-nowrap [&>*]:mt-4 [&>*]:mx-4"
             >
               <div>
                 <p className="text-sm text-opacity-80">Ticker</p>
@@ -167,7 +167,7 @@ const HomePage = () => {
             </TabsContent>
             <TabsContent
               value="Manual"
-              className="flex flex-col md:flex-col justify-around [&>*]:whitespace-nowrap [&>*]:mt-4"
+              className="flex flex-col md:flex-col justify-around [&>*]:whitespace-nowrap [&>*]:mt-4 [&>*]:mx-4"
             >
               <div className="">
                 <p className="text-sm text-opacity-80">Input Data</p>

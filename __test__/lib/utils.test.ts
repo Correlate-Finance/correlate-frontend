@@ -102,8 +102,16 @@ describe('Unit tests for various functions', () => {
 
     it('should create a workbook and add sheets for each dataset', () => {
       const mockDatasets = [
-        { filename: 'Sheet1', data: [{ Date: '2022-01-01', Value: 100 }] },
-        { filename: 'Sheet2', data: [{ Date: '2022-01-02', Value: 200 }] },
+        {
+          filename: 'Sheet1',
+          sheet_name: 'Sheet1',
+          data: [{ Date: '2022-01-01', Value: 100 }],
+        },
+        {
+          filename: 'Sheet2',
+          sheet_name: 'Sheet2',
+          data: [{ Date: '2022-01-02', Value: 200 }],
+        },
       ];
 
       exportToExcelMultipleSheets(mockDatasets);
@@ -192,6 +200,7 @@ describe('Unit tests for various functions', () => {
         title: '',
         pearson_value: 0,
         p_value: 0,
+        internal_name: '',
       };
 
       const expectedResult = [

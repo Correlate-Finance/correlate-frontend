@@ -31,6 +31,9 @@ export type CorrelationDataPoint = {
   input_data: number[];
   dataset_data: number[];
   dates: string[];
+  source?: string;
+  description?: string;
+  internal_name: string;
 };
 
 const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
@@ -53,6 +56,9 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
       .map((dp) => {
         return {
           filename: dp.title,
+          source: dp.source,
+          description: dp.description,
+          sheet_name: dp.internal_name,
           data: dp.dataset_data.map((value, index) => {
             return {
               Date: dp.dates[index],

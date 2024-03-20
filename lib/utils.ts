@@ -11,6 +11,7 @@ export function createExcelSheet(
   data: any,
   filename: string,
   source?: string,
+  description?: string,
 ): XLSX.WorkSheet | undefined {
   if (!data?.length) {
     alert('No data to export');
@@ -26,7 +27,8 @@ export function createExcelSheet(
 
   // Since we are pushing to the start have to append in reverse order
   excelData.unshift(['', '']);
-  excelData.unshift(['Source', source ? source : 'example.com']);
+  excelData.unshift(['Source', source ? source : '']);
+  excelData.unshift(['Description', description ? description : '']);
   excelData.unshift(['Dataset', filename]);
 
   const ws = XLSX.utils.aoa_to_sheet(excelData);
@@ -36,6 +38,9 @@ export function createExcelSheet(
 export const exportToExcelMultipleSheets = (
   datasets: {
     filename: string;
+    sheet_name: string;
+    source?: string;
+    description?: string;
     data: {
       Date: string;
       Value: number;
@@ -44,11 +49,16 @@ export const exportToExcelMultipleSheets = (
 ) => {
   const wb = XLSX.utils.book_new();
   datasets.forEach((item, index) => {
-    const ws = createExcelSheet(item.data, item.filename);
+    const ws = createExcelSheet(
+      item.data,
+      item.filename,
+      item.source,
+      item.description,
+    );
     if (ws === undefined) {
       return;
     }
-    XLSX.utils.book_append_sheet(wb, ws, `Sheet ${index + 1}`);
+    XLSX.utils.book_append_sheet(wb, ws, item.sheet_name);
   });
 
   const blob = XLSX.write(wb, {
@@ -73,8 +83,13 @@ export const exportToExcelMultipleSheets = (
   URL.revokeObjectURL(url);
 };
 
-export const exportToExcel = (data: any[], filename: string) => {
-  const ws = createExcelSheet(data, filename);
+export const exportToExcel = (
+  data: any[],
+  filename: string,
+  source?: string,
+  description?: string,
+) => {
+  const ws = createExcelSheet(data, filename, source, description);
   if (ws === undefined) {
     return;
   }
