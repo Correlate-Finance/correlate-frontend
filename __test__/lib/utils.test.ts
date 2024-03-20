@@ -141,7 +141,9 @@ describe('Unit tests for various functions', () => {
     });
 
     it('should not add a sheet if createExcelSheet returns undefined', () => {
-      const mockDatasets = [{ filename: 'Sheet1', data: [] }]; // Empty data will cause createExcelSheet to return undefined
+      const mockDatasets = [
+        { filename: 'Sheet1', sheet_name: 'Sheet1', data: [] },
+      ]; // Empty data will cause createExcelSheet to return undefined
 
       // (createExcelSheet as jest.Mock).mockReturnValueOnce(undefined);
 

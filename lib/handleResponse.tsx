@@ -26,5 +26,6 @@ export default async function handleResponseStatus(response: Response) {
     });
     return null;
   }
-  return await response.json();
+  const parsed = await response.json();
+  return await parsed;
 }

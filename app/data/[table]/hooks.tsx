@@ -27,6 +27,26 @@ export const useFetchData = (params: Tparams) => {
   return { data, loading };
 };
 
+export const useMetadata = (params: Tparams) => {
+  const [metadata, setMetadata] = useState<any>({});
+  useEffect(() => {
+    fetch(`/api/dataset-metadata/?name=${params.table}`, {
+      method: 'GET',
+    })
+      .then((res) => {
+        return handleResponseStatus(res);
+      })
+      .then((json) => {
+        setMetadata(json);
+      })
+      .catch((_) => {
+        setMetadata({});
+      });
+  }, [params.table]);
+
+  return metadata;
+};
+
 // Custom hook for filtering data
 export const useFilterData = (data: DataTrendPoint[]) => {
   const filteredDataRaw = useMemo(() => {

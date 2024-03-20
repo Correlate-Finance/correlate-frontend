@@ -24,7 +24,12 @@ import { exportToExcel, formatNumber, formatPercentage } from '@/lib/utils';
 import dayjs from 'dayjs';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import { useAllYearsArray, useFetchData, useFilterData } from './hooks';
+import {
+  useAllYearsArray,
+  useFetchData,
+  useFilterData,
+  useMetadata,
+} from './hooks';
 import { MonthlySeasonality, calculateSeasonality } from './seasonality';
 
 const BarLineChart = dynamic(() => import('@/components/chart/BarLineChart'), {
@@ -61,6 +66,7 @@ export default function DataTrendPage({ params }: Readonly<TProps>) {
   const [activeTab, setActiveTab] = useLocalStorage('activeTab', 'Raw');
 
   const { filteredDataRaw, filteredDataSeasonal } = useFilterData(data);
+  const metadata = useMetadata(params);
   const [seasonalMonthlyAverage, setSeasonalMonthlyAverage] = useState<
     MonthlySeasonality[]
   >([]);
@@ -87,6 +93,7 @@ export default function DataTrendPage({ params }: Readonly<TProps>) {
 
   return (
     <div>
+      <h1 className="text-center text-2xl">{metadata.title}</h1>
       <Button
         className="bg-blue-800 my-2 mx-4"
         onClick={() => exportToExcel(data, params.table)}

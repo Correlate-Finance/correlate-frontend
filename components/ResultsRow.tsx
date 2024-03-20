@@ -116,7 +116,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
                 <DoubleLineChart data={convertToGraphData(dp)} />{' '}
               </div>
               <Button
-                onClick={() => router.push(`/data/${dp.title}`)}
+                onClick={() => router.push(`/data/${dp.internal_name}`)}
                 className="bg-blue-700 hover:bg-blue-900"
               >
                 See More
