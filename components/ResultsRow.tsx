@@ -53,7 +53,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
         Value: value,
       };
     });
-    exportToExcel(excelData, dp.title);
+    exportToExcel(excelData, dp.title, dp.source, dp.description);
   };
 
   return (
