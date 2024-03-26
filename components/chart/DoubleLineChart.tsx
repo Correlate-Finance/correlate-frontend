@@ -41,13 +41,6 @@ const renderCircleTraveller = (props: any) => {
   );
 };
 
-// const calculateCorrelation = (data: GraphDataPoint[], startIndex: number, endIndex: number, lag) => {
-//   const X = data.map((d,i) => (i > startIndex && i < endIndex -  d.dataset );
-//   const Y = data.map((d,i) => d.revenue);
-
-//   return correlationCoefficient(X, Y);
-// };
-
 const DoubleLineChart: React.FC<MyComponentProps> = ({
   data,
   syncId,

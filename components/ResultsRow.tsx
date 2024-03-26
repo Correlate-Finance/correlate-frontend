@@ -83,10 +83,6 @@ const ResultsRow: React.FC<MyComponentProps> = ({
         startIndex ? startIndex + dp.lag : dp.lag,
         endIndex ? endIndex + 1 : dp.input_data.length,
       );
-      // document.getElementById('correlation')!.innerText = correlationCoefficient(
-      //   X,
-      //   Y,
-      // ).toFixed(3);
       setCorrelation(correlationCoefficient(X, Y).toFixed(3));
       counter.current++;
     },
@@ -157,17 +153,12 @@ const ResultsRow: React.FC<MyComponentProps> = ({
                   correlation={correlation}
                 />
               </div>
-              <div>
-                <p>
-                  {/* Correlation: <strong id="correlation">{correlation}</strong> */}
-                </p>
-                <Button
-                  onClick={() => router.push(`/data/${dp.internal_name}`)}
-                  className="bg-blue-700 hover:bg-blue-900"
-                >
-                  See More
-                </Button>
-              </div>
+              <Button
+                onClick={() => router.push(`/data/${dp.internal_name}`)}
+                className="bg-blue-700 hover:bg-blue-900"
+              >
+                See More
+              </Button>
             </div>
           </TableCell>
         </TableRow>
