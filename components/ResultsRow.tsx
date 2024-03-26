@@ -1,13 +1,23 @@
 'use client';
 
 import { DownloadIcon } from '@radix-ui/react-icons';
-import React, { MouseEventHandler, useState } from 'react';
+import React, {
+  MouseEventHandler,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { CorrelationDataPoint } from './Results';
 import DoubleLineChart from './chart/DoubleLineChart';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { convertToGraphData, exportToExcel } from '@/lib/utils';
+import {
+  convertToGraphData,
+  correlationCoefficient,
+  exportToExcel,
+} from '@/lib/utils';
 import { BellIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
@@ -28,8 +38,11 @@ const ResultsRow: React.FC<MyComponentProps> = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
+  const [correlation, setCorrelation] = useState(dp.pearson_value.toFixed(3));
+  const [graphData, setGraphData] = useState(convertToGraphData(dp));
   const router = useRouter();
   const { toast } = useToast();
+  const counter = useRef(0);
 
   const getColorClass = (value: number) => {
     if (Math.abs(value) > 0.8) {
@@ -55,6 +68,26 @@ const ResultsRow: React.FC<MyComponentProps> = ({
     });
     exportToExcel(excelData, dp.title, dp.source, dp.description);
   };
+
+  useEffect(() => {
+    setGraphData(convertToGraphData(dp));
+  }, [dp]);
+
+  const onBrushChange = useCallback(
+    ({ startIndex, endIndex }: { startIndex?: number; endIndex?: number }) => {
+      const X = dp.dataset_data.slice(
+        startIndex,
+        endIndex ? endIndex - dp.lag + 1 : dp.dataset_data.length - dp.lag,
+      );
+      const Y = dp.input_data.slice(
+        startIndex ? startIndex + dp.lag : dp.lag,
+        endIndex ? endIndex + 1 : dp.input_data.length,
+      );
+      setCorrelation(correlationCoefficient(X, Y).toFixed(3));
+      counter.current++;
+    },
+    [dp],
+  );
 
   return (
     <>
@@ -113,7 +146,12 @@ const ResultsRow: React.FC<MyComponentProps> = ({
           <TableCell colSpan={100}>
             <div className="flex flex-row items-end">
               <div className="w-full">
-                <DoubleLineChart data={convertToGraphData(dp)} />{' '}
+                <DoubleLineChart
+                  data={graphData}
+                  syncId="sync"
+                  onBrushChange={onBrushChange}
+                  correlation={correlation}
+                />
               </div>
               <Button
                 onClick={() => router.push(`/data/${dp.internal_name}`)}

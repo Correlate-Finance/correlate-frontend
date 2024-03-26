@@ -152,3 +152,33 @@ export const convertToGraphData = (dp: CorrelationDataPoint) => {
   });
   return combinedList;
 };
+
+export const correlationCoefficient = (x: number[], y: number[]) => {
+  if (x.length !== y.length) {
+    throw new Error('X and Y arrays must have the same length');
+  }
+
+  // Calculate the mean of x and y
+  var meanX = x.reduce((a, b) => a + b, 0) / x.length;
+  var meanY = y.reduce((a, b) => a + b, 0) / y.length;
+
+  // Calculate the covariance of x and y
+  // var covariance =
+  //   x.reduce((a, b, i) => a + (b - meanX) * (y[i] - meanY), 0) / (x.length - 1);
+
+  let covariance = 0;
+  for (let i = 0; i < x.length; i++) {
+    covariance += (x[i] - meanX) * (y[i] - meanY);
+  }
+  covariance /= x.length - 1;
+
+  // Calculate the standard deviation of x and y
+  var stdX = Math.sqrt(
+    x.reduce((a, b) => a + (b - meanX) ** 2, 0) / (x.length - 1),
+  );
+  var stdY = Math.sqrt(
+    y.reduce((a, b) => a + (b - meanY) ** 2, 0) / (y.length - 1),
+  );
+  // Calculate the correlation coefficient
+  return covariance / (stdX * stdY);
+};
