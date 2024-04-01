@@ -3,6 +3,7 @@
 import InputData from '@/components/InputData';
 import Results from '@/components/Results';
 import SharedInputFieldsHomePage from '@/components/SharedInputFieldsHomePage';
+import Loading from '@/components/animations/Loading';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -103,7 +104,7 @@ const HomePage = () => {
 
   return (
     <div className="flex overflow-scroll max-h-[90vh]">
-      <Card className="dark:bg-[#1b1b26] bg-gray-100 m-4 w-[300px] border-0 sticky top-4">
+      <Card className="dark:bg-[#1b1b26] bg-gray-100 m-4 w-[300px] border-0 sticky top-4 overflow-y-auto">
         <CardContent className="px-4">
           <Tabs
             value={tabValue}
@@ -241,6 +242,7 @@ const HomePage = () => {
               lagPeriods={inputFields.lagPeriods}
             />
           )}
+          {loading && <Loading />}
         </div>
       </div>
     </div>
