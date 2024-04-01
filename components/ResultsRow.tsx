@@ -32,7 +32,10 @@ interface MyComponentProps {
   index: number;
 }
 
-const getIsClicked = async (datasetData: number[], token: string): Promise<any> => {
+const getIsClicked = async (
+  datasetData: number[],
+  token: string,
+): Promise<any> => {
   return await fetch(`${getBaseUrl()}/users/is_clicked`, {
     method: 'GET',
     body: JSON.stringify({
@@ -93,7 +96,9 @@ const ResultsRow: React.FC<MyComponentProps> = ({
   };
 
   useEffect(() => {
-    getIsClicked(dp.dataset_data, session.data?.user.accessToken || "").then((data) => setIsClicked(data.is_clicked));
+    getIsClicked(dp.dataset_data, session.data?.user.accessToken || '').then(
+      (data) => setIsClicked(data.is_clicked),
+    );
   });
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -174,7 +179,11 @@ const ResultsRow: React.FC<MyComponentProps> = ({
                   description: `${dp.title}`,
                 });
               }
-              addOrRemoveWatchlist(isClicked, dp.dataset_data, session.data?.user.accessToken || "");
+              addOrRemoveWatchlist(
+                isClicked,
+                dp.dataset_data,
+                session.data?.user.accessToken || '',
+              );
               setIsClicked(!isClicked);
               e.stopPropagation();
             }}
