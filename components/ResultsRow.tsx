@@ -11,6 +11,7 @@ import React, {
 import { CorrelationDataPoint } from './Results';
 import DoubleLineChart from './chart/DoubleLineChart';
 
+import { getBaseUrl } from '@/app/api/util';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TableCell, TableRow } from '@/components/ui/table';
 import {
@@ -19,6 +20,7 @@ import {
   exportToExcel,
 } from '@/lib/utils';
 import { BellIcon } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import { useToast } from './ui/use-toast';
@@ -29,6 +31,41 @@ interface MyComponentProps {
   toggleCheckbox: (id: number, checked: boolean) => void;
   index: number;
 }
+
+const getIsClicked = async (datasetData: number[], token: string): Promise<any> => {
+  return await fetch(`${getBaseUrl()}/users/is_clicked`, {
+    method: 'GET',
+    body: JSON.stringify({
+      dataset: datasetData,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${token}`,
+    },
+  }).then((res) => res.json());
+};
+
+const addOrRemoveWatchlist = async (
+  clicked: boolean,
+  datasetData: number[],
+  token: string,
+): Promise<void> => {
+  const postData = {
+    method: 'POST',
+    body: JSON.stringify({
+      dataset: datasetData,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${token}`,
+    },
+  };
+
+  await fetch(
+    `${getBaseUrl()}/${clicked ? `users/deletewatchlist` : `users/addwatchlist`}`,
+    postData,
+  ).then((res) => res.json());
+};
 
 const ResultsRow: React.FC<MyComponentProps> = ({
   dp,
@@ -43,6 +80,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
   const router = useRouter();
   const { toast } = useToast();
   const counter = useRef(0);
+  const session = useSession();
 
   const getColorClass = (value: number) => {
     if (Math.abs(value) > 0.8) {
@@ -53,6 +91,10 @@ const ResultsRow: React.FC<MyComponentProps> = ({
       return ''; // Default color or any other color you prefer
     }
   };
+
+  useEffect(() => {
+    getIsClicked(dp.dataset_data, session.data?.user.accessToken || "").then((data) => setIsClicked(data.is_clicked));
+  });
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
@@ -132,6 +174,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
                   description: `${dp.title}`,
                 });
               }
+              addOrRemoveWatchlist(isClicked, dp.dataset_data, session.data?.user.accessToken || "");
               setIsClicked(!isClicked);
               e.stopPropagation();
             }}
