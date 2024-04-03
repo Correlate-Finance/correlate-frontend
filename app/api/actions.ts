@@ -62,3 +62,25 @@ export async function getAllDatasetMetadata() {
   const data = await response.json();
   return data;
 }
+
+export const addOrRemoveWatchlist = async (
+  clicked: boolean,
+  datasetData: number[],
+  token: string,
+): Promise<void> => {
+  const postData = {
+    method: 'POST',
+    body: JSON.stringify({
+      dataset: datasetData,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${token}`,
+    },
+  };
+
+  await fetch(
+    `${getBaseUrl()}/${clicked ? `users/deletewatchlist` : `users/addwatchlist`}`,
+    postData,
+  ).then((res) => res.json());
+};

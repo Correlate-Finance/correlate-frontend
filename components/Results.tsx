@@ -38,6 +38,7 @@ export type CorrelationDataPoint = {
 
 const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
   const [checkedRows, setCheckedRows] = useState<Set<number>>(new Set());
+
   const toggleCheckbox = (id: number, checked: boolean) => {
     const newCheckedRows = new Set(checkedRows);
     if (checked) {
