@@ -21,11 +21,6 @@ export async function GET(request: NextRequest) {
       },
     );
 
-    console.log(
-      `${getCorrelationEngineUrl()}/correlate?${searchParams.toString()}`,
-    );
-    console.log(res);
-
     if (!res.ok) {
       return new Response(JSON.stringify({ error: res.statusText }), {
         status: res.status,
