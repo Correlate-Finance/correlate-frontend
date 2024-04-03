@@ -1,7 +1,7 @@
 import { authOptions } from '@/lib/configs/authOptions';
 import { getServerSession } from 'next-auth/next';
 import { type NextRequest } from 'next/server';
-import { getBaseUrl } from '../util';
+import { getCorrelationEngineUrl } from '../util';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const res = await fetch(
-      `${getBaseUrl()}/correlate?${searchParams.toString()}`,
+      `${getCorrelationEngineUrl()}/correlate?${searchParams.toString()}`,
       {
         headers: {
           Authorization: `Token ${session.user.accessToken}`,
