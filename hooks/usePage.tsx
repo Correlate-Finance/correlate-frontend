@@ -11,6 +11,7 @@ export const inputFieldsSchema = z.object({
     .number()
     .max(2023, { message: 'Year needs to be lower than 2023' })
     .min(2000, { message: 'Year needs to be higher than 2000' }),
+  endYear: z.coerce.number().min(2000),
   fiscalYearEnd: z.string().optional().default('December'),
   aggregationPeriod: z.string(),
   lagPeriods: z.coerce.number(),
@@ -38,15 +39,13 @@ export function useFetchRevenueData() {
   const fetchRevenueData = async (
     values: z.infer<typeof inputFieldsSchema>,
   ) => {
+    console.log(values);
     setLoading(true);
     setRevenueData([]);
 
     try {
       const response = await fetch(
-        `api/revenue?stock=${values.ticker}&startYear=${values.startYear}&aggregationPeriod=${values.aggregationPeriod}`,
-        {
-          credentials: 'include',
-        },
+        `api/revenue?stock=${values.ticker}&start_year=${values.startYear}&aggregation_period=${values.aggregationPeriod}${values.endYear ? `&end_year=${values.endYear}` : ''}`,
       );
       const jsonData = await handleResponseStatus(response);
       const parsedData = jsonData.data.map((x: any) => [x.date, x.value]);
@@ -71,9 +70,16 @@ export const useSubmitForm = (
   const onSubmit = async (inputFields: z.infer<typeof inputFieldsSchema>) => {
     fetchRevenueData(inputFields);
     setLoading(true);
+    setCorrelateResponseData({
+      data: [],
+      aggregationPeriod: '',
+      correlationMetric: '',
+    });
+
     const {
       ticker,
       startYear,
+      endYear,
       aggregationPeriod,
       lagPeriods,
       highLevelOnly,
@@ -87,13 +93,12 @@ export const useSubmitForm = (
         lag_periods: lagPeriods.toString(),
         high_level_only: highLevelOnly.toString(),
         correlation_metric: correlationMetric,
+        end_year: endYear.toString(),
       });
       if (ticker) {
         urlParams.append('stock', ticker);
       }
-      const res = await fetch(`api/fetch?${urlParams.toString()}`, {
-        credentials: 'include',
-      });
+      const res = await fetch(`api/fetch?${urlParams.toString()}`);
       const jsonData = await handleResponseStatus(res);
 
       setLoading(false);
@@ -140,7 +145,6 @@ export const useCorrelateInputText = (
           headers: {
             'Content-Type': 'text/html; charset=utf-8',
           },
-          credentials: 'include',
         },
       );
 

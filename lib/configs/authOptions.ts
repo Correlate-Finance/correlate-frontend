@@ -22,7 +22,6 @@ export const authOptions: NextAuthOptions = {
             headers: {
               'Content-Type': 'application/json',
             },
-            credentials: 'include',
           });
 
           if (response.ok) {

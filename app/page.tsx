@@ -36,6 +36,7 @@ const HomePage = () => {
     inputData: '',
     fiscalYearEnd: 'December',
     startYear: 2010,
+    endYear: 2024,
     aggregationPeriod: 'Quarterly',
     correlationMetric: 'RAW_VALUE',
     lagPeriods: 0,
@@ -147,6 +148,20 @@ const HomePage = () => {
                     });
                   }}
                   defaultValue={inputFields.startYear.toString()}
+                  data-testid="automatic-start-year"
+                />
+              </div>
+              <div>
+                <p className="text-sm text-opacity-80">End Year</p>
+                <Input
+                  placeholder="2024"
+                  onChange={(e) => {
+                    setInputFields({
+                      ...inputFields,
+                      endYear: Number(e.target.value),
+                    });
+                  }}
+                  defaultValue={inputFields.endYear?.toString()}
                   data-testid="automatic-start-year"
                 />
               </div>

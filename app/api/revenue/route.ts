@@ -5,9 +5,6 @@ import { getBaseUrl } from '../util';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const stock = searchParams.get('stock');
-  const startYear = searchParams.get('startYear');
-  const aggregationPeriod = searchParams.get('aggregationPeriod');
 
   const session = await getServerSession(authOptions);
 
@@ -17,7 +14,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const res = await fetch(
-      `${getBaseUrl()}/revenue?stock=${stock}&startYear=${startYear}&aggregationPeriod=${aggregationPeriod}`,
+      `${getBaseUrl()}/revenue?${searchParams.toString()}`,
       {
         headers: {
           Authorization: `Token ${session.user.accessToken}`,
