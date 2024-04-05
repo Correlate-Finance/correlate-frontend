@@ -1,7 +1,10 @@
 'use server';
+
 import { CorrelationData } from '@/components/Results';
+import { inputFieldsSchema } from '@/hooks/usePage';
 import { authOptions } from '@/lib/configs/authOptions';
 import { getServerSession } from 'next-auth/next';
+import { z } from 'zod';
 import { getBaseUrl } from './util';
 
 export async function correlateIndex(
@@ -61,4 +64,53 @@ export async function getAllDatasetMetadata() {
   });
   const data = await response.json();
   return data;
+}
+
+export async function getCompanyData(
+  values: z.infer<typeof inputFieldsSchema>,
+) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Response.json({ error: 'Unauthorized', status: 401 });
+  }
+
+  if (values.ticker === undefined) {
+    return Response.json({ error: 'No stock provided', status: 400 });
+  }
+
+  const urlParams = new URLSearchParams({
+    aggregation_period: values.aggregationPeriod,
+    stock: values.ticker,
+    start_year: values.startYear.toString(),
+  });
+
+  if (values.endYear) {
+    urlParams.append('end_year', values.endYear.toString());
+  }
+
+  if (values.companyMetric) {
+    urlParams.append('company_metric', values.companyMetric);
+  }
+
+  try {
+    const res = await fetch(
+      `${getBaseUrl()}/company_data?${urlParams.toString()}`,
+      {
+        headers: {
+          Authorization: `Token ${session.user.accessToken}`,
+        },
+      },
+    );
+
+    if (!res.ok) {
+      return Promise.reject('Unable to fetch data from the server');
+    }
+
+    const data = await res.json();
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }

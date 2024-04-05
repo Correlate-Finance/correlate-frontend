@@ -39,6 +39,7 @@ const HomePage = () => {
     endYear: 2024,
     aggregationPeriod: 'Quarterly',
     correlationMetric: 'RAW_VALUE',
+    companyMetric: 'REVENUE',
     lagPeriods: 0,
     highLevelOnly: true,
   });
@@ -121,7 +122,7 @@ const HomePage = () => {
             </TabsList>
             <TabsContent
               value="Automatic"
-              className="flex flex-col md:flex-col [&>*]:whitespace-nowrap [&>*]:mt-4 [&>*]:mx-4"
+              className="flex flex-col md:flex-col [&>*]:whitespace-nowrap [&>*]:mt-3 [&>*]:mx-4"
             >
               <div>
                 <p className="text-sm text-opacity-80">Ticker</p>
@@ -136,6 +137,32 @@ const HomePage = () => {
                   defaultValue={inputFields.ticker}
                   data-testid="automatic-ticker"
                 />
+              </div>
+              <div>
+                <p className="text-sm text-opacity-80">Company Metric</p>
+                <Select
+                  onValueChange={(e: string) =>
+                    setInputFields({ ...inputFields, companyMetric: e })
+                  }
+                  defaultValue={inputFields.companyMetric?.toString()}
+                >
+                  <SelectTrigger data-testid="company-metric">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="REVENUE">Revenue</SelectItem>
+                    <SelectItem value="COST_OF_REVENUE">
+                      Cost Of Revenue
+                    </SelectItem>
+                    <SelectItem value="GROSS_PROFIT">Gross Profit</SelectItem>
+                    <SelectItem value="OPERATING_INCOME">
+                      Operating Income
+                    </SelectItem>
+                    <SelectItem value="NET_INCOME">Net Income</SelectItem>
+                    <SelectItem value="EBITDA">EBITDA</SelectItem>
+                    <SelectItem value="EPS">EPS</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <p className="text-sm text-opacity-80">Start Year</p>

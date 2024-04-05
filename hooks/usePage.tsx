@@ -1,3 +1,4 @@
+import { getCompanyData } from '@/app/api/actions';
 import { CorrelationData } from '@/components/Results';
 import handleResponseStatus from '@/lib/handleResponse';
 import { useState } from 'react';
@@ -17,6 +18,7 @@ export const inputFieldsSchema = z.object({
   lagPeriods: z.coerce.number(),
   highLevelOnly: z.boolean().default(false),
   correlationMetric: z.string(),
+  companyMetric: z.string().optional(),
 });
 
 export function useCorrelateResponseData() {
@@ -44,11 +46,8 @@ export function useFetchRevenueData() {
     setRevenueData([]);
 
     try {
-      const response = await fetch(
-        `api/revenue?stock=${values.ticker}&start_year=${values.startYear}&aggregation_period=${values.aggregationPeriod}${values.endYear ? `&end_year=${values.endYear}` : ''}`,
-      );
-      const jsonData = await handleResponseStatus(response);
-      const parsedData = jsonData.data.map((x: any) => [x.date, x.value]);
+      const response = await getCompanyData(values);
+      const parsedData = response.map((x: any) => [x.date, x.value]);
       setRevenueData(parsedData);
     } catch (e) {
       setRevenueData([]);
@@ -84,6 +83,7 @@ export const useSubmitForm = (
       lagPeriods,
       highLevelOnly,
       correlationMetric,
+      companyMetric,
     } = inputFields;
 
     try {
@@ -95,6 +95,9 @@ export const useSubmitForm = (
         correlation_metric: correlationMetric,
         end_year: endYear.toString(),
       });
+      if (companyMetric !== undefined) {
+        urlParams.append('company_metric', companyMetric);
+      }
       if (ticker) {
         urlParams.append('stock', ticker);
       }

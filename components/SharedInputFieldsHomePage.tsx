@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import React from 'react';
 
 export default function SharedInputFieldsHomePage({
@@ -83,7 +82,7 @@ export default function SharedInputFieldsHomePage({
           </SelectContent>
         </Select>
       </div>
-      <div>
+      {/* <div>
         <p className="text-sm text-opacity-80">High Level Datasets</p>
         <Switch
           className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-neutral-400"
@@ -95,7 +94,7 @@ export default function SharedInputFieldsHomePage({
             });
           }}
         />
-      </div>
+      </div> */}
     </React.Fragment>
   );
 }
