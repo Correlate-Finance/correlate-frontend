@@ -114,3 +114,46 @@ export async function getCompanyData(
     return Promise.reject(error);
   }
 }
+
+export const sendOTP = async (email: string) => {
+  const response = await fetch(`${getBaseUrl()}/users/send-otp`, {
+    method: 'POST',
+    body: JSON.stringify({
+      email: email,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const data = await response.json();
+  return data;
+};
+
+export const verifyOTP = async (email: string, otp: string) => {
+  const response = await fetch(`${getBaseUrl()}/users/verify-otp`, {
+    method: 'POST',
+    body: JSON.stringify({
+      email: email,
+      otp: otp,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const data = await response.json();
+  return data;
+};
+
+export const changePassword = async (email: string) => {
+  const response = await fetch(`${getBaseUrl()}/users/change-password`, {
+    method: 'POST',
+    body: JSON.stringify({
+      email: email,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const data = await response.json();
+  return data;
+};

@@ -29,17 +29,21 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+
+import { sendOTP, verifyOTP } from '@/app/api/actions';
 
 const inputFieldsSchema = z.object({
   email: z.string().min(1).max(255),
 });
 
 const ResetPassword = () => {
-  const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const emailSubmitted = useRef(false);
+  const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
+  const otpVerified = useRef(false);
   const searchParams = useSearchParams();
 
   // Check if the query object has a specific parameter
@@ -53,8 +57,19 @@ const ResetPassword = () => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof inputFieldsSchema>) {
-    setEmailSubmitted(!emailSubmitted);
+  async function onEmailSubmit(values: z.infer<typeof inputFieldsSchema>) {
+    emailSubmitted.current = true;
+    setEmail(values.email);
+    sendOTP(values.email);
+  }
+
+  function onOTPSubmit() {
+    const response = verifyOTP(email, otp);
+    response.then((res) => {
+      if (res === 'OTP is correct') {
+        otpVerified.current = true;
+      }
+    });
   }
 
   return (
@@ -65,7 +80,7 @@ const ResetPassword = () => {
         </CardTitle>
         <CardDescription>
           {emailSubmitted
-            ? 'Enter the OTP'
+            ? 'Enter the OTP sent to your email address.'
             : 'Enter your email address to receive an OTP.'}
         </CardDescription>
       </CardHeader>
@@ -80,7 +95,7 @@ const ResetPassword = () => {
           <Form {...form}>
             <form
               noValidate
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(onEmailSubmit)}
               className="space-y-4"
             >
               <FormField
@@ -125,7 +140,9 @@ const ResetPassword = () => {
               </InputOTP>
             </div>
             <div className="flex justify-center">
-              <Button type="submit">Enter</Button>
+              <Button type="submit" onClick={onOTPSubmit}>
+                Enter
+              </Button>
             </div>
           </form>
         )}
