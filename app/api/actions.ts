@@ -144,11 +144,12 @@ export const verifyOTP = async (email: string, otp: string) => {
   return data;
 };
 
-export const changePassword = async (email: string) => {
+export const changePassword = async (email: string, password: string) => {
   const response = await fetch(`${getBaseUrl()}/users/change-password`, {
     method: 'POST',
     body: JSON.stringify({
       email: email,
+      password: password,
     }),
     headers: {
       'Content-Type': 'application/json',

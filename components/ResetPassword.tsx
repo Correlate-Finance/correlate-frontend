@@ -29,15 +29,31 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-import { sendOTP, verifyOTP } from '@/app/api/actions';
+import { changePassword, sendOTP, verifyOTP } from '@/app/api/actions';
+import router from 'next/router';
 
 const inputFieldsSchema = z.object({
   email: z.string().min(1).max(255),
 });
+
+const passwordFieldsSchema = z
+  .object({
+    password: z.string().min(8).max(255),
+    confirmPassword: z.string().min(8).max(255),
+  })
+  .superRefine(({ confirmPassword, password }, ctx) => {
+    if (confirmPassword !== password) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'The passwords did not match',
+        path: ['confirmPassword'],
+      });
+    }
+  });
 
 const ResetPassword = () => {
   const emailSubmitted = useRef(false);
@@ -57,17 +73,37 @@ const ResetPassword = () => {
     },
   });
 
+  const passwordForm = useForm<z.infer<typeof passwordFieldsSchema>>({
+    resolver: zodResolver(passwordFieldsSchema),
+    defaultValues: {
+      password: '',
+      confirmPassword: '',
+    },
+  });
+
   async function onEmailSubmit(values: z.infer<typeof inputFieldsSchema>) {
     emailSubmitted.current = true;
     setEmail(values.email);
     sendOTP(values.email);
   }
 
+  async function onPasswordSubmit(
+    values: z.infer<typeof passwordFieldsSchema>,
+  ) {
+    const response = changePassword(email, values.password);
+    response.then((res) => {
+      if (res.message === 'Password changed') {
+        router.push('/login');
+      }
+    });
+  }
+
   function onOTPSubmit() {
     const response = verifyOTP(email, otp);
     response.then((res) => {
-      if (res === 'OTP is correct') {
+      if (res.message === 'OTP is correct') {
         otpVerified.current = true;
+        setOtp('');
       }
     });
   }
@@ -91,7 +127,7 @@ const ResetPassword = () => {
           </div>
         )}
 
-        {!emailSubmitted ? (
+        {!emailSubmitted.current ? (
           <Form {...form}>
             <form
               noValidate
@@ -116,9 +152,9 @@ const ResetPassword = () => {
               </div>
             </form>
           </Form>
-        ) : (
-          <form onSubmit={() => {}} className="space-y-4">
-            <div className="flex justify-center mb-8">
+        ) : !otpVerified.current ? (
+          <React.Fragment>
+            <div className="space-y-4 flex justify-center mb-8">
               <InputOTP
                 maxLength={6}
                 value={otp}
@@ -140,11 +176,49 @@ const ResetPassword = () => {
               </InputOTP>
             </div>
             <div className="flex justify-center">
-              <Button type="submit" onClick={onOTPSubmit}>
+              <Button onClick={onOTPSubmit} disabled={otp.length < 6}>
                 Enter
               </Button>
             </div>
-          </form>
+          </React.Fragment>
+        ) : (
+          <Form {...passwordForm}>
+            <form
+              noValidate
+              onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
+              className="space-y-4"
+            >
+              <FormField
+                control={passwordForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={passwordForm.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-center">
+                <Button type="submit">Submit</Button>
+              </div>
+            </form>
+          </Form>
         )}
       </CardContent>
       <CardFooter className="text-sm flex flex-col justify-center">
