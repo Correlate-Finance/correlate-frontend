@@ -29,8 +29,8 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
+import { set, useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 import { changePassword, sendOTP, verifyOTP } from '@/app/api/actions';
@@ -55,16 +55,18 @@ const passwordFieldsSchema = z
   });
 
 const ResetPassword = () => {
-  const [email, setEmail] = useState(localStorage.getItem('email') || '');
+  const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
-  const [otpVerified, setOtpVerified] = useState(
-    localStorage.getItem('otpVerified') === 'true',
-  );
-  const [emailSubmitted, setEmailSubmitted] = useState(
-    !!localStorage.getItem('email'),
-  );
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
   const searchParams = useSearchParams();
   const [hasError, setHasError] = useState(searchParams.get('error') !== null);
+
+  useEffect(() => {
+    setEmail(localStorage.getItem('email') || '');
+    setOtpVerified(localStorage.getItem('otpVerified') === 'true');
+    setEmailSubmitted(localStorage.getItem('email') !== null);
+  }, []);
 
   // Check if the query object has a specific parameter
   const errorMessage = 'The OTP you entered is incorrect. Please try again.';
@@ -87,7 +89,8 @@ const ResetPassword = () => {
     setEmail(values.email);
     sendOTP(values.email);
     setEmailSubmitted(true);
-    localStorage.setItem('email', values.email);
+    if (typeof window !== 'undefined')
+      localStorage.setItem('email', values.email);
   }
 
   async function onPasswordSubmit(
@@ -96,8 +99,10 @@ const ResetPassword = () => {
     const response = changePassword(email, values.password);
     response.then((res) => {
       if (res.message === 'Password changed') {
-        localStorage.removeItem('email');
-        localStorage.removeItem('otpVerified');
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('email');
+          localStorage.removeItem('otpVerified');
+        }
         window.location.assign('/login');
       }
     });
@@ -108,7 +113,8 @@ const ResetPassword = () => {
     response.then((res) => {
       if (res.message === 'OTP is correct') {
         setOtpVerified(true);
-        localStorage.setItem('otpVerified', 'true');
+        if (typeof window !== 'undefined')
+          localStorage.setItem('otpVerified', 'true');
         setHasError(false);
         setOtp('');
       } else {
