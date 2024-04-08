@@ -29,12 +29,11 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 import { changePassword, sendOTP, verifyOTP } from '@/app/api/actions';
-import router from 'next/router';
 
 const inputFieldsSchema = z.object({
   email: z.string().min(1).max(255),
@@ -56,16 +55,19 @@ const passwordFieldsSchema = z
   });
 
 const ResetPassword = () => {
-  const emailSubmitted = useRef(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(localStorage.getItem('email') || '');
   const [otp, setOtp] = useState('');
-  const otpVerified = useRef(false);
+  const [otpVerified, setOtpVerified] = useState(
+    localStorage.getItem('otpVerified') === 'true',
+  );
+  const [emailSubmitted, setEmailSubmitted] = useState(
+    !!localStorage.getItem('email'),
+  );
   const searchParams = useSearchParams();
+  const [hasError, setHasError] = useState(searchParams.get('error') !== null);
 
   // Check if the query object has a specific parameter
-  const hasError = searchParams.get('error') !== null;
-  const errorMessage =
-    'Invalid Email. Check the details you provided are correct.';
+  const errorMessage = 'The OTP you entered is incorrect. Please try again.';
   const form = useForm<z.infer<typeof inputFieldsSchema>>({
     resolver: zodResolver(inputFieldsSchema),
     defaultValues: {
@@ -82,9 +84,10 @@ const ResetPassword = () => {
   });
 
   async function onEmailSubmit(values: z.infer<typeof inputFieldsSchema>) {
-    emailSubmitted.current = true;
     setEmail(values.email);
     sendOTP(values.email);
+    setEmailSubmitted(true);
+    localStorage.setItem('email', values.email);
   }
 
   async function onPasswordSubmit(
@@ -93,7 +96,9 @@ const ResetPassword = () => {
     const response = changePassword(email, values.password);
     response.then((res) => {
       if (res.message === 'Password changed') {
-        router.push('/login');
+        localStorage.removeItem('email');
+        localStorage.removeItem('otpVerified');
+        window.location.assign('/login');
       }
     });
   }
@@ -102,8 +107,12 @@ const ResetPassword = () => {
     const response = verifyOTP(email, otp);
     response.then((res) => {
       if (res.message === 'OTP is correct') {
-        otpVerified.current = true;
+        setOtpVerified(true);
+        localStorage.setItem('otpVerified', 'true');
+        setHasError(false);
         setOtp('');
+      } else {
+        window.location.assign('/reset-password?error=true');
       }
     });
   }
@@ -127,7 +136,7 @@ const ResetPassword = () => {
           </div>
         )}
 
-        {!emailSubmitted.current ? (
+        {!emailSubmitted ? (
           <Form {...form}>
             <form
               noValidate
@@ -152,7 +161,7 @@ const ResetPassword = () => {
               </div>
             </form>
           </Form>
-        ) : !otpVerified.current ? (
+        ) : !otpVerified ? (
           <React.Fragment>
             <div className="space-y-4 flex justify-center mb-8">
               <InputOTP
