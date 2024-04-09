@@ -1,8 +1,35 @@
 import '@testing-library/jest-dom';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import Page from '../../app/page';
+
+// mock Blob.prototype.text
+Object.defineProperty(Blob.prototype, 'text', {
+  writable: true,
+  value: jest.fn().mockImplementation(function () {
+    return Promise.resolve(
+      '<table><tr><td>cell1</td><td>cell2</td></tr></table>',
+    );
+  }),
+});
+
+//  mock navigator.clipboard.read
+Object.assign(navigator, {
+  clipboard: {
+    read: jest.fn().mockResolvedValue([
+      {
+        getType: jest.fn().mockResolvedValue(new Blob()), // Kini getType mengembalikan Blob yang memiliki .text()
+      },
+    ]),
+  },
+});
 
 describe('Page', () => {
   afterAll(() => {
@@ -38,6 +65,17 @@ describe('Page', () => {
     });
     const clickedLagPeriods = userEvent.click(screen.getByText('2'));
     expect(clickedLagPeriods).toBeTruthy();
+
+    const ticker = screen.getByTestId('automatic-ticker');
+    fireEvent.change(ticker, { target: { value: 'GOOGL' } });
+    expect(ticker).toHaveValue('GOOGL');
+
+    const startYear = screen.getByTestId('automatic-start-year');
+    fireEvent.change(startYear, { target: { value: '2015' } });
+    expect(startYear).toHaveValue('2015');
+
+    const buttonCorrelate = screen.getByTestId('automatic-correlate-button');
+    fireEvent.click(buttonCorrelate);
   });
 
   test('renders input fields in Manual tab', async () => {
@@ -103,6 +141,17 @@ describe('Page', () => {
       expect(screen.getByTestId('lag-periods')).toHaveTextContent('2');
     });
 
-    userEvent.click(screen.getByTestId('manual-correlate-button'));
+    const manualInputData = screen.getByTestId('manual-input-data');
+    fireEvent.change(manualInputData, {
+      target: { value: 'some input data' },
+    });
+    expect(manualInputData).toHaveValue('some input data');
+    fireEvent.paste(manualInputData, {
+      clipboardData: {
+        getData: () => 'some input data',
+      },
+    });
+
+    fireEvent.click(screen.getByTestId('manual-correlate-button'));
   });
 });
