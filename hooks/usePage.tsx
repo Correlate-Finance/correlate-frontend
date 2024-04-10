@@ -1,4 +1,4 @@
-import { getCompanyData } from '@/app/api/actions';
+import { getCompanySegments } from '@/app/api/actions';
 import { CorrelationData } from '@/components/Results';
 import handleResponseStatus from '@/lib/handleResponse';
 import { useState } from 'react';
@@ -18,7 +18,7 @@ export const inputFieldsSchema = z.object({
   lagPeriods: z.coerce.number(),
   highLevelOnly: z.boolean().default(false),
   correlationMetric: z.string(),
-  companyMetric: z.string().optional(),
+  segment: z.string().optional(),
 });
 
 export function useCorrelateResponseData() {
@@ -41,13 +41,18 @@ export function useFetchRevenueData() {
   const fetchRevenueData = async (
     values: z.infer<typeof inputFieldsSchema>,
   ) => {
-    console.log(values);
     setLoading(true);
     setRevenueData([]);
 
     try {
-      const response = await getCompanyData(values);
-      const parsedData = response.map((x: any) => [x.date, x.value]);
+      const response = await getCompanySegments(values);
+      const filteredData = response.filter(
+        (x: any) => x.segment == values.segment,
+      );
+      const parsedData = filteredData[0].data.map((x: any) => [
+        x.date,
+        x.value,
+      ]);
       setRevenueData(parsedData);
     } catch (e) {
       setRevenueData([]);
@@ -83,7 +88,7 @@ export const useSubmitForm = (
       lagPeriods,
       highLevelOnly,
       correlationMetric,
-      companyMetric,
+      segment,
     } = inputFields;
 
     try {
@@ -95,8 +100,8 @@ export const useSubmitForm = (
         correlation_metric: correlationMetric,
         end_year: endYear.toString(),
       });
-      if (companyMetric !== undefined) {
-        urlParams.append('company_metric', companyMetric);
+      if (segment !== undefined) {
+        urlParams.append('segment', segment);
       }
       if (ticker) {
         urlParams.append('stock', ticker);

@@ -66,7 +66,7 @@ export async function getAllDatasetMetadata() {
   return data;
 }
 
-export async function getCompanyData(
+export async function getCompanySegments(
   values: z.infer<typeof inputFieldsSchema>,
 ) {
   const session = await getServerSession(authOptions);
@@ -89,13 +89,9 @@ export async function getCompanyData(
     urlParams.append('end_year', values.endYear.toString());
   }
 
-  if (values.companyMetric) {
-    urlParams.append('company_metric', values.companyMetric);
-  }
-
   try {
     const res = await fetch(
-      `${getBaseUrl()}/company_data?${urlParams.toString()}`,
+      `${getBaseUrl()}/segment_data?${urlParams.toString()}`,
       {
         headers: {
           Authorization: `Token ${session.user.accessToken}`,
@@ -108,7 +104,7 @@ export async function getCompanyData(
     }
 
     const data = await res.json();
-
+    // Extract only the top level segment names
     return data;
   } catch (error) {
     return Promise.reject(error);

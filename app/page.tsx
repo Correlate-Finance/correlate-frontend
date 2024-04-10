@@ -24,11 +24,13 @@ import {
 } from '@/hooks/usePage';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import DOMPurify from 'isomorphic-dompurify';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
+import { getCompanySegments } from './api/actions';
 
 const HomePage = () => {
   const [tabValue, setTabValue] = useLocalStorage('tabValue', 'Manual');
+  const [segments, setSegments] = useState([] as string[]);
   const [inputFields, setInputFields] = useLocalStorage<
     z.infer<typeof inputFieldsSchema>
   >('inputFields', {
@@ -39,7 +41,6 @@ const HomePage = () => {
     endYear: 2024,
     aggregationPeriod: 'Quarterly',
     correlationMetric: 'RAW_VALUE',
-    companyMetric: 'REVENUE',
     lagPeriods: 0,
     highLevelOnly: true,
   });
@@ -103,6 +104,16 @@ const HomePage = () => {
     return table;
   }
 
+  useEffect(() => {
+    const fetchSegments = async () => {
+      const data = await getCompanySegments(inputFields);
+      const segments = data.map((x: any) => x.segment);
+      setSegments(segments);
+    };
+
+    fetchSegments();
+  }, [inputFields.ticker]);
+
   return (
     <div className="flex overflow-scroll max-h-[90vh]">
       <Card className="dark:bg-[#1b1b26] bg-gray-100 m-4 w-[300px] border-0 sticky top-4">
@@ -142,25 +153,19 @@ const HomePage = () => {
                 <p className="text-sm text-opacity-80">Company Metric</p>
                 <Select
                   onValueChange={(e: string) =>
-                    setInputFields({ ...inputFields, companyMetric: e })
+                    setInputFields({ ...inputFields, segment: e })
                   }
-                  defaultValue={inputFields.companyMetric?.toString()}
+                  defaultValue={inputFields.segment?.toString()}
                 >
-                  <SelectTrigger data-testid="company-metric">
+                  <SelectTrigger data-testid="segment">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="REVENUE">Revenue</SelectItem>
-                    <SelectItem value="COST_OF_REVENUE">
-                      Cost Of Revenue
-                    </SelectItem>
-                    <SelectItem value="GROSS_PROFIT">Gross Profit</SelectItem>
-                    <SelectItem value="OPERATING_INCOME">
-                      Operating Income
-                    </SelectItem>
-                    <SelectItem value="NET_INCOME">Net Income</SelectItem>
-                    <SelectItem value="EBITDA">EBITDA</SelectItem>
-                    <SelectItem value="EPS">EPS</SelectItem>
+                    {segments.map((segment) => (
+                      <SelectItem value={segment} key={segment}>
+                        {segment}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
