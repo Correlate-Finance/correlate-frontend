@@ -43,6 +43,7 @@ const HomePage = () => {
     correlationMetric: 'RAW_VALUE',
     lagPeriods: 0,
     highLevelOnly: true,
+    segment: 'Total Revenue',
   });
 
   const { correlateResponseData, setCorrelateResponseData } =
@@ -108,7 +109,7 @@ const HomePage = () => {
     const fetchSegments = async () => {
       const data = await getCompanySegments(inputFields);
       const segments = data.map((x: any) => x.segment);
-      setSegments(segments);
+      setSegments(['Total Revenue'].concat(segments));
     };
 
     fetchSegments();

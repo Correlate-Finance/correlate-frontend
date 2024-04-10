@@ -45,15 +45,24 @@ export function useFetchRevenueData() {
     setRevenueData([]);
 
     try {
-      const response = await getCompanySegments(values);
-      const filteredData = response.filter(
-        (x: any) => x.segment == values.segment,
-      );
-      const parsedData = filteredData[0].data.map((x: any) => [
-        x.date,
-        x.value,
-      ]);
-      setRevenueData(parsedData);
+      if (values.segment === 'Total Revenue') {
+        const response = await fetch(
+          `api/revenue?stock=${values.ticker}&start_year=${values.startYear}&aggregation_period=${values.aggregationPeriod}${values.endYear ? `&end_year=${values.endYear}` : ''}`,
+        );
+        const jsonData = await handleResponseStatus(response);
+        const parsedData = jsonData.data.map((x: any) => [x.date, x.value]);
+        setRevenueData(parsedData);
+      } else {
+        const response = await getCompanySegments(values);
+        const filteredData = response.filter(
+          (x: any) => x.segment == values.segment,
+        );
+        const parsedData = filteredData[0].data.map((x: any) => [
+          x.date,
+          x.value,
+        ]);
+        setRevenueData(parsedData);
+      }
     } catch (e) {
       setRevenueData([]);
     } finally {
@@ -100,7 +109,7 @@ export const useSubmitForm = (
         correlation_metric: correlationMetric,
         end_year: endYear.toString(),
       });
-      if (segment !== undefined) {
+      if (segment !== undefined && segment !== 'Total Revenue') {
         urlParams.append('segment', segment);
       }
       if (ticker) {
