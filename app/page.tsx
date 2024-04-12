@@ -113,7 +113,7 @@ const HomePage = () => {
     };
 
     fetchSegments();
-  }, [inputFields.ticker]);
+  }, [inputFields]);
 
   return (
     <div className="flex overflow-scroll max-h-[90vh]">
