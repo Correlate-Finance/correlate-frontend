@@ -38,6 +38,7 @@ export default function SearchableTable({ data }: { data: any[] }) {
   const rowsPerPage = 10;
   const router = useRouter();
   const [showResults, setShowResults] = useState(false);
+  const [toggleAllChecked, setToggleAllChecked] = useState(false);
 
   const [checkedRows, setCheckedRows] = useState<Set<string>>(new Set());
 
@@ -61,6 +62,7 @@ export default function SearchableTable({ data }: { data: any[] }) {
   );
 
   const toggleAll = (checked: boolean) => {
+    setToggleAllChecked(checked);
     const newCheckedRows = new Set(
       Array.from(
         { length: filteredData.length },
@@ -72,7 +74,7 @@ export default function SearchableTable({ data }: { data: any[] }) {
     } else {
       setCheckedRows(
         (prevRows) =>
-          new Set([...prevRows].filter((x) => newCheckedRows.has(x))),
+          new Set([...prevRows].filter((x) => !newCheckedRows.has(x))),
       );
     }
   };
@@ -131,11 +133,9 @@ export default function SearchableTable({ data }: { data: any[] }) {
   const { correlateResponseData, setCorrelateResponseData } =
     useCorrelateResponseData();
 
-  const {
-    onSubmit,
-    loading: loadingAutomatic,
-    hasData,
-  } = useSubmitForm(setCorrelateResponseData);
+  const { onSubmit, loading: loadingAutomatic } = useSubmitForm(
+    setCorrelateResponseData,
+  );
 
   const { correlateInputText, loading: loadingManual } = useCorrelateInputText(
     setCorrelateResponseData,
@@ -148,14 +148,15 @@ export default function SearchableTable({ data }: { data: any[] }) {
     onSubmit(inputFields, [...checkedRows]);
   };
 
-  console.log(showResults, hasData, correlateResponseData);
-
   return (
     <div className="flex overflow-scroll max-h-[90vh]">
       <CorrelationCard
         onAutomaticSubmit={onSubmitSelected}
         loadingAutomatic={loadingAutomatic}
-        onManualSubmit={correlateInputText}
+        onManualSubmit={(x) => {
+          setShowResults(true);
+          correlateInputText(x, [...checkedRows]);
+        }}
         loadingManual={loadingManual}
       />
       <div className="w-full mt-4">
@@ -166,6 +167,7 @@ export default function SearchableTable({ data }: { data: any[] }) {
               placeholder="Search by Series ID or Title..."
               onChange={(e) => {
                 setQuery(e.target.value);
+                setToggleAllChecked(false);
                 setCurrentPage(1); // Reset to first page on new search
               }}
               className="w-[90%] m-auto mb-4"
@@ -176,6 +178,7 @@ export default function SearchableTable({ data }: { data: any[] }) {
                 <TableRow>
                   <TableHead>
                     <Checkbox
+                      checked={toggleAllChecked}
                       onCheckedChange={(e) => {
                         if (e !== 'indeterminate') {
                           toggleAll(e);
@@ -197,7 +200,10 @@ export default function SearchableTable({ data }: { data: any[] }) {
                     }}
                     className="cursor-pointer"
                   >
-                    <TableCell>
+                    <TableCell
+                      onClick={(e) => e.stopPropagation()}
+                      className="cursor-default"
+                    >
                       <Checkbox
                         checked={checkedRows.has(row.series_id)}
                         onCheckedChange={(e) => {
@@ -257,7 +263,7 @@ export default function SearchableTable({ data }: { data: any[] }) {
           </>
         )}
 
-        {showResults && hasData && (
+        {showResults && (
           <div>
             <Button onClick={() => setShowResults(false)} className="mx-2">
               Back to Table Explorer

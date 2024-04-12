@@ -82,7 +82,7 @@ export const useSubmitForm = (
 
   const onSubmit = async (
     inputFields: z.infer<typeof inputFieldsSchema>,
-    selected_datasets?: Array<string>,
+    selectedDatasets?: Array<string>,
   ) => {
     fetchRevenueData(inputFields);
     setLoading(true);
@@ -119,8 +119,8 @@ export const useSubmitForm = (
         urlParams.append('stock', ticker);
       }
 
-      if (selected_datasets) {
-        selected_datasets.forEach((dataset) => {
+      if (selectedDatasets) {
+        selectedDatasets.forEach((dataset) => {
           urlParams.append('selected_datasets', dataset);
         });
       }
@@ -149,6 +149,7 @@ export const useCorrelateInputText = (
 
   const correlateInputText = async (
     inputFields: z.infer<typeof inputFieldsSchema>,
+    selectedDatasets?: Array<string>,
   ) => {
     if (!inputFields.inputData) {
       alert('No input data');
@@ -164,6 +165,13 @@ export const useCorrelateInputText = (
         high_level_only: inputFields.highLevelOnly.toString(),
         correlation_metric: inputFields.correlationMetric,
       });
+
+      if (selectedDatasets) {
+        selectedDatasets.forEach((dataset) => {
+          urlParams.append('selected_datasets', dataset);
+        });
+      }
+
       const res = await fetch(
         `api/correlateinputdata?${urlParams.toString()}`,
         {
