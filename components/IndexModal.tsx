@@ -1,4 +1,4 @@
-import { correlateIndex } from '@/app/api/actions';
+import { correlateIndex, saveIndex } from '@/app/api/actions';
 import {
   Dialog,
   DialogContent,
@@ -34,10 +34,11 @@ export default function IndexModal({
 
   const correlateIndexFormSchema = z
     .object({
-      indexName: z.string().optional(),
+      indexName: z.string(),
       percentages: z
         .array(z.string().default((1 / checkedRows.size).toFixed(2)))
         .min(checkedRows.size),
+      button: z.string(),
     })
     .refine(
       (data) => {
@@ -50,6 +51,17 @@ export default function IndexModal({
         message: 'The sum should be 1',
         path: [`percentages.${checkedRows.size - 1}`],
       },
+    )
+    .refine(
+      (data) => {
+        return data.button === 'correlate'
+          ? true
+          : data.indexName.trim().length > 0;
+      },
+      {
+        message: 'Index name is required',
+        path: ['indexName'],
+      },
     );
 
   const form = useForm<z.infer<typeof correlateIndexFormSchema>>({
@@ -59,10 +71,15 @@ export default function IndexModal({
       percentages: Array.from({ length: checkedRows.size }, () =>
         (1 / checkedRows.size).toFixed(2),
       ),
+      button: 'correlate',
     },
   });
 
   const onSubmit = async (values: z.infer<typeof correlateIndexFormSchema>) => {
+    if (values.button === 'save') {
+      await onSaveIndex(values);
+      return;
+    }
     try {
       const result = await correlateIndex(values, data, checkedRows);
       setCorrelationDataPoint(result.data[0]);
@@ -74,12 +91,44 @@ export default function IndexModal({
     }
   };
 
+  const onSaveIndex = async (
+    values: z.infer<typeof correlateIndexFormSchema>,
+  ) => {
+    try {
+      const percentages = values.percentages.map((p) => Number(p));
+      const correlationData: CorrelationData = {
+        data: Array.from(checkedRows).map((i) => data.data[i]),
+        aggregationPeriod: data.aggregationPeriod,
+        correlationMetric: data.correlationMetric,
+      };
+
+      await saveIndex(correlationData, values.indexName, percentages);
+      toast({
+        title: 'Index saved',
+        description: `Index ${values.indexName} has been saved`,
+      });
+    } catch (e) {
+      toast({
+        title: 'Error saving index',
+        description: `${e}`,
+      });
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
           className="bg-blue-800 text-white"
           disabled={checkedRows.size > 5}
+          onClick={() => {
+            form.setValue(
+              'percentages',
+              Array.from({ length: checkedRows.size }, () =>
+                (1 / checkedRows.size).toFixed(2),
+              ),
+            );
+          }}
         >
           Create Index
         </Button>
@@ -88,26 +137,25 @@ export default function IndexModal({
         <DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <DialogTitle>
-                {/* Leaving this in because we will be adding this very soon.
-                  <FormField
-                    control={form.control}
-                    name="indexName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            placeholder="Index Name"
-                            className="w-1/3"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  /> */}
-                <p>Create Correlation Index</p>
-                <Separator className="mt-2 dark:bg-white" />
+              <p>Create Correlation Index</p>
+              <Separator className="mt-4 mb-6 dark:bg-white" />
+              <DialogTitle className="mb-6">
+                <FormField
+                  control={form.control}
+                  name="indexName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          placeholder="Index Name"
+                          className="w-1/3"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </DialogTitle>
 
               <ul>
@@ -128,13 +176,7 @@ export default function IndexModal({
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Input
-                                  placeholder="Percentage"
-                                  defaultValue={(1 / checkedRows.size).toFixed(
-                                    2,
-                                  )}
-                                  {...field}
-                                />
+                                <Input placeholder="Percentage" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -148,10 +190,21 @@ export default function IndexModal({
                   </li>
                 ))}
               </ul>
-              <Separator className="mt-2 dark:bg-white" />
+              <Separator className="mt-2 mb-4 dark:bg-white" />
               <div className="flex justify-center">
-                <Button className="bg-blue-800 text-white my-2" type="submit">
+                <Button
+                  className="bg-blue-800 text-white my-2 mx-2"
+                  type="submit"
+                  onClick={() => form.setValue('button', 'correlate')}
+                >
                   Correlate
+                </Button>
+                <Button
+                  className="bg-blue-800 text-white my-2 mx-2"
+                  type="submit"
+                  onClick={() => form.setValue('button', 'save')}
+                >
+                  Save Index
                 </Button>
               </div>
             </form>
