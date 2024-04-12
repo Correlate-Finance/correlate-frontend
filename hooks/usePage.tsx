@@ -80,7 +80,10 @@ export const useSubmitForm = (
   const [hasData, setHasData] = useLocalStorage<boolean>('hasData', false);
   const { fetchRevenueData, revenueData } = useFetchRevenueData();
 
-  const onSubmit = async (inputFields: z.infer<typeof inputFieldsSchema>) => {
+  const onSubmit = async (
+    inputFields: z.infer<typeof inputFieldsSchema>,
+    selected_datasets?: Array<string>,
+  ) => {
     fetchRevenueData(inputFields);
     setLoading(true);
     setCorrelateResponseData({
@@ -115,6 +118,13 @@ export const useSubmitForm = (
       if (ticker) {
         urlParams.append('stock', ticker);
       }
+
+      if (selected_datasets) {
+        selected_datasets.forEach((dataset) => {
+          urlParams.append('selected_datasets', dataset);
+        });
+      }
+
       const res = await fetch(`api/fetch?${urlParams.toString()}`);
       const jsonData = await handleResponseStatus(res);
 
