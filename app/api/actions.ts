@@ -122,7 +122,7 @@ export const saveIndex = async (
     return Promise.reject('Unauthorized');
   }
 
-  const response = await fetch(`${getBaseUrl()}/users/save-index/`, {
+  const response = await fetch(`${getBaseUrl()}/save-index/`, {
     method: 'POST',
     body: JSON.stringify({
       index_name: indexName,
