@@ -11,41 +11,37 @@ import {
 
 interface MyComponentProps {
   data: string[][];
-  tab: string;
 }
 
-const InputData: React.FC<MyComponentProps> = ({ data, tab }) => {
+const InputData: React.FC<MyComponentProps> = ({ data }) => {
   let USDollar = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
   });
 
   return (
-    <>
-      <h2 className="ml-4">{tab === 'Automatic' ? 'Revenue' : 'Input Data'}</h2>
-      <div className="border-white">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">Date</TableHead>
-              <TableHead>Value</TableHead>
+    <div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">Date</TableHead>
+            <TableHead>Value</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map((dp) => (
+            <TableRow key={dp[0]}>
+              <TableCell className="font-medium w-min whitespace-nowrap">
+                {dp[0]}
+              </TableCell>
+              <TableCell className="whitespace-nowrap">
+                {USDollar.format(Number(dp?.[1]?.replaceAll(',', '')))}
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((dp) => (
-              <TableRow key={dp[0]}>
-                <TableCell className="font-medium w-min whitespace-nowrap">
-                  {dp[0]}
-                </TableCell>
-                <TableCell className="whitespace-nowrap">
-                  {USDollar.format(Number(dp?.[1]?.replaceAll(',', '')))}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 

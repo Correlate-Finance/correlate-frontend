@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { exportToExcelMultipleSheets } from '@/lib/utils';
+import { exportMultipleToExcel } from '@/lib/utils';
 import React, { useEffect, useState } from 'react';
 import IndexModal from './IndexModal';
 import ResultsRow from './ResultsRow';
@@ -51,36 +51,12 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
     setCheckedRows(newCheckedRows);
   };
 
-  const exportMultipleToExcel = () => {
-    const export_data = data.data
-      .filter((_, index) => checkedRows.has(index))
-      .map((dp) => {
-        return {
-          filename: dp.title,
-          source: dp.source,
-          description: dp.description,
-          sheet_name: dp.internal_name,
-          data: dp.dataset_data.map((value, index) => {
-            return {
-              Date: dp.dates[index],
-              Value: value,
-            };
-          }),
-        };
-      });
-
-    exportToExcelMultipleSheets(export_data);
-  };
-
   useEffect(() => {
     setCheckedRows(new Set());
   }, [data]);
 
   return (
     <>
-      <div className="flex flex-row gap-1">
-        <h2 className="ml-4 flex-1">Correlations</h2>
-      </div>
       <div className="border-white">
         <Table className="w-full">
           <TableCaption>Top Correlations with the data.</TableCaption>
@@ -113,7 +89,11 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
           <IndexModal data={data} checkedRows={checkedRows} />
           <Button
             className="mx-8 bg-blue-800 text-white"
-            onClick={exportMultipleToExcel}
+            onClick={() =>
+              exportMultipleToExcel(
+                data.data.filter((_, index) => checkedRows.has(index)),
+              )
+            }
             disabled={checkedRows.size === 0}
           >
             Download

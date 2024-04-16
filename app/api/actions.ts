@@ -5,6 +5,7 @@ import { inputFieldsSchema } from '@/hooks/usePage';
 import { authOptions } from '@/lib/configs/authOptions';
 import { getServerSession } from 'next-auth/next';
 import { z } from 'zod';
+import { DatasetMetadata } from './schema';
 import { getBaseUrl } from './util';
 
 export async function correlateIndex(
@@ -49,7 +50,7 @@ export async function correlateIndex(
   }
 }
 
-export async function getAllDatasetMetadata() {
+export async function getAllDatasetMetadata(): Promise<DatasetMetadata[]> {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -110,3 +111,34 @@ export async function getCompanySegments(
     return Promise.reject(error);
   }
 }
+
+export const saveIndex = async (
+  data: CorrelationData,
+  indexName: string,
+  percentages: number[],
+) => {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+
+  const response = await fetch(`${getBaseUrl()}/users/save-index/`, {
+    method: 'POST',
+    body: JSON.stringify({
+      index_name: indexName,
+      datasets: data.data.map((d, i) => ({
+        title: d.title,
+        percentage: percentages[i],
+      })),
+      aggregation_period: data.aggregationPeriod,
+      correlation_metric: data.correlationMetric,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${session.user.accessToken}`,
+    },
+  });
+  const json = await response.json();
+  return json;
+};
