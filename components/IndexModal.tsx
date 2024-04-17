@@ -1,4 +1,5 @@
 import { correlateIndex, saveIndex } from '@/app/api/actions';
+import { IndexDataset } from '@/app/api/schema';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { convertToGraphData } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { CorrelationData, CorrelationDataPoint } from './Results';
@@ -91,29 +92,31 @@ export default function IndexModal({
     }
   };
 
-  const onSaveIndex = async (
-    values: z.infer<typeof correlateIndexFormSchema>,
-  ) => {
-    try {
-      const percentages = values.percentages.map((p) => Number(p));
-      const correlationData: CorrelationData = {
-        data: Array.from(checkedRows).map((i) => data.data[i]),
-        aggregationPeriod: data.aggregationPeriod,
-        correlationMetric: data.correlationMetric,
-      };
-
-      await saveIndex(correlationData, values.indexName, percentages);
-      toast({
-        title: 'Index saved',
-        description: `Index ${values.indexName} has been saved`,
-      });
-    } catch (e) {
-      toast({
-        title: 'Error saving index',
-        description: `${e}`,
-      });
-    }
-  };
+  const onSaveIndex = useMemo(
+    () => async (values: z.infer<typeof correlateIndexFormSchema>) => {
+      try {
+        const indexDatasets: IndexDataset[] = Array.from(checkedRows).map(
+          (checkedIndex, i) => {
+            return {
+              title: data.data[checkedIndex].title,
+              percentage: values.percentages[i],
+            };
+          },
+        );
+        await saveIndex(indexDatasets, values.indexName);
+        toast({
+          title: 'Index saved',
+          description: `Index ${values.indexName} has been saved`,
+        });
+      } catch (e) {
+        toast({
+          title: 'Error saving index',
+          description: `${e}`,
+        });
+      }
+    },
+    [checkedRows, data],
+  );
 
   return (
     <Dialog>

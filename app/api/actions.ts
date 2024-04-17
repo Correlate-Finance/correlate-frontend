@@ -6,7 +6,7 @@ import { inputFieldsSchema } from '@/hooks/usePage';
 import { authOptions } from '@/lib/configs/authOptions';
 import { getServerSession } from 'next-auth/next';
 import { z } from 'zod';
-import { DatasetMetadata } from './schema';
+import { DatasetMetadata, IndexDataset } from './schema';
 import { getBaseUrl } from './util';
 
 export async function registerUser(
@@ -225,11 +225,7 @@ export const changePassword = async (email: string, password: string) => {
   return data;
 };
 
-export const saveIndex = async (
-  data: CorrelationData,
-  indexName: string,
-  percentages: number[],
-) => {
+export const saveIndex = async (data: IndexDataset[], indexName: string) => {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -240,12 +236,7 @@ export const saveIndex = async (
     method: 'POST',
     body: JSON.stringify({
       index_name: indexName,
-      datasets: data.data.map((d, i) => ({
-        title: d.title,
-        percentage: percentages[i],
-      })),
-      aggregation_period: data.aggregationPeriod,
-      correlation_metric: data.correlationMetric,
+      datasets: data,
     }),
     headers: {
       'Content-Type': 'application/json',

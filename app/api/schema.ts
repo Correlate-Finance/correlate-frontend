@@ -24,3 +24,8 @@ export interface DatasetMetadata {
   series_id: string;
   title: string;
 }
+
+export interface IndexDataset {
+  title: string;
+  percentage: string;
+}

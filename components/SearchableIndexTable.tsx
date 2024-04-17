@@ -222,7 +222,7 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
                       <EditIndexModal
                         data={{
                           data: [],
-                          aggregationPeriod: '',
+                          aggregationPeriod: '',  
                           correlationMetric: '',
                         }}
                       />
