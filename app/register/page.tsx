@@ -24,23 +24,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { registerUser } from '../api/actions';
-
-export const registerFieldsSchema = z
-  .object({
-    email: z.string().min(1).max(255),
-    name: z.string().min(1).max(255),
-    password: z.string().min(1).max(255),
-    confirmPassword: z.string().min(1).max(255),
-  })
-  .superRefine(({ confirmPassword, password }, ctx) => {
-    if (confirmPassword !== password) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'The passwords did not match',
-        path: ['confirmPassword'],
-      });
-    }
-  });
+import { registerFieldsSchema } from '../api/schema';
 
 const Page = () => {
   const router = useRouter();

@@ -1,12 +1,11 @@
 'use server';
 
-import { registerFieldsSchema } from '@/app/register/page';
 import { CorrelationData } from '@/components/Results';
 import { inputFieldsSchema } from '@/hooks/usePage';
 import { authOptions } from '@/lib/configs/authOptions';
 import { getServerSession } from 'next-auth/next';
 import { z } from 'zod';
-import { DatasetMetadata } from './schema';
+import { DatasetMetadata, registerFieldsSchema } from './schema';
 import { getBaseUrl } from './util';
 
 export async function registerUser(
