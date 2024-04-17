@@ -119,6 +119,25 @@ export const exportToExcel = (
   URL.revokeObjectURL(url);
 };
 
+export const exportMultipleToExcel = (data: CorrelationDataPoint[]) => {
+  const export_data = data.map((dp) => {
+    return {
+      filename: dp.title,
+      source: dp.source,
+      description: dp.description,
+      sheet_name: dp.internal_name,
+      data: dp.dataset_data.map((value, index) => {
+        return {
+          Date: dp.dates[index],
+          Value: value,
+        };
+      }),
+    };
+  });
+
+  exportToExcelMultipleSheets(export_data);
+};
+
 export const formatNumber = (number: number | bigint | undefined) => {
   if (number !== undefined) {
     return new Intl.NumberFormat('en-US', {

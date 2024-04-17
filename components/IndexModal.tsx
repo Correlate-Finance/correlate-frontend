@@ -41,8 +41,8 @@ export default function IndexModal({
       button: z.string(),
     })
     .refine(
-      (data) => {
-        const sum = data.percentages.reduce((acc, curr) => {
+      (values) => {
+        const sum = values.percentages.reduce((acc, curr) => {
           return acc + Number(curr);
         }, 0);
         return sum >= 0.99 && sum <= 1.0;

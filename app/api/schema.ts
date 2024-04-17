@@ -19,3 +19,8 @@ export interface DataTrendPoint {
   DeltaSeasonality?: number;
   [index: string]: string | number | undefined;
 }
+
+export interface DatasetMetadata {
+  series_id: string;
+  title: string;
+}

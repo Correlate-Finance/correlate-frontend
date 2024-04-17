@@ -276,10 +276,10 @@ const HomePage = () => {
       <div className="m-5 flex flex-row justify-between w-3/4 gap-8">
         <div className="w-min">
           {(inputFields.inputData && tabValue === 'Manual' && (
-            <InputData data={generateTabularData()} tab={tabValue} />
+            <InputData data={generateTabularData()} />
           )) ||
             (revenueData && tabValue === 'Automatic' && (
-              <InputData data={revenueData} tab={tabValue} />
+              <InputData data={revenueData} />
             ))}
         </div>
         <div className="flex-1">
