@@ -74,8 +74,8 @@ export const fetchWatchlistedRows = async (datasetTitles: string[]) => {
     return Promise.reject('Unauthorized');
   }
 
-  const response = await fetch(`${getBaseUrl()}/users/is_clicked`, {
-    method: 'GET',
+  const response = await fetch(`${getBaseUrl()}/users/watchlisted`, {
+    method: 'POST',
     body: JSON.stringify({
       datasets: datasetTitles,
     }),

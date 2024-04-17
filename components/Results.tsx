@@ -60,7 +60,7 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
     responseData.then((data) => {
       setWatchlistedRows(data.watchlisted);
     });
-  });
+  }, []);
 
   const exportMultipleToExcel = () => {
     const export_data = data.data

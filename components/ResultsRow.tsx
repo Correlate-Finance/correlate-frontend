@@ -40,12 +40,16 @@ const ResultsRow: React.FC<MyComponentProps> = ({
   addedToWatchlist,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const [isClicked, setIsClicked] = useState(addedToWatchlist);
+  const [isClicked, setIsClicked] = useState(false);
   const [correlation, setCorrelation] = useState(dp.pearson_value.toFixed(3));
   const [graphData, setGraphData] = useState(convertToGraphData(dp));
   const router = useRouter();
   const { toast } = useToast();
   const counter = useRef(0);
+
+  useEffect(() => {
+    setIsClicked(addedToWatchlist);
+  }, [addedToWatchlist]);
 
   const getColorClass = (value: number) => {
     if (Math.abs(value) > 0.8) {
