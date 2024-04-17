@@ -1,4 +1,4 @@
-import { getCompanyData } from '@/app/api/actions';
+import { getCompanySegments } from '@/app/api/actions';
 import { CorrelationData } from '@/components/Results';
 import handleResponseStatus from '@/lib/handleResponse';
 import { useState } from 'react';
@@ -18,7 +18,7 @@ export const inputFieldsSchema = z.object({
   lagPeriods: z.coerce.number(),
   highLevelOnly: z.boolean().default(false),
   correlationMetric: z.string(),
-  companyMetric: z.string().optional(),
+  segment: z.string().optional(),
 });
 
 export function useCorrelateResponseData() {
@@ -41,14 +41,28 @@ export function useFetchRevenueData() {
   const fetchRevenueData = async (
     values: z.infer<typeof inputFieldsSchema>,
   ) => {
-    console.log(values);
     setLoading(true);
     setRevenueData([]);
 
     try {
-      const response = await getCompanyData(values);
-      const parsedData = response.map((x: any) => [x.date, x.value]);
-      setRevenueData(parsedData);
+      if (values.segment === 'Total Revenue') {
+        const response = await fetch(
+          `api/revenue?stock=${values.ticker}&start_year=${values.startYear}&aggregation_period=${values.aggregationPeriod}${values.endYear ? `&end_year=${values.endYear}` : ''}`,
+        );
+        const jsonData = await handleResponseStatus(response);
+        const parsedData = jsonData.data.map((x: any) => [x.date, x.value]);
+        setRevenueData(parsedData);
+      } else {
+        const response = await getCompanySegments(values);
+        const filteredData = response.filter(
+          (x: any) => x.segment == values.segment,
+        );
+        const parsedData = filteredData[0].data.map((x: any) => [
+          x.date,
+          x.value,
+        ]);
+        setRevenueData(parsedData);
+      }
     } catch (e) {
       setRevenueData([]);
     } finally {
@@ -66,7 +80,10 @@ export const useSubmitForm = (
   const [hasData, setHasData] = useLocalStorage<boolean>('hasData', false);
   const { fetchRevenueData, revenueData } = useFetchRevenueData();
 
-  const onSubmit = async (inputFields: z.infer<typeof inputFieldsSchema>) => {
+  const onSubmit = async (
+    inputFields: z.infer<typeof inputFieldsSchema>,
+    selectedDatasets?: Array<string>,
+  ) => {
     fetchRevenueData(inputFields);
     setLoading(true);
     setCorrelateResponseData({
@@ -83,7 +100,7 @@ export const useSubmitForm = (
       lagPeriods,
       highLevelOnly,
       correlationMetric,
-      companyMetric,
+      segment,
     } = inputFields;
 
     try {
@@ -95,12 +112,19 @@ export const useSubmitForm = (
         correlation_metric: correlationMetric,
         end_year: endYear.toString(),
       });
-      if (companyMetric !== undefined) {
-        urlParams.append('company_metric', companyMetric);
+      if (segment !== undefined && segment !== 'Total Revenue') {
+        urlParams.append('segment', segment);
       }
       if (ticker) {
         urlParams.append('stock', ticker);
       }
+
+      if (selectedDatasets) {
+        selectedDatasets.forEach((dataset) => {
+          urlParams.append('selected_datasets', dataset);
+        });
+      }
+
       const res = await fetch(`api/fetch?${urlParams.toString()}`);
       const jsonData = await handleResponseStatus(res);
 
@@ -125,6 +149,7 @@ export const useCorrelateInputText = (
 
   const correlateInputText = async (
     inputFields: z.infer<typeof inputFieldsSchema>,
+    selectedDatasets?: Array<string>,
   ) => {
     if (!inputFields.inputData) {
       alert('No input data');
@@ -140,6 +165,13 @@ export const useCorrelateInputText = (
         high_level_only: inputFields.highLevelOnly.toString(),
         correlation_metric: inputFields.correlationMetric,
       });
+
+      if (selectedDatasets) {
+        selectedDatasets.forEach((dataset) => {
+          urlParams.append('selected_datasets', dataset);
+        });
+      }
+
       const res = await fetch(
         `api/correlateinputdata?${urlParams.toString()}`,
         {

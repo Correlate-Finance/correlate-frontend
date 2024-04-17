@@ -1,43 +1,29 @@
-import { correlateIndex } from '@/app/api/actions';
+import { DatasetMetadata } from '@/app/api/schema';
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { convertToGraphData } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { CorrelationData, CorrelationDataPoint } from './Results';
-import DoubleLineChart from './chart/DoubleLineChart';
 import { Button } from './ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
 import { Input } from './ui/input';
 import { Separator } from './ui/separator';
-import { useToast } from './ui/use-toast';
 
-export default function IndexModal({
+export default function CreateIndexModal({
   data,
-  checkedRows,
 }: {
-  data: CorrelationData;
-  checkedRows: Set<number>;
+  data: DatasetMetadata[];
 }) {
-  const [correlationDataPoint, setCorrelationDataPoint] = useState<
-    CorrelationDataPoint | undefined
-  >();
-  const { toast } = useToast();
-
+  const totalRows = data.length;
   const correlateIndexFormSchema = z
     .object({
-      indexName: z.string().optional(),
-      percentages: z
-        .array(z.string().default((1 / checkedRows.size).toFixed(2)))
-        .min(checkedRows.size),
+      indexName: z.string(),
+      percentages: z.array(z.string()).min(totalRows),
     })
     .refine(
       (values) => {
@@ -48,7 +34,16 @@ export default function IndexModal({
       },
       {
         message: 'The sum should be 1',
-        path: [`percentages.${checkedRows.size - 1}`],
+        path: [`percentages.${totalRows - 1}`],
+      },
+    )
+    .refine(
+      (values) => {
+        values.indexName.trim().length > 0;
+      },
+      {
+        message: 'Index name is required',
+        path: ['indexName'],
       },
     );
 
@@ -56,22 +51,17 @@ export default function IndexModal({
     resolver: zodResolver(correlateIndexFormSchema),
     defaultValues: {
       indexName: '',
-      percentages: Array.from({ length: checkedRows.size }, () =>
-        (1 / checkedRows.size).toFixed(2),
+      percentages: Array.from({ length: totalRows }, () =>
+        (1 / totalRows).toFixed(2),
       ),
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof correlateIndexFormSchema>) => {
-    try {
-      const result = await correlateIndex(values, data, checkedRows);
-      setCorrelationDataPoint(result.data[0]);
-    } catch (e) {
-      toast({
-        title: 'Error fetching correlation data',
-        description: `${e}`,
-      });
-    }
+  const createIndex = async (
+    values: z.infer<typeof correlateIndexFormSchema>,
+  ) => {
+    await onSaveIndex(values);
+    return;
   };
 
   return (
@@ -79,7 +69,15 @@ export default function IndexModal({
       <DialogTrigger asChild>
         <Button
           className="bg-blue-800 text-white"
-          disabled={checkedRows.size > 5}
+          disabled={totalRows > 5}
+          onClick={() => {
+            form.setValue(
+              'percentages',
+              Array.from({ length: totalRows }, () =>
+                (1 / totalRows).toFixed(2),
+              ),
+            );
+          }}
         >
           Create Index
         </Button>
@@ -87,9 +85,9 @@ export default function IndexModal({
       <DialogContent>
         <DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(createIndex)}>
               <DialogTitle>
-                {/* Leaving this in because we will be adding this very soon.
+                <div className="flex flex-row items-center">
                   <FormField
                     control={form.control}
                     name="indexName"
@@ -98,29 +96,24 @@ export default function IndexModal({
                         <FormControl>
                           <Input
                             placeholder="Index Name"
-                            className="w-1/3"
+                            className="w-2/3"
                             {...field}
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
-                  /> */}
-                <p>Create Correlation Index</p>
+                  />
+                  <p>Create Correlation Index</p>
+                </div>
                 <Separator className="mt-2 dark:bg-white" />
               </DialogTitle>
 
               <ul>
-                {[...checkedRows].map((index, i) => (
-                  <li key={index}>
+                {[...data].map((dp, i) => (
+                  <li key={dp.series_id}>
                     <div className="flex flex-row justify-between m-1">
-                      <div className="flex flex-col w-4/5">
-                        <p className="text-sm">{data.data[index].title}</p>
-                        <p className="text-sm text-gray-500 ">
-                          Correlation:{' '}
-                          {data.data[index].pearson_value.toFixed(3)}
-                        </p>
-                      </div>
+                      <p className="text-sm">{dp.title}</p>
                       <div className="w-1/5 shrink-0">
                         <FormField
                           control={form.control}
@@ -130,9 +123,7 @@ export default function IndexModal({
                               <FormControl>
                                 <Input
                                   placeholder="Percentage"
-                                  defaultValue={(1 / checkedRows.size).toFixed(
-                                    2,
-                                  )}
+                                  defaultValue={(1 / totalRows).toFixed(2)}
                                   {...field}
                                 />
                               </FormControl>
@@ -142,34 +133,23 @@ export default function IndexModal({
                         />
                       </div>
                     </div>
-                    {i != checkedRows.size - 1 && (
-                      <Separator className="mt-2" />
-                    )}
+                    {i != totalRows - 1 && <Separator className="mt-2" />}
                   </li>
                 ))}
               </ul>
               <Separator className="mt-2 dark:bg-white" />
               <div className="flex justify-center">
                 <Button className="bg-blue-800 text-white my-2" type="submit">
-                  Correlate
+                  Save
                 </Button>
               </div>
             </form>
           </Form>
         </DialogHeader>
-        <DialogFooter>
-          {correlationDataPoint && (
-            <div className="w-3/4 m-auto flex-col items-center justify-center">
-              <p className="text-lg text-center">
-                {`Correlation Value: ${correlationDataPoint.pearson_value.toFixed(3)}`}
-              </p>
-              <DoubleLineChart
-                data={convertToGraphData(correlationDataPoint)}
-              />
-            </div>
-          )}
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
+}
+function onSaveIndex(values: { indexName: string; percentages: string[] }) {
+  throw new Error('Function not implemented.');
 }

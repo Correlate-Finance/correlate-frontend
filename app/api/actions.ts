@@ -5,6 +5,7 @@ import { inputFieldsSchema } from '@/hooks/usePage';
 import { authOptions } from '@/lib/configs/authOptions';
 import { getServerSession } from 'next-auth/next';
 import { z } from 'zod';
+import { DatasetMetadata } from './schema';
 import { getBaseUrl } from './util';
 
 export async function correlateIndex(
@@ -49,7 +50,7 @@ export async function correlateIndex(
   }
 }
 
-export async function getAllDatasetMetadata() {
+export async function getAllDatasetMetadata(): Promise<DatasetMetadata[]> {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -66,7 +67,57 @@ export async function getAllDatasetMetadata() {
   return data;
 }
 
-export async function getCompanyData(
+export const fetchWatchlistedRows = async (datasetTitles: string[]) => {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+
+  const response = await fetch(`${getBaseUrl()}/users/watchlisted`, {
+    method: 'POST',
+    body: JSON.stringify({
+      datasets: datasetTitles,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${session?.user.accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data;
+};
+
+export const addOrRemoveWatchlist = async (
+  clicked: boolean,
+  datasetTitle: string,
+) => {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+
+  const postData = {
+    method: 'POST',
+    body: JSON.stringify({
+      dataset: datasetTitle,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${session?.user.accessToken}`,
+    },
+  };
+
+  const response = await fetch(
+    `${getBaseUrl()}/${clicked ? `users/deletewatchlist` : `users/addwatchlist`}`,
+    postData,
+  );
+  const data = await response.json();
+  return data;
+};
+
+export async function getCompanySegments(
   values: z.infer<typeof inputFieldsSchema>,
 ) {
   const session = await getServerSession(authOptions);
@@ -89,13 +140,9 @@ export async function getCompanyData(
     urlParams.append('end_year', values.endYear.toString());
   }
 
-  if (values.companyMetric) {
-    urlParams.append('company_metric', values.companyMetric);
-  }
-
   try {
     const res = await fetch(
-      `${getBaseUrl()}/company_data?${urlParams.toString()}`,
+      `${getBaseUrl()}/segment_data?${urlParams.toString()}`,
       {
         headers: {
           Authorization: `Token ${session.user.accessToken}`,
@@ -108,7 +155,7 @@ export async function getCompanyData(
     }
 
     const data = await res.json();
-
+    // Extract only the top level segment names
     return data;
   } catch (error) {
     return Promise.reject(error);
@@ -157,4 +204,35 @@ export const changePassword = async (email: string, password: string) => {
   });
   const data = await response.json();
   return data;
+};
+
+export const saveIndex = async (
+  data: CorrelationData,
+  indexName: string,
+  percentages: number[],
+) => {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+
+  const response = await fetch(`${getBaseUrl()}/users/save-index/`, {
+    method: 'POST',
+    body: JSON.stringify({
+      index_name: indexName,
+      datasets: data.data.map((d, i) => ({
+        title: d.title,
+        percentage: percentages[i],
+      })),
+      aggregation_period: data.aggregationPeriod,
+      correlation_metric: data.correlationMetric,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${session.user.accessToken}`,
+    },
+  });
+  const json = await response.json();
+  return json;
 };

@@ -1,5 +1,7 @@
 'use client';
 
+import { DatasetMetadata } from '@/app/api/schema';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
   Pagination,
@@ -18,20 +20,84 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  inputFieldsSchema,
+  useCorrelateInputText,
+  useCorrelateResponseData,
+  useSubmitForm,
+} from '@/hooks/usePage';
+import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { z } from 'zod';
+import CorrelationCard from './CorrelationCard';
+import CorrelationResult from './CorrelationResult';
+import CreateIndexModal from './CreateIndexModal';
+import { Button } from './ui/button';
 
-export default function SearchableTable({ data }: { data: any[] }) {
+export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
   const [query, setQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
   const router = useRouter();
+  const [showResults, setShowResults] = useState(false);
+  const [toggleAllChecked, setToggleAllChecked] = useState(false);
 
-  const filteredData = data.filter(
-    (row) =>
-      row.title?.toLowerCase().includes(query.toLowerCase()) ||
-      row.series_id?.toLowerCase().includes(query.toLowerCase()),
+  const [checkedRows, setCheckedRows] = useState<Set<string>>(new Set());
+
+  const toggleCheckbox = (id: number, checked: boolean) => {
+    const newCheckedRows = new Set(checkedRows);
+    const value = filteredData[id].series_id;
+    if (checked) {
+      newCheckedRows.add(value);
+    } else if (newCheckedRows.has(value)) {
+      // Delete if the row exists and checked off
+      newCheckedRows.delete(value);
+    }
+
+    setCheckedRows(newCheckedRows);
+  };
+
+  const filteredData = useMemo(
+    () =>
+      data
+        .filter(
+          (row) =>
+            row.title?.toLowerCase().includes(query.toLowerCase()) ||
+            row.series_id?.toLowerCase().includes(query.toLowerCase()),
+        )
+        .sort((a, b) => {
+          const aIsChecked = checkedRows.has(a.series_id);
+          const bIsChecked = checkedRows.has(b.series_id);
+
+          if (aIsChecked && !bIsChecked) {
+            return -1; // 'a' comes first
+          }
+          if (!aIsChecked && bIsChecked) {
+            return 1; // 'b' comes first
+          }
+          return 0; // No change
+        }),
+    [data, query, checkedRows],
   );
+
+  const toggleAll = (checked: boolean) => {
+    setToggleAllChecked(checked);
+    const newCheckedRows = new Set(
+      Array.from(
+        { length: filteredData.length },
+        (_, i) => filteredData[i].series_id,
+      ),
+    );
+    if (checked) {
+      setCheckedRows((prevRows) => new Set([...prevRows, ...newCheckedRows]));
+    } else {
+      setCheckedRows(
+        (prevRows) =>
+          new Set([...prevRows].filter((x) => !newCheckedRows.has(x))),
+      );
+    }
+  };
 
   const pageCount = Math.ceil(filteredData.length / rowsPerPage);
 
@@ -84,76 +150,172 @@ export default function SearchableTable({ data }: { data: any[] }) {
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
+  const { correlateResponseData, setCorrelateResponseData } =
+    useCorrelateResponseData();
+
+  const { onSubmit, loading: loadingAutomatic } = useSubmitForm(
+    setCorrelateResponseData,
+  );
+
+  const { correlateInputText, loading: loadingManual } = useCorrelateInputText(
+    setCorrelateResponseData,
+  );
+
+  const onSubmitSelected = (
+    inputFields: z.infer<typeof inputFieldsSchema>,
+  ): void => {
+    setShowResults(true);
+    onSubmit(inputFields, [...checkedRows]);
+  };
 
   return (
     <div>
-      <Input
-        type="text"
-        placeholder="Search by Series ID or Title..."
-        onChange={(e) => {
-          setQuery(e.target.value);
-          setCurrentPage(1); // Reset to first page on new search
-        }}
-        className="w-3/4 m-auto mt-8 mb-4"
-      />
-
-      <Table className="mx-8 w-3/4 m-auto">
-        <TableHeader>
-          <TableRow>
-            <TableHead>Series ID</TableHead>
-            <TableHead>Title</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {currentRows.map((row) => (
-            <TableRow
-              key={row.series_id}
-              onClick={(e) => {
-                router.push(`/data/${row.series_id}`);
-              }}
-              className="cursor-pointer"
-            >
-              <TableCell>{row.series_id}</TableCell>
-              <TableCell>{row.title}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-
-      <Pagination>
-        <PaginationContent>
-          {currentPage > 1 && (
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => setCurrentPage(currentPage - 1)}
+      {!showResults && (
+        <div className="flex flex-row max-h-[90vh]">
+          <CorrelationCard
+            onAutomaticSubmit={onSubmitSelected}
+            loadingAutomatic={loadingAutomatic}
+            onManualSubmit={(x) => {
+              setShowResults(true);
+              correlateInputText(x, [...checkedRows]);
+            }}
+            loadingManual={loadingManual}
+          />
+          <div className="w-full mt-4 mx-8">
+            <div>
+              <Input
+                type="text"
+                placeholder="Search by Series ID or Title..."
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setToggleAllChecked(false);
+                  setCurrentPage(1); // Reset to first page on new search
+                }}
+                className="mb-4"
               />
-            </PaginationItem>
-          )}
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>
+                      <Checkbox
+                        checked={toggleAllChecked}
+                        onCheckedChange={(e) => {
+                          if (e !== 'indeterminate') {
+                            toggleAll(e);
+                          }
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </TableHead>
+                    <TableHead>Series ID</TableHead>
+                    <TableHead>Title</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {currentRows.map((row, index) => (
+                    <TableRow
+                      key={row.series_id}
+                      onClick={(e) => {
+                        router.push(`/data/${row.series_id}`);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <TableCell
+                        onClick={(e) => e.stopPropagation()}
+                        className="cursor-default"
+                      >
+                        <Checkbox
+                          checked={checkedRows.has(row.series_id)}
+                          onCheckedChange={(e) => {
+                            if (e !== 'indeterminate') {
+                              toggleCheckbox(
+                                index + (currentPage - 1) * rowsPerPage,
+                                e,
+                              );
+                            }
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </TableCell>
+                      <TableCell>{row.series_id}</TableCell>
+                      <TableCell>{row.title}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
 
-          {paginationNumbers().map((page) => (
-            <PaginationItem key={page}>
-              {(page === 'ellipsis1' || page === 'ellipsis2') && (
-                <PaginationEllipsis />
-              )}
-              {typeof page === 'number' && (
-                <PaginationLink
-                  onClick={() => setCurrentPage(page)}
-                  isActive={currentPage === page}
-                  className="cursor-pointer"
-                >
-                  {page}
-                </PaginationLink>
-              )}
-            </PaginationItem>
-          ))}
+              <Pagination>
+                <PaginationContent>
+                  {currentPage > 1 && (
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                      />
+                    </PaginationItem>
+                  )}
 
-          {currentPage < pageCount && (
-            <PaginationItem>
-              <PaginationNext onClick={() => setCurrentPage(currentPage + 1)} />
-            </PaginationItem>
-          )}
-        </PaginationContent>
-      </Pagination>
+                  {paginationNumbers().map((page) => (
+                    <PaginationItem key={page}>
+                      {(page === 'ellipsis1' || page === 'ellipsis2') && (
+                        <PaginationEllipsis />
+                      )}
+                      {typeof page === 'number' && (
+                        <PaginationLink
+                          onClick={() => setCurrentPage(page)}
+                          isActive={currentPage === page}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      )}
+                    </PaginationItem>
+                  ))}
+
+                  {currentPage < pageCount && (
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                      />
+                    </PaginationItem>
+                  )}
+                </PaginationContent>
+              </Pagination>
+            </div>
+          </div>
+        </div>
+      )}
+      {!showResults && checkedRows.size > 0 && (
+        <div className="sticky bottom-0 flex flex-row backdrop-blur mx-8 justify-end gap-4">
+          <Button
+            variant="destructive"
+            onClick={() => setCheckedRows(new Set([]))}
+            className="dark:bg-red-700 dark:hover:bg-red-900"
+          >
+            Clear {checkedRows.size} Selected
+          </Button>
+
+          <CreateIndexModal
+            data={data.filter((dp) => checkedRows.has(dp.series_id))}
+          />
+        </div>
+      )}
+
+      {showResults && (
+        <div>
+          <button
+            className="cursor-pointer flex flex-row ml-6 mt-4 items-center"
+            onClick={() => setShowResults(false)}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <p>Search</p>
+          </button>
+          <CorrelationResult
+            data={correlateResponseData}
+            lagPeriods={0}
+            inputData={[]}
+          />
+        </div>
+      )}
     </div>
   );
 }
