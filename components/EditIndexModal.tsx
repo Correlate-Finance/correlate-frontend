@@ -16,6 +16,7 @@ import { Input } from './ui/input';
 import { Separator } from './ui/separator';
 import { useToast } from './ui/use-toast';
 
+import { IndexDataset } from '@/app/api/schema';
 import { SquarePen } from 'lucide-react';
 
 export default function EditIndexModal({ data }: { data: CorrelationData }) {
@@ -82,14 +83,13 @@ export default function EditIndexModal({ data }: { data: CorrelationData }) {
     values: z.infer<typeof correlateIndexFormSchema>,
   ) => {
     try {
-      const percentages = values.percentages.map((p) => Number(p));
-      const correlationData: CorrelationData = {
-        data: Array(data.data.length).map((i) => data.data[i]),
-        aggregationPeriod: data.aggregationPeriod,
-        correlationMetric: data.correlationMetric,
-      };
-
-      await saveIndex(correlationData, values.indexName, percentages);
+      const indexDatasets: IndexDataset[] = data.data.map((dp, i) => {
+        return {
+          title: dp.title,
+          percentage: values.percentages[i],
+        };
+      });
+      await saveIndex(indexDatasets, values.indexName);
       toast({
         title: 'Index saved',
         description: `Index ${values.indexName} has been saved`,
