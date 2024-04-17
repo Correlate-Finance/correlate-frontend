@@ -152,6 +152,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
                   onBrushChange={onBrushChange}
                   correlation={correlation}
                 />
+                <p className="text-gray-300 pl-16">Source: FRED</p>
               </div>
               <Button
                 onClick={() => router.push(`/data/${dp.internal_name}`)}
