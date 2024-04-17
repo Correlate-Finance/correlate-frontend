@@ -1,5 +1,6 @@
 'use server';
 
+import { registerFieldsSchema } from '@/app/register/page';
 import { CorrelationData } from '@/components/Results';
 import { inputFieldsSchema } from '@/hooks/usePage';
 import { authOptions } from '@/lib/configs/authOptions';
@@ -7,6 +8,24 @@ import { getServerSession } from 'next-auth/next';
 import { z } from 'zod';
 import { DatasetMetadata } from './schema';
 import { getBaseUrl } from './util';
+
+export async function registerUser(
+  values: z.infer<typeof registerFieldsSchema>,
+) {
+  const response = await fetch(`${getBaseUrl()}/users/register`, {
+    method: 'POST',
+    body: JSON.stringify({
+      email: values.email,
+      name: values.name,
+      password: values.password,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const data = await response.json();
+  return data;
+}
 
 export async function correlateIndex(
   values: { indexName?: string; percentages: string[] },

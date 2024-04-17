@@ -30,7 +30,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { set, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 import { changePassword, sendOTP, verifyOTP } from '@/app/api/actions';
@@ -190,10 +190,17 @@ const ResetPassword = () => {
                 </InputOTPGroup>
               </InputOTP>
             </div>
+
             <div className="flex justify-center">
               <Button onClick={onOTPSubmit} disabled={otp.length < 6}>
                 Enter
               </Button>
+            </div>
+            <div className="flex justify-center gap-4 text-sm pt-4 text-blue-400">
+              <button onClick={() => sendOTP(email)}>Resend OTP</button>
+              <button onClick={() => setEmailSubmitted(false)}>
+                Change Email
+              </button>
             </div>
           </React.Fragment>
         ) : (
