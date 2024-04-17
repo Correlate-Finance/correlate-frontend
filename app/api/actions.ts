@@ -141,3 +141,20 @@ export const saveIndex = async (
   const json = await response.json();
   return json;
 };
+
+export async function getAllIndices() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+
+  const baseUrl = getBaseUrl();
+  const response = await fetch(`${baseUrl}/get-indices`, {
+    headers: {
+      Authorization: `Token ${session.user.accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data;
+}

@@ -32,7 +32,7 @@ import CorrelationCard from './CorrelationCard';
 import Results from './Results';
 import { Button } from './ui/button';
 
-import { SquarePen } from 'lucide-react';
+import EditIndexModal from './EditIndexModal';
 
 export default function SearchableIndexTable({ data }: { data: any[] }) {
   const [query, setQuery] = useState('');
@@ -46,7 +46,7 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
 
   const toggleCheckbox = (id: number, checked: boolean) => {
     const newCheckedRows = new Set(checkedRows);
-    const value = filteredData[id].series_id;
+    const value = filteredData[id].id;
     if (checked) {
       newCheckedRows.add(value);
     } else if (newCheckedRows.has(value)) {
@@ -58,16 +58,13 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
   };
 
   const filteredData = data.filter((row) =>
-    row.title?.toLowerCase().includes(query.toLowerCase()),
+    row.name?.toLowerCase().includes(query.toLowerCase()),
   );
 
   const toggleAll = (checked: boolean) => {
     setToggleAllChecked(checked);
     const newCheckedRows = new Set(
-      Array.from(
-        { length: filteredData.length },
-        (_, i) => filteredData[i].series_id,
-      ),
+      Array.from({ length: filteredData.length }, (_, i) => filteredData[i].id),
     );
     if (checked) {
       setCheckedRows((prevRows) => new Set([...prevRows, ...newCheckedRows]));
@@ -164,7 +161,7 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
           <>
             <Input
               type="text"
-              placeholder="Search by Title..."
+              placeholder="Search by Index name..."
               onChange={(e) => {
                 setQuery(e.target.value);
                 setToggleAllChecked(false);
@@ -187,15 +184,15 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
                       onClick={(e) => e.stopPropagation()}
                     />
                   </TableHead>
-                  <TableHead>Title</TableHead>
+                  <TableHead>Name</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {currentRows.map((row, index) => (
                   <TableRow
-                    key={row.series_id}
+                    key={row.id}
                     onClick={(e) => {
-                      router.push(`/data/${row.series_id}`);
+                      router.push(`/data/${row.name}`);
                     }}
                     className="cursor-pointer"
                   >
@@ -204,7 +201,7 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
                       className="cursor-default"
                     >
                       <Checkbox
-                        checked={checkedRows.has(row.series_id)}
+                        checked={checkedRows.has(row.id)}
                         onCheckedChange={(e) => {
                           if (e !== 'indeterminate') {
                             toggleCheckbox(
@@ -216,18 +213,19 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
                         onClick={(e) => e.stopPropagation()}
                       />
                     </TableCell>
-                    <TableCell>{row.title}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/data/${row.series_id}/edit`);
+                    <TableCell>{row.name}</TableCell>
+                    <TableCell
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <EditIndexModal
+                        data={{
+                          data: [],
+                          aggregationPeriod: '',
+                          correlationMetric: '',
                         }}
-                      >
-                        <SquarePen size={20} />
-                      </Button>
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
