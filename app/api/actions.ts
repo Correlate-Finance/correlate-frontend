@@ -1,7 +1,11 @@
 'use server';
+
 import { CorrelationData } from '@/components/Results';
+import { inputFieldsSchema } from '@/hooks/usePage';
 import { authOptions } from '@/lib/configs/authOptions';
 import { getServerSession } from 'next-auth/next';
+import { z } from 'zod';
+import { DatasetMetadata } from './schema';
 import { getBaseUrl } from './util';
 
 export async function correlateIndex(
@@ -46,7 +50,7 @@ export async function correlateIndex(
   }
 }
 
-export async function getAllDatasetMetadata() {
+export async function getAllDatasetMetadata(): Promise<DatasetMetadata[]> {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -111,4 +115,80 @@ export const addOrRemoveWatchlist = async (
   );
   const data = await response.json();
   return data;
+};
+
+export async function getCompanySegments(
+  values: z.infer<typeof inputFieldsSchema>,
+) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Response.json({ error: 'Unauthorized', status: 401 });
+  }
+
+  if (values.ticker === undefined) {
+    return Response.json({ error: 'No stock provided', status: 400 });
+  }
+
+  const urlParams = new URLSearchParams({
+    aggregation_period: values.aggregationPeriod,
+    stock: values.ticker,
+    start_year: values.startYear.toString(),
+  });
+
+  if (values.endYear) {
+    urlParams.append('end_year', values.endYear.toString());
+  }
+
+  try {
+    const res = await fetch(
+      `${getBaseUrl()}/segment_data?${urlParams.toString()}`,
+      {
+        headers: {
+          Authorization: `Token ${session.user.accessToken}`,
+        },
+      },
+    );
+
+    if (!res.ok) {
+      return Promise.reject('Unable to fetch data from the server');
+    }
+
+    const data = await res.json();
+    // Extract only the top level segment names
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+export const saveIndex = async (
+  data: CorrelationData,
+  indexName: string,
+  percentages: number[],
+) => {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+
+  const response = await fetch(`${getBaseUrl()}/users/save-index/`, {
+    method: 'POST',
+    body: JSON.stringify({
+      index_name: indexName,
+      datasets: data.data.map((d, i) => ({
+        title: d.title,
+        percentage: percentages[i],
+      })),
+      aggregation_period: data.aggregationPeriod,
+      correlation_metric: data.correlationMetric,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${session.user.accessToken}`,
+    },
+  });
+  const json = await response.json();
+  return json;
 };

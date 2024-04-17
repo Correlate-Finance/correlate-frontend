@@ -24,11 +24,13 @@ import {
 } from '@/hooks/usePage';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import DOMPurify from 'isomorphic-dompurify';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
+import { getCompanySegments } from './api/actions';
 
 const HomePage = () => {
   const [tabValue, setTabValue] = useLocalStorage('tabValue', 'Manual');
+  const [segments, setSegments] = useState([] as string[]);
   const [inputFields, setInputFields] = useLocalStorage<
     z.infer<typeof inputFieldsSchema>
   >('inputFields', {
@@ -36,10 +38,12 @@ const HomePage = () => {
     inputData: '',
     fiscalYearEnd: 'December',
     startYear: 2010,
+    endYear: 2024,
     aggregationPeriod: 'Quarterly',
     correlationMetric: 'RAW_VALUE',
     lagPeriods: 0,
     highLevelOnly: true,
+    segment: 'Total Revenue',
   });
 
   const { correlateResponseData, setCorrelateResponseData } =
@@ -101,6 +105,16 @@ const HomePage = () => {
     return table;
   }
 
+  useEffect(() => {
+    const fetchSegments = async () => {
+      const data = await getCompanySegments(inputFields);
+      const segments = data.map((x: any) => x.segment);
+      setSegments(['Total Revenue'].concat(segments));
+    };
+
+    fetchSegments();
+  }, [inputFields]);
+
   return (
     <div className="flex overflow-scroll max-h-[90vh]">
       <Card className="dark:bg-[#1b1b26] bg-gray-100 m-4 w-[300px] border-0 sticky top-4">
@@ -120,7 +134,7 @@ const HomePage = () => {
             </TabsList>
             <TabsContent
               value="Automatic"
-              className="flex flex-col md:flex-col [&>*]:whitespace-nowrap [&>*]:mt-4 [&>*]:mx-4"
+              className="flex flex-col md:flex-col [&>*]:whitespace-nowrap [&>*]:mt-3 [&>*]:mx-4"
             >
               <div>
                 <p className="text-sm text-opacity-80">Ticker</p>
@@ -137,6 +151,26 @@ const HomePage = () => {
                 />
               </div>
               <div>
+                <p className="text-sm text-opacity-80">Company Metric</p>
+                <Select
+                  onValueChange={(e: string) =>
+                    setInputFields({ ...inputFields, segment: e })
+                  }
+                  defaultValue={inputFields.segment?.toString()}
+                >
+                  <SelectTrigger data-testid="segment">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {segments.map((segment) => (
+                      <SelectItem value={segment} key={segment}>
+                        {segment}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
                 <p className="text-sm text-opacity-80">Start Year</p>
                 <Input
                   placeholder="2010"
@@ -147,6 +181,20 @@ const HomePage = () => {
                     });
                   }}
                   defaultValue={inputFields.startYear.toString()}
+                  data-testid="automatic-start-year"
+                />
+              </div>
+              <div>
+                <p className="text-sm text-opacity-80">End Year</p>
+                <Input
+                  placeholder="2024"
+                  onChange={(e) => {
+                    setInputFields({
+                      ...inputFields,
+                      endYear: Number(e.target.value),
+                    });
+                  }}
+                  defaultValue={inputFields.endYear?.toString()}
                   data-testid="automatic-start-year"
                 />
               </div>
@@ -228,10 +276,10 @@ const HomePage = () => {
       <div className="m-5 flex flex-row justify-between w-3/4 gap-8">
         <div className="w-min">
           {(inputFields.inputData && tabValue === 'Manual' && (
-            <InputData data={generateTabularData()} tab={tabValue} />
+            <InputData data={generateTabularData()} />
           )) ||
             (revenueData && tabValue === 'Automatic' && (
-              <InputData data={revenueData} tab={tabValue} />
+              <InputData data={revenueData} />
             ))}
         </div>
         <div className="flex-1">

@@ -89,9 +89,6 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
 
   return (
     <>
-      <div className="flex flex-row gap-1">
-        <h2 className="ml-4 flex-1">Correlations</h2>
-      </div>
       <div className="border-white">
         <Table className="w-full">
           <TableCaption>Top Correlations with the data.</TableCaption>

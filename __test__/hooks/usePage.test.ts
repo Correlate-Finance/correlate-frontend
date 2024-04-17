@@ -12,6 +12,7 @@ const originalFetch = global.fetch;
 const DEFAULT_INPUT_FIELDS = {
   ticker: 'AAPL',
   startYear: 2020,
+  endYear: 2024,
   aggregationPeriod: 'monthly',
   lagPeriods: 0,
   highLevelOnly: false,
