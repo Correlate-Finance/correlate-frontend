@@ -1,7 +1,7 @@
 'use client';
 
 import { getAllDatasetMetadata } from '@/app/api/actions';
-import SearchableTable from '@/components/SearchableTable';
+import SearchableIndexTable from '@/components/SearchableIndexTable';
 import { useEffect, useState } from 'react';
 
 const IndexExplorerPage = () => {
@@ -15,7 +15,7 @@ const IndexExplorerPage = () => {
     fetchData();
   }, []);
 
-  return <SearchableTable data={data} />;
+  return <SearchableIndexTable data={data} />;
 };
 
 export default IndexExplorerPage;
