@@ -67,6 +67,56 @@ export async function getAllDatasetMetadata(): Promise<DatasetMetadata[]> {
   return data;
 }
 
+export const fetchWatchlistedRows = async (datasetTitles: string[]) => {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+
+  const response = await fetch(`${getBaseUrl()}/users/watchlisted`, {
+    method: 'POST',
+    body: JSON.stringify({
+      datasets: datasetTitles,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${session?.user.accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data;
+};
+
+export const addOrRemoveWatchlist = async (
+  clicked: boolean,
+  datasetTitle: string,
+) => {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+
+  const postData = {
+    method: 'POST',
+    body: JSON.stringify({
+      dataset: datasetTitle,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Token ${session?.user.accessToken}`,
+    },
+  };
+
+  const response = await fetch(
+    `${getBaseUrl()}/${clicked ? `users/deletewatchlist` : `users/addwatchlist`}`,
+    postData,
+  );
+  const data = await response.json();
+  return data;
+};
+
 export async function getCompanySegments(
   values: z.infer<typeof inputFieldsSchema>,
 ) {
