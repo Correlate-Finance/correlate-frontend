@@ -27,6 +27,11 @@ export interface DatasetMetadata {
   title: string;
 }
 
+export interface IndexDataset {
+  title: string;
+  percentage: string;
+}
+
 export const registerFieldsSchema = z
   .object({
     email: z.string().min(1).max(255),

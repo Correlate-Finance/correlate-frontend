@@ -1,63 +1,55 @@
-import { correlateIndex, saveIndex } from '@/app/api/actions';
-import { IndexDataset } from '@/app/api/schema';
+import { saveIndex } from '@/app/api/actions';
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { convertToGraphData } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { CorrelationData, CorrelationDataPoint } from './Results';
-import DoubleLineChart from './chart/DoubleLineChart';
+import { CorrelationData } from './Results';
 import { Button } from './ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
 import { Input } from './ui/input';
 import { Separator } from './ui/separator';
 import { useToast } from './ui/use-toast';
 
-export default function IndexModal({
-  data,
-  checkedRows,
-}: {
-  data: CorrelationData;
-  checkedRows: Set<number>;
-}) {
-  const [correlationDataPoint, setCorrelationDataPoint] = useState<
-    CorrelationDataPoint | undefined
-  >();
+import { SquarePen } from 'lucide-react';
+
+export default function EditIndexModal({ data }: { data: CorrelationData }) {
+  if (!data) {
+    data = {
+      data: [],
+      aggregationPeriod: '',
+      correlationMetric: '',
+    };
+  }
   const { toast } = useToast();
 
   const correlateIndexFormSchema = z
     .object({
       indexName: z.string(),
       percentages: z
-        .array(z.string().default((1 / checkedRows.size).toFixed(2)))
-        .min(checkedRows.size),
-      button: z.string(),
+        .array(z.string().default((1 / data.data.length).toFixed(2)))
+        .min(data.data.length),
     })
     .refine(
-      (values) => {
-        const sum = values.percentages.reduce((acc, curr) => {
+      (data) => {
+        const sum = data.percentages.reduce((acc, curr) => {
           return acc + Number(curr);
         }, 0);
         return sum >= 0.99 && sum <= 1.0;
       },
       {
         message: 'The sum should be 1',
-        path: [`percentages.${checkedRows.size - 1}`],
+        path: [`percentages.${data.data.length - 1}`],
       },
     )
     .refine(
       (data) => {
-        return data.button === 'correlate'
-          ? true
-          : data.indexName.trim().length > 0;
+        return data.indexName.trim().length > 0;
       },
       {
         message: 'Index name is required',
@@ -69,78 +61,65 @@ export default function IndexModal({
     resolver: zodResolver(correlateIndexFormSchema),
     defaultValues: {
       indexName: '',
-      percentages: Array.from({ length: checkedRows.size }, () =>
-        (1 / checkedRows.size).toFixed(2),
+      percentages: Array.from({ length: data.data.length }, () =>
+        (1 / data.data.length).toFixed(2),
       ),
-      button: 'correlate',
     },
   });
 
   const onSubmit = async (values: z.infer<typeof correlateIndexFormSchema>) => {
-    if (values.button === 'save') {
-      await onSaveIndex(values);
-      return;
-    }
     try {
-      const result = await correlateIndex(values, data, checkedRows);
-      setCorrelationDataPoint(result.data[0]);
+      await onSaveIndex(values);
     } catch (e) {
       toast({
-        title: 'Error fetching correlation data',
+        title: 'Error updating correlation data',
         description: `${e}`,
       });
     }
   };
 
-  const onSaveIndex = useMemo(
-    () => async (values: z.infer<typeof correlateIndexFormSchema>) => {
-      try {
-        const indexDatasets: IndexDataset[] = Array.from(checkedRows).map(
-          (checkedIndex, i) => {
-            return {
-              title: data.data[checkedIndex].title,
-              percentage: values.percentages[i],
-            };
-          },
-        );
-        await saveIndex(indexDatasets, values.indexName);
-        toast({
-          title: 'Index saved',
-          description: `Index ${values.indexName} has been saved`,
-        });
-      } catch (e) {
-        toast({
-          title: 'Error saving index',
-          description: `${e}`,
-        });
-      }
-    },
-    [checkedRows, data, toast],
-  );
+  const onSaveIndex = async (
+    values: z.infer<typeof correlateIndexFormSchema>,
+  ) => {
+    try {
+      const percentages = values.percentages.map((p) => Number(p));
+      const correlationData: CorrelationData = {
+        data: Array(data.data.length).map((i) => data.data[i]),
+        aggregationPeriod: data.aggregationPeriod,
+        correlationMetric: data.correlationMetric,
+      };
+
+      await saveIndex(correlationData, values.indexName, percentages);
+      toast({
+        title: 'Index saved',
+        description: `Index ${values.indexName} has been saved`,
+      });
+    } catch (e) {
+      toast({
+        title: 'Error saving index',
+        description: `${e}`,
+      });
+    }
+  };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className="bg-blue-800 text-white"
-          disabled={checkedRows.size > 5}
-          onClick={() => {
-            form.setValue(
-              'percentages',
-              Array.from({ length: checkedRows.size }, () =>
-                (1 / checkedRows.size).toFixed(2),
-              ),
-            );
+          variant="outline"
+          size="icon"
+          onClick={(e) => {
+            e.stopPropagation();
           }}
         >
-          Create Index
+          <SquarePen size={20} />
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <p>Create Correlation Index</p>
+              <p>Edit Correlation Index</p>
               <Separator className="mt-4 mb-6 dark:bg-white" />
               <DialogTitle className="mb-6">
                 <FormField
@@ -162,7 +141,7 @@ export default function IndexModal({
               </DialogTitle>
 
               <ul>
-                {[...checkedRows].map((index, i) => (
+                {Array(data.data.length).map((index, i) => (
                   <li key={index}>
                     <div className="flex flex-row justify-between m-1">
                       <div className="flex flex-col w-4/5">
@@ -187,7 +166,7 @@ export default function IndexModal({
                         />
                       </div>
                     </div>
-                    {i != checkedRows.size - 1 && (
+                    {i != data.data.length - 1 && (
                       <Separator className="mt-2" />
                     )}
                   </li>
@@ -198,14 +177,6 @@ export default function IndexModal({
                 <Button
                   className="bg-blue-800 text-white my-2 mx-2"
                   type="submit"
-                  onClick={() => form.setValue('button', 'correlate')}
-                >
-                  Correlate
-                </Button>
-                <Button
-                  className="bg-blue-800 text-white my-2 mx-2"
-                  type="submit"
-                  onClick={() => form.setValue('button', 'save')}
                 >
                   Save Index
                 </Button>
@@ -213,18 +184,6 @@ export default function IndexModal({
             </form>
           </Form>
         </DialogHeader>
-        <DialogFooter>
-          {correlationDataPoint && (
-            <div className="w-3/4 m-auto flex-col items-center justify-center">
-              <p className="text-lg text-center">
-                {`Correlation Value: ${correlationDataPoint.pearson_value.toFixed(3)}`}
-              </p>
-              <DoubleLineChart
-                data={convertToGraphData(correlationDataPoint)}
-              />
-            </div>
-          )}
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
