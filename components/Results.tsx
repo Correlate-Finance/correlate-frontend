@@ -89,7 +89,9 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
                 key={`${dp.title}-${dp.lag}`}
                 index={index}
                 toggleCheckbox={toggleCheckbox}
-                addedToWatchlist={watchlistedRows[index]}
+                addedToWatchlist={
+                  watchlistedRows ? watchlistedRows[index] : false
+                }
               />
             ))}
           </TableBody>
