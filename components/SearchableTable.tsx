@@ -48,7 +48,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
 
   const toggleCheckbox = (id: number, checked: boolean) => {
     const newCheckedRows = new Set(checkedRows);
-    const value = filteredData[id].series_id;
+    const value = filteredData[id].internal_name;
     if (checked) {
       newCheckedRows.add(value);
     } else if (newCheckedRows.has(value)) {
@@ -64,12 +64,12 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
       data
         .filter(
           (row) =>
-            row.title?.toLowerCase().includes(query.toLowerCase()) ||
-            row.series_id?.toLowerCase().includes(query.toLowerCase()),
+            row.external_name?.toLowerCase().includes(query.toLowerCase()) ||
+            row.internal_name?.toLowerCase().includes(query.toLowerCase()),
         )
         .sort((a, b) => {
-          const aIsChecked = checkedRows.has(a.series_id);
-          const bIsChecked = checkedRows.has(b.series_id);
+          const aIsChecked = checkedRows.has(a.internal_name);
+          const bIsChecked = checkedRows.has(b.internal_name);
 
           if (aIsChecked && !bIsChecked) {
             return -1; // 'a' comes first
@@ -87,7 +87,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
     const newCheckedRows = new Set(
       Array.from(
         { length: filteredData.length },
-        (_, i) => filteredData[i].series_id,
+        (_, i) => filteredData[i].internal_name,
       ),
     );
     if (checked) {
@@ -210,16 +210,18 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
                       onClick={(e) => e.stopPropagation()}
                     />
                   </TableHead>
-                  <TableHead>Series ID</TableHead>
                   <TableHead>Title</TableHead>
+                  <TableHead>Source</TableHead>
+                  <TableHead>Release</TableHead>
+                  <TableHead>Units</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {currentRows.map((row, index) => (
                   <TableRow
-                    key={row.series_id}
+                    key={row.internal_name}
                     onClick={(e) => {
-                      router.push(`/data/${row.series_id}`);
+                      router.push(`/data/${row.internal_name}`);
                     }}
                     className="cursor-pointer"
                   >
@@ -228,7 +230,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
                       className="cursor-default"
                     >
                       <Checkbox
-                        checked={checkedRows.has(row.series_id)}
+                        checked={checkedRows.has(row.internal_name)}
                         onCheckedChange={(e) => {
                           if (e !== 'indeterminate') {
                             toggleCheckbox(
@@ -240,8 +242,10 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
                         onClick={(e) => e.stopPropagation()}
                       />
                     </TableCell>
-                    <TableCell>{row.series_id}</TableCell>
-                    <TableCell>{row.title}</TableCell>
+                    <TableCell>{row.external_name}</TableCell>
+                    <TableCell>{row.source}</TableCell>
+                    <TableCell>{row.release}</TableCell>
+                    <TableCell>{row.units}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -314,7 +318,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
           </Button>
 
           <CreateIndexModal
-            data={data.filter((dp) => checkedRows.has(dp.series_id))}
+            data={data.filter((dp) => checkedRows.has(dp.internal_name))}
           />
         </div>
       )}

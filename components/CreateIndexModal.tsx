@@ -57,7 +57,7 @@ export default function CreateIndexModal({
     try {
       const indexDatasets: IndexDataset[] = data.map((metadata, i) => {
         return {
-          title: metadata.title,
+          title: metadata.external_name,
           percentage: values.percentages[i],
         };
       });
@@ -128,9 +128,9 @@ export default function CreateIndexModal({
 
               <ul>
                 {[...data].map((dp, i) => (
-                  <li key={dp.series_id}>
+                  <li key={dp.internal_name}>
                     <div className="flex flex-row justify-between m-1">
-                      <p className="text-sm">{dp.title}</p>
+                      <p className="text-sm">{dp.external_name}</p>
                       <div className="w-1/5 shrink-0">
                         <FormField
                           control={form.control}

@@ -23,8 +23,15 @@ export interface DataTrendPoint {
 }
 
 export interface DatasetMetadata {
-  series_id: string;
-  title: string;
+  internal_name: string;
+  external_name: string;
+  description: string;
+  source: string;
+  url: string;
+  release: string;
+  popularity: number;
+  categories: string[];
+  units: string;
 }
 
 export interface IndexDataset {
