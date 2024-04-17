@@ -26,6 +26,7 @@ export type CorrelationData = {
 
 export type CorrelationDataPoint = {
   title: string;
+  internal_name: string;
   pearson_value: number;
   p_value: number;
   lag: number;
@@ -34,7 +35,9 @@ export type CorrelationDataPoint = {
   dates: string[];
   source?: string;
   description?: string;
-  internal_name: string;
+  release?: string;
+  url?: string;
+  units?: string;
 };
 
 const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
