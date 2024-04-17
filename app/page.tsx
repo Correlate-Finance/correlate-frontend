@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import {
   inputFieldsSchema,
+  useCorrelateInputData,
   useCorrelateInputText,
   useCorrelateResponseData,
   useSubmitForm,
@@ -48,11 +49,14 @@ const HomePage = () => {
 
   const { correlateResponseData, setCorrelateResponseData } =
     useCorrelateResponseData();
-  const { onSubmit, loading, hasData, revenueData } = useSubmitForm(
+  const { correlateInputData, setCorrelateInputData } = useCorrelateInputData();
+
+  const { onSubmit, loading, hasData } = useSubmitForm(
     setCorrelateResponseData,
+    setCorrelateInputData,
   );
   const { correlateInputText, loading: loadingCorrelate } =
-    useCorrelateInputText(setCorrelateResponseData);
+    useCorrelateInputText(setCorrelateResponseData, setCorrelateInputData);
 
   async function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
     e.preventDefault();
@@ -89,20 +93,6 @@ const HomePage = () => {
       ...inputFields,
       inputData: table.map((row) => row.join('\t')).join('\n'),
     });
-  }
-
-  function generateTabularData() {
-    let rows = inputFields.inputData?.split('\n');
-    let table: string[][] = [];
-
-    rows?.forEach((row) => {
-      table.push(row.split('\t'));
-    });
-    // Transpose table
-    if (table.length == 2) {
-      table = table[0].map((_, colIndex) => table.map((row) => row[colIndex]));
-    }
-    return table;
   }
 
   useEffect(() => {
@@ -275,12 +265,7 @@ const HomePage = () => {
       {/* <Separator orientation="vertical" className="my-40 w-4 border-white" /> */}
       <div className="m-5 flex flex-row justify-between w-3/4 gap-8">
         <div className="w-min">
-          {(inputFields.inputData && tabValue === 'Manual' && (
-            <InputData data={generateTabularData()} />
-          )) ||
-            (revenueData && tabValue === 'Automatic' && (
-              <InputData data={revenueData} />
-            ))}
+          <InputData data={correlateInputData} />
         </div>
         <div className="flex-1">
           {hasData && (

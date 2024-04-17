@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/table';
 import {
   inputFieldsSchema,
+  useCorrelateInputData,
   useCorrelateInputText,
   useCorrelateResponseData,
   useSubmitForm,
@@ -152,13 +153,16 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
   const { correlateResponseData, setCorrelateResponseData } =
     useCorrelateResponseData();
+  const { correlateInputData, setCorrelateInputData } = useCorrelateInputData();
 
   const { onSubmit, loading: loadingAutomatic } = useSubmitForm(
     setCorrelateResponseData,
+    setCorrelateInputData,
   );
 
   const { correlateInputText, loading: loadingManual } = useCorrelateInputText(
     setCorrelateResponseData,
+    setCorrelateInputData,
   );
 
   const onSubmitSelected = (
@@ -170,122 +174,137 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
 
   return (
     <div>
-      {!showResults && (
-        <div className="flex flex-row max-h-[90vh]">
-          <CorrelationCard
-            onAutomaticSubmit={onSubmitSelected}
-            loadingAutomatic={loadingAutomatic}
-            onManualSubmit={(x) => {
-              setShowResults(true);
-              correlateInputText(x, [...checkedRows]);
-            }}
-            loadingManual={loadingManual}
-          />
-          <div className="w-full mt-4 mx-8">
-            <div>
-              <Input
-                type="text"
-                placeholder="Search by Series ID or Title..."
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setToggleAllChecked(false);
-                  setCurrentPage(1); // Reset to first page on new search
-                }}
-                className="mb-4"
-              />
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>
+      <div className="flex flex-row">
+        <CorrelationCard
+          onAutomaticSubmit={onSubmitSelected}
+          loadingAutomatic={loadingAutomatic}
+          onManualSubmit={(x) => {
+            setShowResults(true);
+            correlateInputText(x, [...checkedRows]);
+          }}
+          loadingManual={loadingManual}
+        />
+        {!showResults && (
+          <div className="w-2/3 mt-4 mx-8">
+            <Input
+              type="text"
+              placeholder="Search by Series ID or Title..."
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setToggleAllChecked(false);
+                setCurrentPage(1); // Reset to first page on new search
+              }}
+              className="mb-4"
+            />
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>
+                    <Checkbox
+                      checked={toggleAllChecked}
+                      onCheckedChange={(e) => {
+                        if (e !== 'indeterminate') {
+                          toggleAll(e);
+                        }
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </TableHead>
+                  <TableHead>Series ID</TableHead>
+                  <TableHead>Title</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentRows.map((row, index) => (
+                  <TableRow
+                    key={row.series_id}
+                    onClick={(e) => {
+                      router.push(`/data/${row.series_id}`);
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <TableCell
+                      onClick={(e) => e.stopPropagation()}
+                      className="cursor-default"
+                    >
                       <Checkbox
-                        checked={toggleAllChecked}
+                        checked={checkedRows.has(row.series_id)}
                         onCheckedChange={(e) => {
                           if (e !== 'indeterminate') {
-                            toggleAll(e);
+                            toggleCheckbox(
+                              index + (currentPage - 1) * rowsPerPage,
+                              e,
+                            );
                           }
                         }}
                         onClick={(e) => e.stopPropagation()}
                       />
-                    </TableHead>
-                    <TableHead>Series ID</TableHead>
-                    <TableHead>Title</TableHead>
+                    </TableCell>
+                    <TableCell>{row.series_id}</TableCell>
+                    <TableCell>{row.title}</TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {currentRows.map((row, index) => (
-                    <TableRow
-                      key={row.series_id}
-                      onClick={(e) => {
-                        router.push(`/data/${row.series_id}`);
-                      }}
-                      className="cursor-pointer"
-                    >
-                      <TableCell
-                        onClick={(e) => e.stopPropagation()}
-                        className="cursor-default"
+                ))}
+              </TableBody>
+            </Table>
+
+            <Pagination>
+              <PaginationContent>
+                {currentPage > 1 && (
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                    />
+                  </PaginationItem>
+                )}
+
+                {paginationNumbers().map((page) => (
+                  <PaginationItem key={page}>
+                    {(page === 'ellipsis1' || page === 'ellipsis2') && (
+                      <PaginationEllipsis />
+                    )}
+                    {typeof page === 'number' && (
+                      <PaginationLink
+                        onClick={() => setCurrentPage(page)}
+                        isActive={currentPage === page}
+                        className="cursor-pointer"
                       >
-                        <Checkbox
-                          checked={checkedRows.has(row.series_id)}
-                          onCheckedChange={(e) => {
-                            if (e !== 'indeterminate') {
-                              toggleCheckbox(
-                                index + (currentPage - 1) * rowsPerPage,
-                                e,
-                              );
-                            }
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      </TableCell>
-                      <TableCell>{row.series_id}</TableCell>
-                      <TableCell>{row.title}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                        {page}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                ))}
 
-              <Pagination>
-                <PaginationContent>
-                  {currentPage > 1 && (
-                    <PaginationItem>
-                      <PaginationPrevious
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                      />
-                    </PaginationItem>
-                  )}
-
-                  {paginationNumbers().map((page) => (
-                    <PaginationItem key={page}>
-                      {(page === 'ellipsis1' || page === 'ellipsis2') && (
-                        <PaginationEllipsis />
-                      )}
-                      {typeof page === 'number' && (
-                        <PaginationLink
-                          onClick={() => setCurrentPage(page)}
-                          isActive={currentPage === page}
-                          className="cursor-pointer"
-                        >
-                          {page}
-                        </PaginationLink>
-                      )}
-                    </PaginationItem>
-                  ))}
-
-                  {currentPage < pageCount && (
-                    <PaginationItem>
-                      <PaginationNext
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                      />
-                    </PaginationItem>
-                  )}
-                </PaginationContent>
-              </Pagination>
-            </div>
+                {currentPage < pageCount && (
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                    />
+                  </PaginationItem>
+                )}
+              </PaginationContent>
+            </Pagination>
           </div>
-        </div>
-      )}
+        )}
+
+        {showResults && (
+          <div className="flex-1">
+            <button
+              className="cursor-pointer flex flex-row ml-6 mt-4 items-center"
+              onClick={() => setShowResults(false)}
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <p>Search</p>
+            </button>
+            <CorrelationResult
+              data={correlateResponseData}
+              lagPeriods={0}
+              inputData={correlateInputData}
+            />
+          </div>
+        )}
+      </div>
       {!showResults && checkedRows.size > 0 && (
-        <div className="sticky bottom-0 flex flex-row backdrop-blur mx-8 justify-end gap-4">
+        <div className="sticky bottom-4 flex flex-row backdrop-blur mx-8 justify-end gap-4">
           <Button
             variant="destructive"
             onClick={() => setCheckedRows(new Set([]))}
@@ -296,23 +315,6 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
 
           <CreateIndexModal
             data={data.filter((dp) => checkedRows.has(dp.series_id))}
-          />
-        </div>
-      )}
-
-      {showResults && (
-        <div>
-          <button
-            className="cursor-pointer flex flex-row ml-6 mt-4 items-center"
-            onClick={() => setShowResults(false)}
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <p>Search</p>
-          </button>
-          <CorrelationResult
-            data={correlateResponseData}
-            lagPeriods={0}
-            inputData={[]}
           />
         </div>
       )}
