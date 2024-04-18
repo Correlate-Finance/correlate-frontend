@@ -14,7 +14,11 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@hookform/resolvers": "^3.3.4",
+    "@mui/icons-material": "^5.15.15",
+    "@mui/material": "^5.15.15",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-dialog": "^1.0.5",

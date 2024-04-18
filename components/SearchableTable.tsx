@@ -1,6 +1,7 @@
 'use client';
 
-import { DatasetMetadata } from '@/app/api/schema';
+import { getDatasetFilters } from '@/app/api/actions';
+import { DatasetFilters, DatasetMetadata } from '@/app/api/schema';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
@@ -29,12 +30,13 @@ import {
 } from '@/hooks/usePage';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 import CorrelationCard from './CorrelationCard';
 import CorrelationResult from './CorrelationResult';
 import CreateIndexModal from './CreateIndexModal';
 import { Button } from './ui/button';
+import { NoBadgeMultiSelect } from './ui/nobadgemultiselect';
 
 export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
   const [query, setQuery] = useState('');
@@ -43,6 +45,25 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
   const router = useRouter();
   const [showResults, setShowResults] = useState(false);
   const [toggleAllChecked, setToggleAllChecked] = useState(false);
+
+  const [selectedSources, setSelectedSources] = useState<string[]>([]);
+  const [selectedReleases, setSelectedReleases] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  const [filters, setFilters] = useState<DatasetFilters>({
+    categories: [],
+    source: [],
+    release: [],
+  });
+
+  useEffect(() => {
+    getDatasetFilters().then((data) => {
+      setFilters(data);
+      setSelectedCategories(data.categories);
+      setSelectedReleases(data.release);
+      setSelectedSources(data.source);
+    });
+  }, []);
 
   const [checkedRows, setCheckedRows] = useState<Set<string>>(new Set());
 
@@ -64,6 +85,16 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
       data
         .filter(
           (row) =>
+            // Check if any of the categories are included in the selected categories
+            row.categories?.some((category) =>
+              selectedCategories.includes(category),
+            ) &&
+            (!row.release || selectedReleases.includes(row.release)) &&
+            selectedSources.includes(row.source),
+        )
+        .filter(
+          (row) =>
+            query === '' ||
             row.external_name?.toLowerCase().includes(query.toLowerCase()) ||
             row.internal_name?.toLowerCase().includes(query.toLowerCase()),
         )
@@ -79,7 +110,14 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
           }
           return 0; // No change
         }),
-    [data, query, checkedRows],
+    [
+      data,
+      query,
+      checkedRows,
+      selectedCategories,
+      selectedReleases,
+      selectedSources,
+    ],
   );
 
   const toggleAll = (checked: boolean) => {
@@ -186,16 +224,39 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
         />
         {!showResults && (
           <div className="w-2/3 mt-4 mx-8">
-            <Input
-              type="text"
-              placeholder="Search by Series ID or Title..."
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setToggleAllChecked(false);
-                setCurrentPage(1); // Reset to first page on new search
-              }}
-              className="mb-4"
-            />
+            <div className="w-full flex flex-row gap-2 [&>*]:h-10">
+              <Input
+                type="text"
+                placeholder="Search by Series ID or Title..."
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setToggleAllChecked(false);
+                  setCurrentPage(1); // Reset to first page on new search
+                }}
+                className="flex-2"
+              />
+              <NoBadgeMultiSelect
+                options={filters.source.map((year) => {
+                  return { value: year, label: year };
+                })}
+                selected={selectedSources}
+                onChange={setSelectedSources}
+              />
+              <NoBadgeMultiSelect
+                options={filters.release.map((year) => {
+                  return { value: year, label: year };
+                })}
+                selected={selectedReleases}
+                onChange={setSelectedReleases}
+              />
+              <NoBadgeMultiSelect
+                options={filters.categories.map((year) => {
+                  return { value: year, label: year };
+                })}
+                selected={selectedCategories}
+                onChange={setSelectedCategories}
+              />
+            </div>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -213,7 +274,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
                   <TableHead>Title</TableHead>
                   <TableHead>Source</TableHead>
                   <TableHead>Release</TableHead>
-                  <TableHead>Units</TableHead>
+                  <TableHead>Categories</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -245,7 +306,14 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
                     <TableCell>{row.external_name}</TableCell>
                     <TableCell>{row.source}</TableCell>
                     <TableCell>{row.release}</TableCell>
-                    <TableCell>{row.units}</TableCell>
+                    <TableCell>
+                      {row.categories.map((category, i) => (
+                        <p key={category}>
+                          {category}
+                          {i == row.categories.length - 1 ? '' : ','}
+                        </p>
+                      ))}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
