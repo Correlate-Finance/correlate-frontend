@@ -185,7 +185,7 @@ const CorrelationCard: React.FC<ComponentProps> = ({
               setInputFields={setInputFields}
             />
             <Button
-              className="mt-6 bg-green-600 hover:bg-green-900 float-right"
+              className="mt-6 bg-[#517AF3] hover:bg-[#3e5cb8] text-white float-right"
               onClick={() => onAutomaticSubmit(inputFields)}
               data-testid="automatic-correlate-button"
             >
@@ -242,7 +242,7 @@ const CorrelationCard: React.FC<ComponentProps> = ({
             />
             <Button
               onClick={() => onManualSubmit(inputFields)}
-              className="bg-green-600 hover:bg-green-900 float-right"
+              className="bg-[#517AF3] hover:bg-[#3e5cb8] text-white float-right"
               data-testid="manual-correlate-button"
             >
               {loadingManual && (

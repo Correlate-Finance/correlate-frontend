@@ -1,5 +1,6 @@
 'use client';
 
+import ChartBar from '@/assets/ChartBar';
 import InputData from '@/components/InputData';
 import Results from '@/components/Results';
 import SharedInputFieldsHomePage from '@/components/SharedInputFieldsHomePage';
@@ -106,9 +107,9 @@ const HomePage = () => {
   }, [inputFields]);
 
   return (
-    <div className="flex overflow-scroll max-h-[90vh]">
-      <Card className="dark:bg-[#1b1b26] bg-gray-100 m-4 w-[300px] border-0 sticky top-4">
-        <CardContent className="px-4">
+    <div className="flex overflow-scroll min-h-[90vh]">
+      <Card className="dark:bg-[#1b1b26] bg-gray-100 m-4 border-0 sticky top-4 flex-1 ">
+        <CardContent className="px-4 min-w-[250px]">
           <Tabs
             value={tabValue}
             className="my-4"
@@ -193,7 +194,7 @@ const HomePage = () => {
                 setInputFields={setInputFields}
               />
               <Button
-                className="mt-6 bg-green-600 hover:bg-green-900 float-right"
+                className="mt-6 bg-[#517AF3] hover:bg-[#3e5cb8] text-white float-right"
                 onClick={() => onSubmit(inputFields)}
                 data-testid="automatic-correlate-button"
               >
@@ -250,7 +251,7 @@ const HomePage = () => {
               />
               <Button
                 onClick={() => correlateInputText(inputFields)}
-                className="bg-green-600 hover:bg-green-900 float-right"
+                className="bg-[#517AF3] hover:bg-[#3e5cb8] text-white float-right"
                 data-testid="manual-correlate-button"
               >
                 {loadingCorrelate && (
@@ -262,20 +263,29 @@ const HomePage = () => {
           </Tabs>
         </CardContent>
       </Card>
-      {/* <Separator orientation="vertical" className="my-40 w-4 border-white" /> */}
-      <div className="m-5 flex flex-row justify-between w-3/4 gap-8">
-        <div className="w-min">
-          <InputData data={correlateInputData} />
-        </div>
-        <div className="flex-1">
-          {hasData && (
+      {hasData && (
+        <div className="m-5 flex flex-row justify-between w-3/4 gap-8">
+          <div className="w-min">
+            <InputData data={correlateInputData} />
+          </div>
+          <div className="flex-1">
             <Results
               data={correlateResponseData}
               lagPeriods={inputFields.lagPeriods}
             />
-          )}
+          </div>
         </div>
-      </div>
+      )}
+      {!hasData && (
+        <div className="flex flex-col justify-center items-center w-full gap-2">
+          <ChartBar />
+          <h1 className="text-4xl text-center font-bold">It’s empty in here</h1>
+          <p className="w-[40%] text-center">
+            Get started by running your first correlation. You can choose a
+            stock ticker or input your own data manually.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

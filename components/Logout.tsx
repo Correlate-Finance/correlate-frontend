@@ -31,7 +31,11 @@ const Logout = () => {
   }
 
   return (
-    <Button className="mx-8 bg-blue-800 my-1 text-white" onClick={logout}>
+    <Button
+      className="my-1 hover:bg-gray-200 hover:dark:bg-[#1b1b26] hover:no-underline"
+      variant="link"
+      onClick={logout}
+    >
       Logout
     </Button>
   );
