@@ -262,3 +262,20 @@ export async function getAllIndices() {
   const data = await response.json();
   return data;
 }
+
+export async function getDatasetFilters() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+
+  const baseUrl = getBaseUrl();
+  const response = await fetch(`${baseUrl}/get-dataset-filters`, {
+    headers: {
+      Authorization: `Token ${session.user.accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data;
+}

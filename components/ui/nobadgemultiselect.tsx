@@ -1,7 +1,3 @@
-import { cn } from '@/lib/utils';
-import * as React from 'react';
-
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -9,13 +5,16 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandSeparator,
 } from '@/components/ui/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Check, ChevronsUpDown, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import * as React from 'react';
 
 export type OptionType = {
   label: string;
@@ -29,7 +28,7 @@ interface MultiSelectProps {
   className?: string;
 }
 
-function MultiSelect({
+function NoBadgeMultiSelect({
   options,
   selected,
   onChange,
@@ -38,8 +37,12 @@ function MultiSelect({
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
 
-  const handleUnselect = (item: string) => {
-    onChange(selected.filter((i) => i !== item));
+  const clearAll = () => {
+    onChange([]);
+  };
+
+  const selectAll = () => {
+    onChange(options.map((o) => o.value));
   };
 
   return (
@@ -52,33 +55,11 @@ function MultiSelect({
           className={`w-full justify-between ${selected.length > 1 ? 'h-full' : 'h-10'}`}
           onClick={() => setOpen(!open)}
         >
-          <div className="flex gap-1 flex-wrap">
-            {selected.map((item) => (
-              <Badge
-                variant="secondary"
-                key={item}
-                className="mr-1 mb-1"
-                onClick={() => handleUnselect(item)}
-              >
-                {item}
-                <button
-                  className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleUnselect(item);
-                    }
-                  }}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  onClick={() => handleUnselect(item)}
-                >
-                  <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                </button>
-              </Badge>
-            ))}
-          </div>
+          {selected.length === 0
+            ? 'Select items'
+            : selected.length === 1
+              ? options.find((o) => o.value === selected[0])?.label
+              : `${selected.length} items selected`}
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -111,10 +92,21 @@ function MultiSelect({
               </CommandItem>
             ))}
           </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup>
+            <div className="flex gap-1">
+              <Button variant="ghost" onClick={clearAll}>
+                Clear All
+              </Button>
+              <Button variant="ghost" onClick={selectAll}>
+                Select All
+              </Button>
+            </div>
+          </CommandGroup>
         </Command>
       </PopoverContent>
     </Popover>
   );
 }
 
-export { MultiSelect };
+export { NoBadgeMultiSelect };
