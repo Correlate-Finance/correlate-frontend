@@ -24,6 +24,7 @@ export type OptionType = {
 interface MultiSelectProps {
   options: OptionType[];
   selected: string[];
+  label: String;
   onChange: React.Dispatch<React.SetStateAction<string[]>>;
   className?: string;
 }
@@ -33,6 +34,7 @@ function NoBadgeMultiSelect({
   selected,
   onChange,
   className,
+  label,
   ...props
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
@@ -56,10 +58,10 @@ function NoBadgeMultiSelect({
           onClick={() => setOpen(!open)}
         >
           {selected.length === 0
-            ? 'Select items'
+            ? 'Select ' + { label }
             : selected.length === 1
               ? options.find((o) => o.value === selected[0])?.label
-              : `${selected.length} items selected`}
+              : `${label} (${selected.length})`}
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

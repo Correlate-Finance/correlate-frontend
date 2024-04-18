@@ -102,7 +102,7 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
       </div>
 
       {checkedRows.size > 0 && (
-        <div className="sticky bottom-0 py-2 flex flex-row justify-end backdrop-blur">
+        <div className="sticky bottom-0 py-2 flex flex-row justify-end">
           <IndexModal data={data} checkedRows={checkedRows} />
           <Button
             className="mx-8 bg-blue-800 text-white"

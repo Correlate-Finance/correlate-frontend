@@ -3,7 +3,6 @@
 import { getDatasetFilters } from '@/app/api/actions';
 import { DatasetFilters, DatasetMetadata } from '@/app/api/schema';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
 import {
   Pagination,
   PaginationContent,
@@ -35,6 +34,7 @@ import { z } from 'zod';
 import CorrelationCard from './CorrelationCard';
 import CorrelationResult from './CorrelationResult';
 import CreateIndexModal from './CreateIndexModal';
+import { Search } from './ui/Search';
 import { Button } from './ui/button';
 import { NoBadgeMultiSelect } from './ui/nobadgemultiselect';
 
@@ -224,23 +224,25 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
         />
         {!showResults && (
           <div className="w-2/3 mt-4 mx-8">
-            <div className="w-full flex flex-row gap-2 [&>*]:h-10">
-              <Input
-                type="text"
-                placeholder="Search by Series ID or Title..."
+            <div className="w-full flex flex-row gap-2 [&>*]:h-10 pb-4">
+              <Search
                 onChange={(e) => {
                   setQuery(e.target.value);
                   setToggleAllChecked(false);
                   setCurrentPage(1); // Reset to first page on new search
                 }}
-                className="flex-2"
+                type="text"
+                placeholder="Search by Series Title"
+                className="min-w-[400px]"
               />
+
               <NoBadgeMultiSelect
                 options={filters.source.map((year) => {
                   return { value: year, label: year };
                 })}
                 selected={selectedSources}
                 onChange={setSelectedSources}
+                label="Source"
               />
               <NoBadgeMultiSelect
                 options={filters.release.map((year) => {
@@ -248,6 +250,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
                 })}
                 selected={selectedReleases}
                 onChange={setSelectedReleases}
+                label="Release"
               />
               <NoBadgeMultiSelect
                 options={filters.categories.map((year) => {
@@ -255,8 +258,10 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
                 })}
                 selected={selectedCategories}
                 onChange={setSelectedCategories}
+                label="Categories"
               />
             </div>
+
             <Table>
               <TableHeader>
                 <TableRow>
@@ -376,7 +381,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
         )}
       </div>
       {!showResults && checkedRows.size > 0 && (
-        <div className="sticky bottom-4 flex flex-row backdrop-blur mx-8 justify-end gap-4">
+        <div className="sticky bottom-4 flex flex-row mx-8 justify-end gap-4">
           <Button
             variant="destructive"
             onClick={() => setCheckedRows(new Set([]))}
