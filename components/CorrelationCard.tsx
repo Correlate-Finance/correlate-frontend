@@ -26,6 +26,7 @@ interface ComponentProps {
   loadingAutomatic: boolean;
   onManualSubmit: (inputFields: z.infer<typeof inputFieldsSchema>) => void;
   loadingManual: boolean;
+  setLagPeriods: (lagPeriods: number) => void;
 }
 
 const CorrelationCard: React.FC<ComponentProps> = ({
@@ -33,6 +34,7 @@ const CorrelationCard: React.FC<ComponentProps> = ({
   loadingAutomatic,
   onManualSubmit,
   loadingManual,
+  setLagPeriods,
 }) => {
   const [tabValue, setTabValue] = useLocalStorage('tabValue', 'Manual');
   const [segments, setSegments] = useState([] as string[]);
@@ -183,6 +185,7 @@ const CorrelationCard: React.FC<ComponentProps> = ({
             <SharedInputFieldsHomePage
               inputFields={inputFields}
               setInputFields={setInputFields}
+              setLagPeriods={setLagPeriods}
             />
             <Button
               className="mt-6 bg-[#517AF3] hover:bg-[#3e5cb8] text-white float-right"
@@ -239,6 +242,7 @@ const CorrelationCard: React.FC<ComponentProps> = ({
             <SharedInputFieldsHomePage
               inputFields={inputFields}
               setInputFields={setInputFields}
+              setLagPeriods={setLagPeriods}
             />
             <Button
               onClick={() => onManualSubmit(inputFields)}

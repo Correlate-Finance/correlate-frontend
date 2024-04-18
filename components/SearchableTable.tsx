@@ -45,6 +45,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
   const router = useRouter();
   const [showResults, setShowResults] = useState(false);
   const [toggleAllChecked, setToggleAllChecked] = useState(false);
+  const [lagPeriods, setLagPeriods] = useState(0);
 
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
   const [selectedReleases, setSelectedReleases] = useState<string[]>([]);
@@ -221,6 +222,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
             correlateInputText(x, [...checkedRows]);
           }}
           loadingManual={loadingManual}
+          setLagPeriods={setLagPeriods}
         />
         {!showResults && (
           <div className="w-2/3 mt-4 mx-8">
@@ -374,7 +376,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
             </button>
             <CorrelationResult
               data={correlateResponseData}
-              lagPeriods={0}
+              lagPeriods={lagPeriods}
               inputData={correlateInputData}
             />
           </div>

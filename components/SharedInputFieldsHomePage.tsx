@@ -13,9 +13,11 @@ import React from 'react';
 export default function SharedInputFieldsHomePage({
   inputFields,
   setInputFields,
+  setLagPeriods,
 }: {
   inputFields: z.infer<typeof inputFieldsSchema>;
   setInputFields: (inputFields: z.infer<typeof inputFieldsSchema>) => void;
+  setLagPeriods: (lagPeriods: number) => void;
 }) {
   return (
     <React.Fragment>
@@ -68,6 +70,7 @@ export default function SharedInputFieldsHomePage({
               ...inputFields,
               lagPeriods: Number(e),
             });
+            setLagPeriods(Number(e));
           }}
         >
           <SelectTrigger data-testid="lag-periods">
