@@ -1,3 +1,4 @@
+import { fetchWatchlistedRows } from '@/app/api/actions';
 import {
   Table,
   TableBody,
@@ -25,6 +26,7 @@ export type CorrelationData = {
 
 export type CorrelationDataPoint = {
   title: string;
+  internal_name: string;
   pearson_value: number;
   p_value: number;
   lag: number;
@@ -33,12 +35,16 @@ export type CorrelationDataPoint = {
   dates: string[];
   source?: string;
   description?: string;
-  internal_name: string;
+  release?: string;
+  url?: string;
+  units?: string;
 };
 
 const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
   const [checkedRows, setCheckedRows] = useState<Set<number>>(new Set());
-
+  const [watchlistedRows, setWatchlistedRows] = useState(
+    new Array<boolean>(data.data.length).fill(false),
+  );
   const toggleCheckbox = (id: number, checked: boolean) => {
     const newCheckedRows = new Set(checkedRows);
     if (checked) {
@@ -50,6 +56,14 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
 
     setCheckedRows(newCheckedRows);
   };
+
+  useEffect(() => {
+    const datasetTitles = data.data.map((dp) => dp.title);
+    const responseData = fetchWatchlistedRows(datasetTitles);
+    responseData.then((data) => {
+      setWatchlistedRows(data.watchlisted);
+    });
+  }, [data]);
 
   useEffect(() => {
     setCheckedRows(new Set());
@@ -78,6 +92,9 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
                 key={`${dp.title}-${dp.lag}`}
                 index={index}
                 toggleCheckbox={toggleCheckbox}
+                addedToWatchlist={
+                  watchlistedRows ? watchlistedRows[index] : false
+                }
               />
             ))}
           </TableBody>

@@ -11,6 +11,7 @@ import React, {
 import { CorrelationDataPoint } from './Results';
 import DoubleLineChart from './chart/DoubleLineChart';
 
+import { addOrRemoveWatchlist } from '@/app/api/actions';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TableCell, TableRow } from '@/components/ui/table';
 import {
@@ -28,6 +29,7 @@ interface MyComponentProps {
   lagPeriods: number;
   toggleCheckbox: (id: number, checked: boolean) => void;
   index: number;
+  addedToWatchlist: boolean;
 }
 
 const ResultsRow: React.FC<MyComponentProps> = ({
@@ -35,6 +37,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
   lagPeriods,
   index,
   toggleCheckbox,
+  addedToWatchlist,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
@@ -43,6 +46,10 @@ const ResultsRow: React.FC<MyComponentProps> = ({
   const router = useRouter();
   const { toast } = useToast();
   const counter = useRef(0);
+
+  useEffect(() => {
+    setIsClicked(addedToWatchlist);
+  }, [addedToWatchlist]);
 
   const getColorClass = (value: number) => {
     if (Math.abs(value) > 0.8) {
@@ -132,6 +139,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
                   description: `${dp.title}`,
                 });
               }
+              addOrRemoveWatchlist(isClicked, dp.title);
               setIsClicked(!isClicked);
               e.stopPropagation();
             }}
@@ -152,7 +160,9 @@ const ResultsRow: React.FC<MyComponentProps> = ({
                   onBrushChange={onBrushChange}
                   correlation={correlation}
                 />
-                <p className="text-gray-300 pl-16">Source: FRED</p>
+                <p className="text-gray-300 pl-16">
+                  {dp.source}: {dp.url}
+                </p>
               </div>
               <Button
                 onClick={() => router.push(`/data/${dp.internal_name}`)}

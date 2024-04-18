@@ -21,6 +21,13 @@ export const inputFieldsSchema = z.object({
   segment: z.string().optional(),
 });
 
+export function useCorrelateInputData() {
+  const [correlateInputData, setCorrelateInputData] = useLocalStorage<
+    string[][]
+  >('correlateInputData', []);
+  return { correlateInputData, setCorrelateInputData };
+}
+
 export function useCorrelateResponseData() {
   const [correlateResponseData, setCorrelateResponseData] =
     useLocalStorage<CorrelationData>('correlateResponseData', {
@@ -75,6 +82,7 @@ export function useFetchRevenueData() {
 
 export const useSubmitForm = (
   setCorrelateResponseData: (correlationData: CorrelationData) => void,
+  setCorrelateInputData?: (inputData: string[][]) => void,
 ) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [hasData, setHasData] = useLocalStorage<boolean>('hasData', false);
@@ -85,6 +93,9 @@ export const useSubmitForm = (
     selectedDatasets?: Array<string>,
   ) => {
     fetchRevenueData(inputFields);
+    if (setCorrelateInputData) {
+      setCorrelateInputData(revenueData);
+    }
     setLoading(true);
     setCorrelateResponseData({
       data: [],
@@ -143,6 +154,7 @@ export const useSubmitForm = (
 
 export const useCorrelateInputText = (
   setCorrelateResponseData: (correlationData: CorrelationData) => void,
+  setCorrelateInputData?: (inputData: string[][]) => void,
 ) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [hasData, setHasData] = useLocalStorage<boolean>('hasData', false);
@@ -156,7 +168,26 @@ export const useCorrelateInputText = (
       return;
     }
 
+    function generateTabularData() {
+      let rows = inputFields.inputData?.split('\n');
+      let table: string[][] = [];
+
+      rows?.forEach((row) => {
+        table.push(row.split('\t'));
+      });
+      // Transpose table if needed
+      if (table.length == 2) {
+        table = table[0].map((_, colIndex) =>
+          table.map((row) => row[colIndex]),
+        );
+      }
+      return table;
+    }
+
     setLoading(true);
+    if (setCorrelateInputData) {
+      setCorrelateInputData(generateTabularData());
+    }
     try {
       const urlParams = new URLSearchParams({
         fiscal_year_end: inputFields.fiscalYearEnd,

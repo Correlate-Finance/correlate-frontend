@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export interface DataTrendPoint {
   Date: string;
   Value: number;
@@ -21,6 +23,35 @@ export interface DataTrendPoint {
 }
 
 export interface DatasetMetadata {
-  series_id: string;
-  title: string;
+  internal_name: string;
+  external_name: string;
+  description: string;
+  source: string;
+  url: string;
+  release: string;
+  popularity: number;
+  categories: string[];
+  units: string;
 }
+
+export interface IndexDataset {
+  title: string;
+  percentage: string;
+}
+
+export const registerFieldsSchema = z
+  .object({
+    email: z.string().min(1).max(255),
+    name: z.string().min(1).max(255),
+    password: z.string().min(1).max(255),
+    confirmPassword: z.string().min(1).max(255),
+  })
+  .superRefine(({ confirmPassword, password }, ctx) => {
+    if (confirmPassword !== password) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'The passwords did not match',
+        path: ['confirmPassword'],
+      });
+    }
+  });

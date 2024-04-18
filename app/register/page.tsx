@@ -23,29 +23,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-
-const inputFieldsSchema = z
-  .object({
-    email: z.string().min(1).max(255),
-    name: z.string().min(1).max(255),
-    password: z.string().min(1).max(255),
-    confirmPassword: z.string().min(1).max(255),
-  })
-  .superRefine(({ confirmPassword, password }, ctx) => {
-    if (confirmPassword !== password) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'The passwords did not match',
-        path: ['confirmPassword'],
-      });
-    }
-  });
+import { registerUser } from '../api/actions';
+import { registerFieldsSchema } from '../api/schema';
 
 const Page = () => {
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof inputFieldsSchema>>({
-    resolver: zodResolver(inputFieldsSchema),
+  const form = useForm<z.infer<typeof registerFieldsSchema>>({
+    resolver: zodResolver(registerFieldsSchema),
     defaultValues: {
       email: '',
       password: '',
@@ -54,27 +39,15 @@ const Page = () => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof inputFieldsSchema>) {
+  async function onSubmit(values: z.infer<typeof registerFieldsSchema>) {
     try {
-      const res = await fetch('api/register', {
-        method: 'POST',
-        body: JSON.stringify({
-          email: values.email,
-          name: values.name,
-          password: values.password,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!res.ok) {
-        throw new Error(`HTTP error! Status: ${res.status}`);
-      }
+      await registerUser(values);
       router.push('/login');
     } catch (error) {
       alert('Error: ' + error);
     }
   }
+
   return (
     <Card className="mx-auto max-w-sm mt-16">
       <CardHeader className="space-y-1">

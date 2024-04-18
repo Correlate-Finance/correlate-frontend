@@ -103,11 +103,17 @@ const Login = () => {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="text-sm flex flex-row justify-center">
+      <CardFooter className="text-sm flex flex-col justify-center">
         <div className="text-neutral-400 ">
           New user?{' '}
           <Link href="/register" className="text-blue-400">
             Sign Up
+          </Link>
+        </div>
+        <div className="mt-2 text-neutral-400 ">
+          Forgot your password?{' '}
+          <Link href="/reset-password" className="text-blue-400">
+            Reset your password
           </Link>
         </div>
       </CardFooter>

@@ -1,4 +1,5 @@
-import { DatasetMetadata } from '@/app/api/schema';
+import { saveIndex } from '@/app/api/actions';
+import { DatasetMetadata, IndexDataset } from '@/app/api/schema';
 import {
   Dialog,
   DialogContent,
@@ -13,6 +14,7 @@ import { Button } from './ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
 import { Input } from './ui/input';
 import { Separator } from './ui/separator';
+import { useToast } from './ui/use-toast';
 
 export default function CreateIndexModal({
   data,
@@ -20,6 +22,7 @@ export default function CreateIndexModal({
   data: DatasetMetadata[];
 }) {
   const totalRows = data.length;
+  const { toast } = useToast();
   const correlateIndexFormSchema = z
     .object({
       indexName: z.string(),
@@ -36,15 +39,6 @@ export default function CreateIndexModal({
         message: 'The sum should be 1',
         path: [`percentages.${totalRows - 1}`],
       },
-    )
-    .refine(
-      (values) => {
-        values.indexName.trim().length > 0;
-      },
-      {
-        message: 'Index name is required',
-        path: ['indexName'],
-      },
     );
 
   const form = useForm<z.infer<typeof correlateIndexFormSchema>>({
@@ -56,6 +50,29 @@ export default function CreateIndexModal({
       ),
     },
   });
+
+  const onSaveIndex = async (
+    values: z.infer<typeof correlateIndexFormSchema>,
+  ) => {
+    try {
+      const indexDatasets: IndexDataset[] = data.map((metadata, i) => {
+        return {
+          title: metadata.external_name,
+          percentage: values.percentages[i],
+        };
+      });
+      await saveIndex(indexDatasets, values.indexName);
+      toast({
+        title: 'Index saved',
+        description: `Index ${values.indexName} has been saved`,
+      });
+    } catch (e) {
+      toast({
+        title: 'Error saving index',
+        description: `${e}`,
+      });
+    }
+  };
 
   const createIndex = async (
     values: z.infer<typeof correlateIndexFormSchema>,
@@ -111,9 +128,9 @@ export default function CreateIndexModal({
 
               <ul>
                 {[...data].map((dp, i) => (
-                  <li key={dp.series_id}>
+                  <li key={dp.internal_name}>
                     <div className="flex flex-row justify-between m-1">
-                      <p className="text-sm">{dp.title}</p>
+                      <p className="text-sm">{dp.external_name}</p>
                       <div className="w-1/5 shrink-0">
                         <FormField
                           control={form.control}
@@ -149,7 +166,4 @@ export default function CreateIndexModal({
       </DialogContent>
     </Dialog>
   );
-}
-function onSaveIndex(values: { indexName: string; percentages: string[] }) {
-  throw new Error('Function not implemented.');
 }

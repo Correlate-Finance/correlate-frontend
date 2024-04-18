@@ -1,6 +1,5 @@
 'use client';
 
-import { DatasetMetadata } from '@/app/api/schema';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
@@ -22,21 +21,20 @@ import {
 } from '@/components/ui/table';
 import {
   inputFieldsSchema,
-  useCorrelateInputData,
   useCorrelateInputText,
   useCorrelateResponseData,
   useSubmitForm,
 } from '@/hooks/usePage';
-import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { z } from 'zod';
 import CorrelationCard from './CorrelationCard';
-import CorrelationResult from './CorrelationResult';
-import CreateIndexModal from './CreateIndexModal';
+import Results from './Results';
 import { Button } from './ui/button';
 
-export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
+import EditIndexModal from './EditIndexModal';
+
+export default function SearchableIndexTable({ data }: { data: any[] }) {
   const [query, setQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
@@ -48,7 +46,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
 
   const toggleCheckbox = (id: number, checked: boolean) => {
     const newCheckedRows = new Set(checkedRows);
-    const value = filteredData[id].internal_name;
+    const value = filteredData[id].id;
     if (checked) {
       newCheckedRows.add(value);
     } else if (newCheckedRows.has(value)) {
@@ -59,36 +57,14 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
     setCheckedRows(newCheckedRows);
   };
 
-  const filteredData = useMemo(
-    () =>
-      data
-        .filter(
-          (row) =>
-            row.external_name?.toLowerCase().includes(query.toLowerCase()) ||
-            row.internal_name?.toLowerCase().includes(query.toLowerCase()),
-        )
-        .sort((a, b) => {
-          const aIsChecked = checkedRows.has(a.internal_name);
-          const bIsChecked = checkedRows.has(b.internal_name);
-
-          if (aIsChecked && !bIsChecked) {
-            return -1; // 'a' comes first
-          }
-          if (!aIsChecked && bIsChecked) {
-            return 1; // 'b' comes first
-          }
-          return 0; // No change
-        }),
-    [data, query, checkedRows],
+  const filteredData = data.filter((row) =>
+    row.name?.toLowerCase().includes(query.toLowerCase()),
   );
 
   const toggleAll = (checked: boolean) => {
     setToggleAllChecked(checked);
     const newCheckedRows = new Set(
-      Array.from(
-        { length: filteredData.length },
-        (_, i) => filteredData[i].internal_name,
-      ),
+      Array.from({ length: filteredData.length }, (_, i) => filteredData[i].id),
     );
     if (checked) {
       setCheckedRows((prevRows) => new Set([...prevRows, ...newCheckedRows]));
@@ -153,16 +129,13 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
   const { correlateResponseData, setCorrelateResponseData } =
     useCorrelateResponseData();
-  const { correlateInputData, setCorrelateInputData } = useCorrelateInputData();
 
   const { onSubmit, loading: loadingAutomatic } = useSubmitForm(
     setCorrelateResponseData,
-    setCorrelateInputData,
   );
 
   const { correlateInputText, loading: loadingManual } = useCorrelateInputText(
     setCorrelateResponseData,
-    setCorrelateInputData,
   );
 
   const onSubmitSelected = (
@@ -173,30 +146,31 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
   };
 
   return (
-    <div>
-      <div className="flex flex-row">
-        <CorrelationCard
-          onAutomaticSubmit={onSubmitSelected}
-          loadingAutomatic={loadingAutomatic}
-          onManualSubmit={(x) => {
-            setShowResults(true);
-            correlateInputText(x, [...checkedRows]);
-          }}
-          loadingManual={loadingManual}
-        />
+    <div className="flex overflow-scroll max-h-[90vh]">
+      <CorrelationCard
+        onAutomaticSubmit={onSubmitSelected}
+        loadingAutomatic={loadingAutomatic}
+        onManualSubmit={(x) => {
+          setShowResults(true);
+          correlateInputText(x, [...checkedRows]);
+        }}
+        loadingManual={loadingManual}
+      />
+      <div className="w-full mt-4">
         {!showResults && (
-          <div className="w-2/3 mt-4 mx-8">
+          <>
             <Input
               type="text"
-              placeholder="Search by Series ID or Title..."
+              placeholder="Search by Index name..."
               onChange={(e) => {
                 setQuery(e.target.value);
                 setToggleAllChecked(false);
                 setCurrentPage(1); // Reset to first page on new search
               }}
-              className="mb-4"
+              className="w-[90%] m-auto mb-4"
             />
-            <Table>
+
+            <Table className="mx-8 w-[90%] m-auto">
               <TableHeader>
                 <TableRow>
                   <TableHead>
@@ -210,18 +184,15 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
                       onClick={(e) => e.stopPropagation()}
                     />
                   </TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Source</TableHead>
-                  <TableHead>Release</TableHead>
-                  <TableHead>Units</TableHead>
+                  <TableHead>Name</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {currentRows.map((row, index) => (
                   <TableRow
-                    key={row.internal_name}
+                    key={row.id}
                     onClick={(e) => {
-                      router.push(`/data/${row.internal_name}`);
+                      router.push(`/data/${row.name}`);
                     }}
                     className="cursor-pointer"
                   >
@@ -230,7 +201,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
                       className="cursor-default"
                     >
                       <Checkbox
-                        checked={checkedRows.has(row.internal_name)}
+                        checked={checkedRows.has(row.id)}
                         onCheckedChange={(e) => {
                           if (e !== 'indeterminate') {
                             toggleCheckbox(
@@ -242,10 +213,20 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
                         onClick={(e) => e.stopPropagation()}
                       />
                     </TableCell>
-                    <TableCell>{row.external_name}</TableCell>
-                    <TableCell>{row.source}</TableCell>
-                    <TableCell>{row.release}</TableCell>
-                    <TableCell>{row.units}</TableCell>
+                    <TableCell>{row.name}</TableCell>
+                    <TableCell
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <EditIndexModal
+                        data={{
+                          data: [],
+                          aggregationPeriod: '',
+                          correlationMetric: '',
+                        }}
+                      />
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -287,41 +268,24 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
                 )}
               </PaginationContent>
             </Pagination>
-          </div>
+          </>
         )}
 
         {showResults && (
-          <div className="flex-1">
-            <button
-              className="cursor-pointer flex flex-row ml-6 mt-4 items-center"
-              onClick={() => setShowResults(false)}
+          <div>
+            <Button onClick={() => setShowResults(false)} className="mx-2">
+              Back to Table Explorer
+            </Button>
+            <Button
+              onClick={() => setCheckedRows(new Set([]))}
+              className="mx-2"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <p>Search</p>
-            </button>
-            <CorrelationResult
-              data={correlateResponseData}
-              lagPeriods={0}
-              inputData={correlateInputData}
-            />
+              Reset Selection
+            </Button>
+            <Results data={correlateResponseData} lagPeriods={0} />
           </div>
         )}
       </div>
-      {!showResults && checkedRows.size > 0 && (
-        <div className="sticky bottom-4 flex flex-row backdrop-blur mx-8 justify-end gap-4">
-          <Button
-            variant="destructive"
-            onClick={() => setCheckedRows(new Set([]))}
-            className="dark:bg-red-700 dark:hover:bg-red-900"
-          >
-            Clear {checkedRows.size} Selected
-          </Button>
-
-          <CreateIndexModal
-            data={data.filter((dp) => checkedRows.has(dp.internal_name))}
-          />
-        </div>
-      )}
     </div>
   );
 }
