@@ -36,6 +36,7 @@ import EditIndexModal from './EditIndexModal';
 
 export default function SearchableIndexTable({ data }: { data: any[] }) {
   const [query, setQuery] = useState('');
+  const [lagPeriods, setLagPeriods] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
   const router = useRouter();
@@ -155,6 +156,7 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
           correlateInputText(x, [...checkedRows]);
         }}
         loadingManual={loadingManual}
+        setLagPeriods={setLagPeriods}
       />
       <div className="w-full mt-4">
         {!showResults && (
@@ -282,7 +284,7 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
             >
               Reset Selection
             </Button>
-            <Results data={correlateResponseData} lagPeriods={0} />
+            <Results data={correlateResponseData} lagPeriods={lagPeriods} />
           </div>
         )}
       </div>

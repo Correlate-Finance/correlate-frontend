@@ -15,7 +15,6 @@ import { useState } from 'react';
 
 const HomePage = () => {
   const [lagPeriods, setLagPeriods] = useState(0);
-
   const { correlateResponseData, setCorrelateResponseData } =
     useCorrelateResponseData();
   const { correlateInputData, setCorrelateInputData } = useCorrelateInputData();
