@@ -1,4 +1,5 @@
 import { saveIndex } from '@/app/api/actions';
+import { CorrelationData } from '@/app/api/schema';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { CorrelationData } from './Results';
 import { Button } from './ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
 import { Input } from './ui/input';

@@ -1,5 +1,6 @@
 'use client';
 
+import { CorrelationDataPoint } from '@/app/api/schema';
 import { DownloadIcon } from '@radix-ui/react-icons';
 import React, {
   MouseEventHandler,
@@ -8,7 +9,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { CorrelationDataPoint } from './Results';
 import DoubleLineChart from './chart/DoubleLineChart';
 
 import { addOrRemoveWatchlist } from '@/app/api/actions';

@@ -1,5 +1,6 @@
+import { CorrelationData } from '@/app/api/schema';
 import InputData from './InputData';
-import Results, { CorrelationData } from './Results';
+import Results from './Results';
 
 interface ComponentProps {
   data: CorrelationData;

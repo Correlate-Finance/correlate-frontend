@@ -45,6 +45,28 @@ export interface DatasetFilters {
   release: string[];
 }
 
+export type CorrelationData = {
+  data: CorrelationDataPoint[];
+  aggregationPeriod: string;
+  correlationMetric: string;
+};
+
+export type CorrelationDataPoint = {
+  title: string;
+  internal_name: string;
+  pearson_value: number;
+  p_value: number;
+  lag: number;
+  input_data: number[];
+  dataset_data: number[];
+  dates: string[];
+  source?: string;
+  description?: string;
+  release?: string;
+  url?: string;
+  units?: string;
+};
+
 export const registerFieldsSchema = z
   .object({
     email: z.string().min(1).max(255),

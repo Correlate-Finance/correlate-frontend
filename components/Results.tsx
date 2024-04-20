@@ -1,4 +1,5 @@
 import { fetchWatchlistedRows } from '@/app/api/actions';
+import { CorrelationData } from '@/app/api/schema';
 import {
   Table,
   TableBody,
@@ -17,28 +18,6 @@ interface MyComponentProps {
   data: CorrelationData;
   lagPeriods: number;
 }
-
-export type CorrelationData = {
-  data: CorrelationDataPoint[];
-  aggregationPeriod: string;
-  correlationMetric: string;
-};
-
-export type CorrelationDataPoint = {
-  title: string;
-  internal_name: string;
-  pearson_value: number;
-  p_value: number;
-  lag: number;
-  input_data: number[];
-  dataset_data: number[];
-  dates: string[];
-  source?: string;
-  description?: string;
-  release?: string;
-  url?: string;
-  units?: string;
-};
 
 const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
   const [checkedRows, setCheckedRows] = useState<Set<number>>(new Set());

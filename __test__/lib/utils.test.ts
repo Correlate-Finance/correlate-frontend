@@ -1,4 +1,4 @@
-import { CorrelationDataPoint } from '@/components/Results';
+import { CorrelationDataPoint } from '@/app/api/schema';
 import {
   cn,
   convertToGraphData,

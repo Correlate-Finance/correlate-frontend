@@ -1,6 +1,6 @@
 'use server';
 
-import { CorrelationData } from '@/components/Results';
+import { CorrelationData } from '@/app/api/schema';
 import { inputFieldsSchema } from '@/hooks/usePage';
 import { authOptions } from '@/lib/configs/authOptions';
 import { getServerSession } from 'next-auth/next';

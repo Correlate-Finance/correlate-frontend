@@ -1,5 +1,5 @@
 import { getCompanySegments } from '@/app/api/actions';
-import { CorrelationData } from '@/components/Results';
+import { CorrelationData } from '@/app/api/schema';
 import handleResponseStatus from '@/lib/handleResponse';
 import { useState } from 'react';
 import { z } from 'zod';

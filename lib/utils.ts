@@ -1,4 +1,4 @@
-import { CorrelationDataPoint } from '@/components/Results';
+import { CorrelationDataPoint } from '@/app/api/schema';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import * as XLSX from 'xlsx';

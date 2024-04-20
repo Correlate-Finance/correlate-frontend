@@ -1,5 +1,9 @@
 import { correlateIndex, saveIndex } from '@/app/api/actions';
-import { IndexDataset } from '@/app/api/schema';
+import {
+  CorrelationData,
+  CorrelationDataPoint,
+  IndexDataset,
+} from '@/app/api/schema';
 import {
   Dialog,
   DialogContent,
@@ -13,7 +17,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { CorrelationData, CorrelationDataPoint } from './Results';
 import DoubleLineChart from './chart/DoubleLineChart';
 import { Button } from './ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
