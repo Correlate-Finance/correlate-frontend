@@ -83,7 +83,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
           }
           return 0; // No change
         }),
-    [data, query, checkedRows, dropdownFilterData],
+    [query, checkedRows, dropdownFilterData],
   );
 
   const toggleAll = (checked: boolean) => {

@@ -43,7 +43,13 @@ const DropdownFilters: React.FC<DropdownFiltersProps> = ({
       );
     });
     setFilteredData(filteredData);
-  }, [selectedSources, selectedReleases, selectedCategories]);
+  }, [
+    selectedSources,
+    selectedReleases,
+    selectedCategories,
+    data,
+    setFilteredData,
+  ]);
 
   return (
     <React.Fragment>
