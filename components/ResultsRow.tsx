@@ -168,7 +168,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
                 onClick={() => router.push(`/data/${dp.internal_name}`)}
                 className="bg-blue-700 hover:bg-blue-900"
               >
-                See More
+                Data Trend
               </Button>
             </div>
           </TableCell>

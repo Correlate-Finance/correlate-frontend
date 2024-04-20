@@ -58,7 +58,7 @@ function NoBadgeMultiSelect({
           onClick={() => setOpen(!open)}
         >
           {selected.length === 0
-            ? 'Select ' + { label }
+            ? `Select ${label}`
             : selected.length === 1
               ? options.find((o) => o.value === selected[0])?.label
               : `${label} (${selected.length})`}
