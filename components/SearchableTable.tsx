@@ -1,7 +1,6 @@
 'use client';
 
-import { getDatasetFilters } from '@/app/api/actions';
-import { DatasetFilters, DatasetMetadata } from '@/app/api/schema';
+import { DatasetMetadata } from '@/app/api/schema';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Pagination,
@@ -29,14 +28,14 @@ import {
 } from '@/hooks/usePage';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { z } from 'zod';
 import CorrelationCard from './CorrelationCard';
 import CorrelationResult from './CorrelationResult';
 import CreateIndexModal from './CreateIndexModal';
+import DropdownFilters from './DropdownFilters';
 import { Search } from './ui/Search';
 import { Button } from './ui/button';
-import { NoBadgeMultiSelect } from './ui/nobadgemultiselect';
 
 export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
   const [query, setQuery] = useState('');
@@ -46,25 +45,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
   const [showResults, setShowResults] = useState(false);
   const [toggleAllChecked, setToggleAllChecked] = useState(false);
   const [lagPeriods, setLagPeriods] = useState(0);
-
-  const [selectedSources, setSelectedSources] = useState<string[]>([]);
-  const [selectedReleases, setSelectedReleases] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-
-  const [filters, setFilters] = useState<DatasetFilters>({
-    categories: [],
-    source: [],
-    release: [],
-  });
-
-  useEffect(() => {
-    getDatasetFilters().then((data) => {
-      setFilters(data);
-      setSelectedCategories(data.categories);
-      setSelectedReleases(data.release);
-      setSelectedSources(data.source);
-    });
-  }, []);
+  const [dropdownFilterData, setDropdownFilterData] = useState(data);
 
   const [checkedRows, setCheckedRows] = useState<Set<string>>(new Set());
 
@@ -83,16 +64,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
 
   const filteredData = useMemo(
     () =>
-      data
-        .filter(
-          (row) =>
-            // Check if any of the categories are included in the selected categories
-            row.categories?.some((category) =>
-              selectedCategories.includes(category),
-            ) &&
-            (!row.release || selectedReleases.includes(row.release)) &&
-            selectedSources.includes(row.source),
-        )
+      dropdownFilterData
         .filter(
           (row) =>
             query === '' ||
@@ -111,14 +83,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
           }
           return 0; // No change
         }),
-    [
-      data,
-      query,
-      checkedRows,
-      selectedCategories,
-      selectedReleases,
-      selectedSources,
-    ],
+    [data, query, checkedRows, dropdownFilterData],
   );
 
   const toggleAll = (checked: boolean) => {
@@ -237,30 +202,9 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
                 placeholder="Search by Series Title"
                 className="min-w-[400px]"
               />
-
-              <NoBadgeMultiSelect
-                options={filters.source.map((year) => {
-                  return { value: year, label: year };
-                })}
-                selected={selectedSources}
-                onChange={setSelectedSources}
-                label="Source"
-              />
-              <NoBadgeMultiSelect
-                options={filters.release.map((year) => {
-                  return { value: year, label: year };
-                })}
-                selected={selectedReleases}
-                onChange={setSelectedReleases}
-                label="Release"
-              />
-              <NoBadgeMultiSelect
-                options={filters.categories.map((year) => {
-                  return { value: year, label: year };
-                })}
-                selected={selectedCategories}
-                onChange={setSelectedCategories}
-                label="Categories"
+              <DropdownFilters
+                data={data}
+                setFilteredData={setDropdownFilterData}
               />
             </div>
 
