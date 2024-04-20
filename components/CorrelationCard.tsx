@@ -101,7 +101,7 @@ const CorrelationCard: React.FC<ComponentProps> = ({
   }, [inputFields]);
 
   return (
-    <Card className="dark:bg-[#1b1b26] bg-gray-100 m-4 w-[300px] border-0 sticky top-4">
+    <Card className="dark:bg-[#1b1b26] bg-gray-100 m-4 min-w-[300px] border-0 sticky top-4">
       <CardContent className="px-4">
         <Tabs
           value={tabValue}

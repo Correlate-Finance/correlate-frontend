@@ -19,17 +19,13 @@ const HomePage = () => {
     useCorrelateResponseData();
   const { correlateInputData, setCorrelateInputData } = useCorrelateInputData();
 
-  const {
-    onSubmit: onSubmitAutomatic,
-    loading: loadingAutomatic,
-    hasData,
-  } = useSubmitForm(setCorrelateResponseData, setCorrelateInputData);
+  const { onSubmit: onSubmitAutomatic, loading: loadingAutomatic } =
+    useSubmitForm(setCorrelateResponseData, setCorrelateInputData);
   const { correlateInputText, loading: loadingManual } = useCorrelateInputText(
     setCorrelateResponseData,
     setCorrelateInputData,
   );
   const loading = loadingAutomatic || loadingManual;
-
   return (
     <div className="flex overflow-scroll min-h-[90vh]">
       <CorrelationCard
@@ -47,8 +43,7 @@ const HomePage = () => {
           <Loading />
         </div>
       )}
-
-      {hasData && !loading && (
+      {correlateResponseData.data.length !== 0 && (
         <div className="m-5 flex flex-row justify-between w-3/4 gap-8">
           <div className="w-min">
             <InputData data={correlateInputData} />
@@ -58,7 +53,7 @@ const HomePage = () => {
           </div>
         </div>
       )}
-      {!hasData && !loading && (
+      {correlateResponseData.data.length === 0 && !loading && (
         <div className="flex flex-col justify-center items-center w-full gap-2">
           <ChartBar />
           <h1 className="text-4xl text-center font-bold">It’s empty in here</h1>
