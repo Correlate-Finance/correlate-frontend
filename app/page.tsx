@@ -1,10 +1,7 @@
 'use client';
 
-import ChartBar from '@/assets/ChartBar';
 import CorrelationCard from '@/components/CorrelationCard';
-import InputData from '@/components/InputData';
-import Results from '@/components/Results';
-import Loading from '@/components/animations/Loading';
+import CorrelationResult from '@/components/CorrelationResult';
 import {
   useCorrelateInputData,
   useCorrelateInputText,
@@ -26,6 +23,7 @@ const HomePage = () => {
     setCorrelateInputData,
   );
   const loading = loadingAutomatic || loadingManual;
+
   return (
     <div className="flex overflow-scroll min-h-[90vh]">
       <CorrelationCard
@@ -38,31 +36,12 @@ const HomePage = () => {
         setLagPeriods={setLagPeriods}
       />
 
-      {loading && (
-        <div className="flex flex-col justify-center items-center">
-          <Loading />
-        </div>
-      )}
-      {correlateResponseData.data.length !== 0 && (
-        <div className="m-5 flex flex-row justify-between w-3/4 gap-8">
-          <div className="w-min">
-            <InputData data={correlateInputData} />
-          </div>
-          <div className="flex-1">
-            <Results data={correlateResponseData} lagPeriods={lagPeriods} />
-          </div>
-        </div>
-      )}
-      {correlateResponseData.data.length === 0 && !loading && (
-        <div className="flex flex-col justify-center items-center w-full gap-2">
-          <ChartBar />
-          <h1 className="text-4xl text-center font-bold">It’s empty in here</h1>
-          <p className="w-[40%] text-center">
-            Get started by running your first correlation. You can choose a
-            stock ticker or input your own data manually.
-          </p>
-        </div>
-      )}
+      <CorrelationResult
+        data={correlateResponseData}
+        lagPeriods={lagPeriods}
+        inputData={correlateInputData}
+        loading={loading}
+      />
     </div>
   );
 };

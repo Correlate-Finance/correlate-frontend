@@ -322,6 +322,7 @@ export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
               data={correlateResponseData}
               lagPeriods={lagPeriods}
               inputData={correlateInputData}
+              loading={loadingAutomatic || loadingManual}
             />
           </div>
         )}

@@ -1,17 +1,20 @@
-import { getDatasetFilters } from '@/app/api/actions';
-import { DatasetFilters, DatasetMetadata } from '@/app/api/schema';
+import {
+  CorrelationDataPoint,
+  DatasetFilters,
+  DatasetMetadata,
+} from '@/app/api/schema';
 import React, { useEffect, useState } from 'react';
 import { NoBadgeMultiSelect } from './ui/nobadgemultiselect';
 
-interface DropdownFiltersProps {
-  data: DatasetMetadata[];
-  setFilteredData: (data: DatasetMetadata[]) => void;
+interface DropdownFiltersProps<T> {
+  data: T[];
+  setFilteredData: (data: T[]) => void;
 }
 
-const DropdownFilters: React.FC<DropdownFiltersProps> = ({
+const DropdownFilters = <T extends DatasetMetadata | CorrelationDataPoint>({
   data,
   setFilteredData,
-}) => {
+}: DropdownFiltersProps<T>): React.JSX.Element => {
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
   const [selectedReleases, setSelectedReleases] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -24,13 +27,31 @@ const DropdownFilters: React.FC<DropdownFiltersProps> = ({
 
   // Load the filter values from the DB
   useEffect(() => {
-    getDatasetFilters().then((data) => {
-      setFilters(data);
-      setSelectedCategories(data.categories);
-      setSelectedReleases(data.release);
-      setSelectedSources(data.source);
+    const categories = new Set<string>([]);
+    const releases = new Set<string>([]);
+    const sources = new Set<string>([]);
+
+    data?.forEach((element) => {
+      element.categories?.forEach((category) => {
+        categories.add(category);
+      });
+      if (element.source) {
+        sources.add(element.source);
+      }
+      if (element.release) {
+        releases.add(element.release);
+      }
     });
-  }, []);
+
+    setSelectedCategories(Array.from(categories));
+    setSelectedReleases(Array.from(releases));
+    setSelectedSources(Array.from(sources));
+    setFilters({
+      categories: Array.from(categories),
+      source: Array.from(sources),
+      release: Array.from(releases),
+    });
+  }, [data]);
 
   useEffect(() => {
     const filteredData = data.filter((row) => {
@@ -39,7 +60,7 @@ const DropdownFilters: React.FC<DropdownFiltersProps> = ({
           selectedCategories.includes(category),
         ) &&
         (!row.release || selectedReleases.includes(row.release)) &&
-        selectedSources.includes(row.source)
+        (!row.source || selectedSources.includes(row.source))
       );
     });
     setFilteredData(filteredData);

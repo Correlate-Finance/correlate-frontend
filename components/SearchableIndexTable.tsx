@@ -8,7 +8,6 @@ import {
   PaginationEllipsis,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import {
@@ -21,6 +20,7 @@ import {
 } from '@/components/ui/table';
 import {
   inputFieldsSchema,
+  useCorrelateInputData,
   useCorrelateInputText,
   useCorrelateResponseData,
   useSubmitForm,
@@ -32,6 +32,8 @@ import CorrelationCard from './CorrelationCard';
 import Results from './Results';
 import { Button } from './ui/button';
 
+import { ArrowLeft } from 'lucide-react';
+import CorrelationResult from './CorrelationResult';
 import EditIndexModal from './EditIndexModal';
 
 export default function SearchableIndexTable({ data }: { data: any[] }) {
@@ -128,15 +130,18 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
+  const { correlateInputData, setCorrelateInputData } = useCorrelateInputData();
   const { correlateResponseData, setCorrelateResponseData } =
     useCorrelateResponseData();
 
   const { onSubmit, loading: loadingAutomatic } = useSubmitForm(
     setCorrelateResponseData,
+    setCorrelateInputData,
   );
 
   const { correlateInputText, loading: loadingManual } = useCorrelateInputText(
     setCorrelateResponseData,
+    setCorrelateInputData,
   );
 
   const onSubmitSelected = (
@@ -261,12 +266,22 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
                   </PaginationItem>
                 ))}
 
-                {currentPage < pageCount && (
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => setCurrentPage(currentPage + 1)}
+                {showResults && (
+                  <div className="flex-1">
+                    <button
+                      className="cursor-pointer flex flex-row ml-6 mt-4 items-center"
+                      onClick={() => setShowResults(false)}
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      <p>Search</p>
+                    </button>
+                    <CorrelationResult
+                      data={correlateResponseData}
+                      lagPeriods={lagPeriods}
+                      inputData={correlateInputData}
+                      loading={loadingAutomatic && loadingManual}
                     />
-                  </PaginationItem>
+                  </div>
                 )}
               </PaginationContent>
             </Pagination>

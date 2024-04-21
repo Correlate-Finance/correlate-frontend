@@ -3,7 +3,6 @@ import { CorrelationData } from '@/app/api/schema';
 import {
   Table,
   TableBody,
-  TableCaption,
   TableHead,
   TableHeader,
   TableRow,
@@ -24,6 +23,8 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
   const [watchlistedRows, setWatchlistedRows] = useState(
     new Array<boolean>(data.data.length).fill(false),
   );
+  const [scrolledRows, setScrolledRows] = useState(100);
+
   const toggleCheckbox = (id: number, checked: boolean) => {
     const newCheckedRows = new Set(checkedRows);
     if (checked) {
@@ -48,11 +49,41 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
     setCheckedRows(new Set());
   }, [data]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const windowHeight =
+        'innerHeight' in window
+          ? window.innerHeight
+          : document.documentElement.offsetHeight;
+      const body = document.body;
+      const html = document.documentElement;
+      const docHeight = Math.max(
+        body.scrollHeight,
+        body.offsetHeight,
+        html.clientHeight,
+        html.scrollHeight,
+        html.offsetHeight,
+      );
+      const windowBottom = windowHeight + window.scrollY;
+
+      // Add 20 rows as users gets closer to the bottom
+      if (windowBottom >= docHeight - 100) {
+        // 10px threshold from the bottom
+        setScrolledRows((prev) => prev + 20);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window?.removeEventListener('scroll', handleScroll);
+    };
+  }, [data]); // Depend on loading and data if needed
+
   return (
     <>
-      <div className="border-white">
+      <div className="border-white overflow-auto">
         <Table className="w-full">
-          <TableCaption>Top Correlations with the data.</TableCaption>
           <TableHeader>
             <TableRow className="hover:bg-inherit">
               <TableHead />
@@ -64,18 +95,20 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
             </TableRow>
           </TableHeader>
           <TableBody className="">
-            {data?.data?.map((dp, index) => (
-              <ResultsRow
-                dp={dp}
-                lagPeriods={lagPeriods}
-                key={`${dp.title}-${dp.lag}`}
-                index={index}
-                toggleCheckbox={toggleCheckbox}
-                addedToWatchlist={
-                  watchlistedRows ? watchlistedRows[index] : false
-                }
-              />
-            ))}
+            {data?.data
+              ?.slice(0, scrolledRows)
+              .map((dp, index) => (
+                <ResultsRow
+                  dp={dp}
+                  lagPeriods={lagPeriods}
+                  key={`${dp.title}-${dp.lag}`}
+                  index={index}
+                  toggleCheckbox={toggleCheckbox}
+                  addedToWatchlist={
+                    watchlistedRows ? watchlistedRows[index] : false
+                  }
+                />
+              ))}
           </TableBody>
         </Table>
       </div>

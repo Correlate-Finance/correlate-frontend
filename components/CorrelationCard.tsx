@@ -53,6 +53,10 @@ const CorrelationCard: React.FC<ComponentProps> = ({
     segment: 'Total Revenue',
   });
 
+  useEffect(() => {
+    setLagPeriods(inputFields.lagPeriods);
+  }, [inputFields.lagPeriods]);
+
   async function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
     e.preventDefault();
     setInputFields({

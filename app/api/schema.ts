@@ -65,6 +65,7 @@ export type CorrelationDataPoint = {
   release?: string;
   url?: string;
   units?: string;
+  categories?: string[];
 };
 
 export const registerFieldsSchema = z
