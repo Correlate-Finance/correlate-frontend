@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SquarePen } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -111,7 +111,7 @@ export default function EditIndexModal({
             e.stopPropagation();
           }}
         >
-          <SquarePen size={20} />
+          <Pencil size={20} />
         </Button>
       </DialogTrigger>
       <DialogContent>

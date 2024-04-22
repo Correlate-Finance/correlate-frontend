@@ -66,6 +66,7 @@ export default function SearchableTable({
     setCheckedRows(newCheckedRows);
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const filteredData = useMemo(
     () =>
       dropdownFilterData
@@ -87,7 +88,7 @@ export default function SearchableTable({
           }
           return 0; // No change
         }),
-    [query, checkedRows, dropdownFilterData],
+    [query, dropdownFilterData],
   );
 
   const toggleAll = (checked: boolean) => {

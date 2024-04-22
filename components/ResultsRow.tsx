@@ -160,7 +160,7 @@ const ResultsRow: React.FC<MyComponentProps> = ({
                   onBrushChange={onBrushChange}
                   correlation={correlation}
                 />
-                <p className="text-gray-300 pl-16">
+                <p className="dark:text-gray-300 text-gray-400 pl-16">
                   {dp.source}: {dp.url}
                 </p>
               </div>
