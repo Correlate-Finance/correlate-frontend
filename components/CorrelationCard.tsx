@@ -55,7 +55,7 @@ const CorrelationCard: React.FC<ComponentProps> = ({
 
   useEffect(() => {
     setLagPeriods(inputFields.lagPeriods);
-  }, [inputFields.lagPeriods]);
+  }, [inputFields.lagPeriods, setLagPeriods]);
 
   async function updateInputText(e: React.ChangeEvent<HTMLTextAreaElement>) {
     e.preventDefault();
