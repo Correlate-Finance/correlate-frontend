@@ -144,8 +144,15 @@ export default function SearchableIndexTable({ data }: { data: IndexType[] }) {
   const onSubmitSelected = (
     inputFields: z.infer<typeof inputFieldsSchema>,
   ): void => {
+    let selectedIndexes = Array.from(checkedRows);
+
+    // If no indexes are selected run against all indexes
+    if (selectedIndexes.length === 0) {
+      selectedIndexes = data.map((row) => row.id);
+    }
+
     setShowResults(true);
-    onSubmit({ inputFields, selectedIndexes: [...checkedRows] });
+    onSubmit({ inputFields, selectedIndexes });
   };
 
   return (
@@ -154,10 +161,17 @@ export default function SearchableIndexTable({ data }: { data: IndexType[] }) {
         onAutomaticSubmit={onSubmitSelected}
         loadingAutomatic={loadingAutomatic}
         onManualSubmit={(x) => {
+          let selectedIndexes = Array.from(checkedRows);
+
+          // If no indexes are selected run against all indexes
+          if (selectedIndexes.length === 0) {
+            selectedIndexes = data.map((row) => row.id);
+          }
+
           setShowResults(true);
           correlateInputText({
             inputFields: x,
-            selectedIndexes: [...checkedRows],
+            selectedIndexes,
           });
         }}
         loadingManual={loadingManual}
