@@ -214,7 +214,7 @@ export default function SearchableIndexTable({ data }: { data: IndexType[] }) {
                         onClick={(e) => e.stopPropagation()}
                       />
                     </TableCell>
-                    <TableCell>{row.name}</TableCell>
+                    <TableCell className="w-full">{row.name}</TableCell>
                     <TableCell
                       onClick={(e) => {
                         e.stopPropagation();
