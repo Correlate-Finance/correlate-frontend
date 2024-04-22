@@ -1,11 +1,15 @@
 'use server';
 
-import { CorrelationData } from '@/app/api/schema';
+import { CorrelationData, IndexType } from '@/app/api/schema';
 import { inputFieldsSchema } from '@/hooks/usePage';
 import { authOptions } from '@/lib/configs/authOptions';
 import { getServerSession } from 'next-auth/next';
 import { z } from 'zod';
-import { DatasetMetadata, IndexDataset, registerFieldsSchema } from './schema';
+import {
+  DatasetMetadataType,
+  IndexDataset,
+  registerFieldsSchema,
+} from './schema';
 import { getBaseUrl } from './util';
 
 export async function registerUser(
@@ -68,7 +72,7 @@ export async function correlateIndex(
   }
 }
 
-export async function getAllDatasetMetadata(): Promise<DatasetMetadata[]> {
+export async function getAllDatasetMetadata(): Promise<DatasetMetadataType[]> {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -224,19 +228,26 @@ export const changePassword = async (email: string, password: string) => {
   return data;
 };
 
-export const saveIndex = async (data: IndexDataset[], indexName: string) => {
+export const saveIndex = async (
+  data: IndexDataset[],
+  indexName: string,
+  index_id?: number,
+) => {
   const session = await getServerSession(authOptions);
 
   if (!session) {
     return Promise.reject('Unauthorized');
   }
 
+  let body = {
+    index_name: indexName,
+    datasets: data,
+    ...(index_id && { index_id: index_id }),
+  };
+
   const response = await fetch(`${getBaseUrl()}/save-index/`, {
     method: 'POST',
-    body: JSON.stringify({
-      index_name: indexName,
-      datasets: data,
-    }),
+    body: JSON.stringify(body),
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Token ${session.user.accessToken}`,
@@ -246,7 +257,7 @@ export const saveIndex = async (data: IndexDataset[], indexName: string) => {
   return json;
 };
 
-export async function getAllIndices() {
+export async function getAllIndices(): Promise<IndexType[]> {
   const session = await getServerSession(authOptions);
 
   if (!session) {

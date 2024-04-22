@@ -1,5 +1,5 @@
 import { saveIndex } from '@/app/api/actions';
-import { DatasetMetadata, IndexDataset } from '@/app/api/schema';
+import { DatasetMetadataType, IndexDataset } from '@/app/api/schema';
 import {
   Dialog,
   DialogContent,
@@ -8,6 +8,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from './ui/button';
@@ -19,10 +20,11 @@ import { useToast } from './ui/use-toast';
 export default function CreateIndexModal({
   data,
 }: {
-  data: DatasetMetadata[];
+  data: DatasetMetadataType[];
 }) {
-  const totalRows = data.length;
+  const [open, setOpen] = useState(false);
   const { toast } = useToast();
+  const totalRows = data.length;
   const correlateIndexFormSchema = z
     .object({
       indexName: z.string(),
@@ -66,6 +68,7 @@ export default function CreateIndexModal({
         title: 'Index saved',
         description: `Index ${values.indexName} has been saved`,
       });
+      setOpen(false);
     } catch (e) {
       toast({
         title: 'Error saving index',
@@ -82,7 +85,7 @@ export default function CreateIndexModal({
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           className="bg-blue-800 text-white"

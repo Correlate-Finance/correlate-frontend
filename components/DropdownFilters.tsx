@@ -1,7 +1,7 @@
 import {
   CorrelationDataPoint,
   DatasetFilters,
-  DatasetMetadata,
+  DatasetMetadataType,
 } from '@/app/api/schema';
 import React, { useEffect, useState } from 'react';
 import { NoBadgeMultiSelect } from './ui/nobadgemultiselect';
@@ -11,7 +11,7 @@ interface DropdownFiltersProps<T> {
   setFilteredData: (data: T[]) => void;
 }
 
-const DropdownFilters = <T extends DatasetMetadata | CorrelationDataPoint>({
+const DropdownFilters = <T extends DatasetMetadataType | CorrelationDataPoint>({
   data,
   setFilteredData,
 }: DropdownFiltersProps<T>): React.JSX.Element => {

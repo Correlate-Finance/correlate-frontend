@@ -29,14 +29,13 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { z } from 'zod';
 import CorrelationCard from './CorrelationCard';
-import Results from './Results';
-import { Button } from './ui/button';
 
+import { IndexType } from '@/app/api/schema';
 import { ArrowLeft } from 'lucide-react';
 import CorrelationResult from './CorrelationResult';
 import EditIndexModal from './EditIndexModal';
 
-export default function SearchableIndexTable({ data }: { data: any[] }) {
+export default function SearchableIndexTable({ data }: { data: IndexType[] }) {
   const [query, setQuery] = useState('');
   const [lagPeriods, setLagPeriods] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,7 +48,7 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
 
   const toggleCheckbox = (id: number, checked: boolean) => {
     const newCheckedRows = new Set(checkedRows);
-    const value = filteredData[id].id;
+    const value = filteredData[id].name;
     if (checked) {
       newCheckedRows.add(value);
     } else if (newCheckedRows.has(value)) {
@@ -67,7 +66,10 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
   const toggleAll = (checked: boolean) => {
     setToggleAllChecked(checked);
     const newCheckedRows = new Set(
-      Array.from({ length: filteredData.length }, (_, i) => filteredData[i].id),
+      Array.from(
+        { length: filteredData.length },
+        (_, i) => filteredData[i].name,
+      ),
     );
     if (checked) {
       setCheckedRows((prevRows) => new Set([...prevRows, ...newCheckedRows]));
@@ -208,7 +210,7 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
                       className="cursor-default"
                     >
                       <Checkbox
-                        checked={checkedRows.has(row.id)}
+                        checked={checkedRows.has(row.name)}
                         onCheckedChange={(e) => {
                           if (e !== 'indeterminate') {
                             toggleCheckbox(
@@ -227,11 +229,9 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
                       }}
                     >
                       <EditIndexModal
-                        data={{
-                          data: [],
-                          aggregationPeriod: '',
-                          correlationMetric: '',
-                        }}
+                        data={row.index_datasets}
+                        name={row.name}
+                        index_id={row.id}
                       />
                     </TableCell>
                   </TableRow>
@@ -265,41 +265,26 @@ export default function SearchableIndexTable({ data }: { data: any[] }) {
                     )}
                   </PaginationItem>
                 ))}
-
-                {showResults && (
-                  <div className="flex-1">
-                    <button
-                      className="cursor-pointer flex flex-row ml-6 mt-4 items-center"
-                      onClick={() => setShowResults(false)}
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                      <p>Search</p>
-                    </button>
-                    <CorrelationResult
-                      data={correlateResponseData}
-                      lagPeriods={lagPeriods}
-                      inputData={correlateInputData}
-                      loading={loadingAutomatic && loadingManual}
-                    />
-                  </div>
-                )}
               </PaginationContent>
             </Pagination>
           </>
         )}
 
         {showResults && (
-          <div>
-            <Button onClick={() => setShowResults(false)} className="mx-2">
-              Back to Table Explorer
-            </Button>
-            <Button
-              onClick={() => setCheckedRows(new Set([]))}
-              className="mx-2"
+          <div className="flex-1">
+            <button
+              className="cursor-pointer flex flex-row ml-6 mt-4 items-center"
+              onClick={() => setShowResults(false)}
             >
-              Reset Selection
-            </Button>
-            <Results data={correlateResponseData} lagPeriods={lagPeriods} />
+              <ArrowLeft className="w-4 h-4" />
+              <p>Search</p>
+            </button>
+            <CorrelationResult
+              data={correlateResponseData}
+              lagPeriods={lagPeriods}
+              inputData={correlateInputData}
+              loading={loadingAutomatic && loadingManual}
+            />
           </div>
         )}
       </div>

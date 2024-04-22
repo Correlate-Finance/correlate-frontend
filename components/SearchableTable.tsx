@@ -1,6 +1,6 @@
 'use client';
 
-import { DatasetMetadata } from '@/app/api/schema';
+import { DatasetMetadataType } from '@/app/api/schema';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Pagination,
@@ -37,7 +37,11 @@ import DropdownFilters from './DropdownFilters';
 import { Search } from './ui/Search';
 import { Button } from './ui/button';
 
-export default function SearchableTable({ data }: { data: DatasetMetadata[] }) {
+export default function SearchableTable({
+  data,
+}: {
+  data: DatasetMetadataType[];
+}) {
   const [query, setQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;

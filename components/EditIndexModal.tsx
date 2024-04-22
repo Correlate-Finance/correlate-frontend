@@ -1,5 +1,5 @@
 import { saveIndex } from '@/app/api/actions';
-import { CorrelationData } from '@/app/api/schema';
+import { IndexDataset, IndexDatasetType } from '@/app/api/schema';
 import {
   Dialog,
   DialogContent,
@@ -8,6 +8,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { SquarePen } from 'lucide-react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from './ui/button';
@@ -16,25 +18,22 @@ import { Input } from './ui/input';
 import { Separator } from './ui/separator';
 import { useToast } from './ui/use-toast';
 
-import { IndexDataset } from '@/app/api/schema';
-import { SquarePen } from 'lucide-react';
-
-export default function EditIndexModal({ data }: { data: CorrelationData }) {
-  if (!data) {
-    data = {
-      data: [],
-      aggregationPeriod: '',
-      correlationMetric: '',
-    };
-  }
+export default function EditIndexModal({
+  data,
+  name,
+  index_id,
+}: {
+  data: IndexDatasetType[];
+  name: string;
+  index_id: number;
+}) {
+  const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
   const correlateIndexFormSchema = z
     .object({
       indexName: z.string(),
-      percentages: z
-        .array(z.string().default((1 / data.data.length).toFixed(2)))
-        .min(data.data.length),
+      percentages: z.array(z.string()).min(data.length),
     })
     .refine(
       (data) => {
@@ -45,7 +44,7 @@ export default function EditIndexModal({ data }: { data: CorrelationData }) {
       },
       {
         message: 'The sum should be 1',
-        path: [`percentages.${data.data.length - 1}`],
+        path: [`percentages.${data.length - 1}`],
       },
     )
     .refine(
@@ -61,16 +60,14 @@ export default function EditIndexModal({ data }: { data: CorrelationData }) {
   const form = useForm<z.infer<typeof correlateIndexFormSchema>>({
     resolver: zodResolver(correlateIndexFormSchema),
     defaultValues: {
-      indexName: '',
-      percentages: Array.from({ length: data.data.length }, () =>
-        (1 / data.data.length).toFixed(2),
-      ),
+      indexName: name,
+      percentages: data.map((dp) => dp.weight.toString()),
     },
   });
 
   const onSubmit = async (values: z.infer<typeof correlateIndexFormSchema>) => {
     try {
-      await onSaveIndex(values);
+      await onSaveIndex(values, index_id);
     } catch (e) {
       toast({
         title: 'Error updating correlation data',
@@ -81,19 +78,21 @@ export default function EditIndexModal({ data }: { data: CorrelationData }) {
 
   const onSaveIndex = async (
     values: z.infer<typeof correlateIndexFormSchema>,
+    index_id: number,
   ) => {
     try {
-      const indexDatasets: IndexDataset[] = data.data.map((dp, i) => {
+      const indexDatasets: IndexDataset[] = data.map((dp, i) => {
         return {
-          title: dp.title,
+          title: dp.dataset.external_name,
           percentage: values.percentages[i],
         };
       });
-      await saveIndex(indexDatasets, values.indexName);
+      await saveIndex(indexDatasets, values.indexName, index_id);
       toast({
         title: 'Index saved',
         description: `Index ${values.indexName} has been saved`,
       });
+      setOpen(false);
     } catch (e) {
       toast({
         title: 'Error saving index',
@@ -103,7 +102,7 @@ export default function EditIndexModal({ data }: { data: CorrelationData }) {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           variant="outline"
@@ -141,14 +140,12 @@ export default function EditIndexModal({ data }: { data: CorrelationData }) {
               </DialogTitle>
 
               <ul>
-                {Array(data.data.length).map((index, i) => (
-                  <li key={index}>
+                {data.map((indexDataset, i) => (
+                  <li key={i}>
                     <div className="flex flex-row justify-between m-1">
                       <div className="flex flex-col w-4/5">
-                        <p className="text-sm">{data.data[index].title}</p>
-                        <p className="text-sm text-gray-500 ">
-                          Correlation:{' '}
-                          {data.data[index].pearson_value.toFixed(3)}
+                        <p className="text-sm">
+                          {indexDataset.dataset.external_name}
                         </p>
                       </div>
                       <div className="w-1/5 shrink-0">
@@ -166,9 +163,7 @@ export default function EditIndexModal({ data }: { data: CorrelationData }) {
                         />
                       </div>
                     </div>
-                    {i != data.data.length - 1 && (
-                      <Separator className="mt-2" />
-                    )}
+                    {i != data.length - 1 && <Separator className="mt-2" />}
                   </li>
                 ))}
               </ul>

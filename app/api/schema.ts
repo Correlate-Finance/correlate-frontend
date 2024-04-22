@@ -22,7 +22,7 @@ export interface DataTrendPoint {
   [index: string]: string | number | undefined;
 }
 
-export interface DatasetMetadata {
+export interface DatasetMetadataType {
   internal_name: string;
   external_name: string;
   description: string;
@@ -66,6 +66,17 @@ export type CorrelationDataPoint = {
   url?: string;
   units?: string;
   categories?: string[];
+};
+
+export type IndexDatasetType = {
+  dataset: DatasetMetadataType;
+  weight: number;
+};
+
+export type IndexType = {
+  id: number;
+  name: string;
+  index_datasets: IndexDatasetType[];
 };
 
 export const registerFieldsSchema = z
