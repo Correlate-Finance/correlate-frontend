@@ -23,7 +23,7 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
   const [watchlistedRows, setWatchlistedRows] = useState(
     new Array<boolean>(data.data.length).fill(false),
   );
-  const [scrolledRows, setScrolledRows] = useState(10);
+  const [scrolledRows, setScrolledRows] = useState(50);
 
   const toggleCheckbox = (id: number, checked: boolean) => {
     const newCheckedRows = new Set(checkedRows);
