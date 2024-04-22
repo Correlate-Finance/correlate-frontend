@@ -32,12 +32,15 @@ export async function registerUser(
 
 export async function correlateIndex(
   values: { indexName?: string; percentages: string[] },
-  data: CorrelationData,
-  checkedRows: Set<number>,
+  index_datasets: string[],
+  aggregationPeriod: string,
+  correlationMetric: string,
+  input_data: number[],
+  dates: string[],
 ): Promise<CorrelationData> {
   const urlParams = new URLSearchParams({
-    aggregation_period: data.aggregationPeriod,
-    correlation_metric: data.correlationMetric,
+    aggregation_period: aggregationPeriod,
+    correlation_metric: correlationMetric,
   });
   const session = await getServerSession(authOptions);
 
@@ -53,11 +56,9 @@ export async function correlateIndex(
         body: JSON.stringify({
           index_name: values.indexName,
           index_percentages: values.percentages,
-          index_datasets: Array.from(checkedRows).map(
-            (i) => data.data[i].title,
-          ),
-          input_data: data.data[0].input_data,
-          dates: data.data[0].dates,
+          index_datasets: index_datasets,
+          input_data: input_data,
+          dates: dates,
         }),
         headers: {
           'Content-Type': 'application/json',

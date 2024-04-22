@@ -84,8 +84,16 @@ export default function IndexModal({
       await onSaveIndex(values);
       return;
     }
+
     try {
-      const result = await correlateIndex(values, data, checkedRows);
+      const result = await correlateIndex(
+        values,
+        Array.from(checkedRows).map((i) => data.data[i].title),
+        data.aggregationPeriod,
+        data.correlationMetric,
+        data.data[0].input_data,
+        data.data[0].dates,
+      );
       setCorrelationDataPoint(result.data[0]);
     } catch (e) {
       toast({

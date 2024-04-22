@@ -25,30 +25,28 @@ import {
   useCorrelateResponseData,
   useSubmitForm,
 } from '@/hooks/usePage';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { z } from 'zod';
 import CorrelationCard from './CorrelationCard';
 
 import { IndexType } from '@/app/api/schema';
 import { ArrowLeft } from 'lucide-react';
-import CorrelationResult from './CorrelationResult';
 import EditIndexModal from './EditIndexModal';
+import IndexCorrelationResult from './IndexCorrelationResult';
 
 export default function SearchableIndexTable({ data }: { data: IndexType[] }) {
   const [query, setQuery] = useState('');
   const [lagPeriods, setLagPeriods] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
-  const router = useRouter();
   const [showResults, setShowResults] = useState(false);
   const [toggleAllChecked, setToggleAllChecked] = useState(false);
 
-  const [checkedRows, setCheckedRows] = useState<Set<string>>(new Set());
+  const [checkedRows, setCheckedRows] = useState<Set<number>>(new Set());
 
   const toggleCheckbox = (id: number, checked: boolean) => {
     const newCheckedRows = new Set(checkedRows);
-    const value = filteredData[id].name;
+    const value = filteredData[id].id;
     if (checked) {
       newCheckedRows.add(value);
     } else if (newCheckedRows.has(value)) {
@@ -66,10 +64,7 @@ export default function SearchableIndexTable({ data }: { data: IndexType[] }) {
   const toggleAll = (checked: boolean) => {
     setToggleAllChecked(checked);
     const newCheckedRows = new Set(
-      Array.from(
-        { length: filteredData.length },
-        (_, i) => filteredData[i].name,
-      ),
+      Array.from({ length: filteredData.length }, (_, i) => filteredData[i].id),
     );
     if (checked) {
       setCheckedRows((prevRows) => new Set([...prevRows, ...newCheckedRows]));
@@ -150,7 +145,7 @@ export default function SearchableIndexTable({ data }: { data: IndexType[] }) {
     inputFields: z.infer<typeof inputFieldsSchema>,
   ): void => {
     setShowResults(true);
-    onSubmit(inputFields, [...checkedRows]);
+    onSubmit({ inputFields, selectedIndexes: [...checkedRows] });
   };
 
   return (
@@ -160,7 +155,10 @@ export default function SearchableIndexTable({ data }: { data: IndexType[] }) {
         loadingAutomatic={loadingAutomatic}
         onManualSubmit={(x) => {
           setShowResults(true);
-          correlateInputText(x, [...checkedRows]);
+          correlateInputText({
+            inputFields: x,
+            selectedIndexes: [...checkedRows],
+          });
         }}
         loadingManual={loadingManual}
         setLagPeriods={setLagPeriods}
@@ -198,19 +196,13 @@ export default function SearchableIndexTable({ data }: { data: IndexType[] }) {
               </TableHeader>
               <TableBody>
                 {currentRows.map((row, index) => (
-                  <TableRow
-                    key={row.id}
-                    onClick={(e) => {
-                      router.push(`/data/${row.name}`);
-                    }}
-                    className="cursor-pointer"
-                  >
+                  <TableRow key={row.id}>
                     <TableCell
                       onClick={(e) => e.stopPropagation()}
                       className="cursor-default"
                     >
                       <Checkbox
-                        checked={checkedRows.has(row.name)}
+                        checked={checkedRows.has(row.id)}
                         onCheckedChange={(e) => {
                           if (e !== 'indeterminate') {
                             toggleCheckbox(
@@ -277,9 +269,9 @@ export default function SearchableIndexTable({ data }: { data: IndexType[] }) {
               onClick={() => setShowResults(false)}
             >
               <ArrowLeft className="w-4 h-4" />
-              <p>Search</p>
+              <p>Indexes</p>
             </button>
-            <CorrelationResult
+            <IndexCorrelationResult
               data={correlateResponseData}
               lagPeriods={lagPeriods}
               inputData={correlateInputData}

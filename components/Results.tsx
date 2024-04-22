@@ -23,7 +23,7 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
   const [watchlistedRows, setWatchlistedRows] = useState(
     new Array<boolean>(data.data.length).fill(false),
   );
-  const [scrolledRows, setScrolledRows] = useState(100);
+  const [scrolledRows, setScrolledRows] = useState(10);
 
   const toggleCheckbox = (id: number, checked: boolean) => {
     const newCheckedRows = new Set(checkedRows);
@@ -79,10 +79,9 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
       window?.removeEventListener('scroll', handleScroll);
     };
   }, [data]); // Depend on loading and data if needed
-
   return (
     <>
-      <div className="border-white overflow-auto">
+      <div className="border-white">
         <Table className="w-full">
           <TableHeader>
             <TableRow className="hover:bg-inherit">
@@ -112,7 +111,6 @@ const Results: React.FC<MyComponentProps> = ({ data, lagPeriods }) => {
           </TableBody>
         </Table>
       </div>
-
       {checkedRows.size > 0 && (
         <div className="sticky bottom-0 py-2 flex flex-row justify-end">
           <IndexModal data={data} checkedRows={checkedRows} />
