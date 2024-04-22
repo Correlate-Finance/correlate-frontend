@@ -87,7 +87,7 @@ export default function SearchableTable({
           }
           return 0; // No change
         }),
-    [query, checkedRows, dropdownFilterData],
+    [query, dropdownFilterData],
   );
 
   const toggleAll = (checked: boolean) => {
