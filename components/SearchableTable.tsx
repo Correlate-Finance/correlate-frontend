@@ -177,7 +177,7 @@ export default function SearchableTable({
     inputFields: z.infer<typeof inputFieldsSchema>,
   ): void => {
     setShowResults(true);
-    onSubmit(inputFields, [...checkedRows]);
+    onSubmit({ inputFields, selectedDatasets: [...checkedRows] });
   };
 
   return (
@@ -188,7 +188,10 @@ export default function SearchableTable({
           loadingAutomatic={loadingAutomatic}
           onManualSubmit={(x) => {
             setShowResults(true);
-            correlateInputText(x, [...checkedRows]);
+            correlateInputText({
+              inputFields: x,
+              selectedDatasets: [...checkedRows],
+            });
           }}
           loadingManual={loadingManual}
           setLagPeriods={setLagPeriods}

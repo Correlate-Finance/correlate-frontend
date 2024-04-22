@@ -125,7 +125,7 @@ describe('usePage All Hooks Test', () => {
       );
 
       await act(async () => {
-        result.current.onSubmit(DEFAULT_INPUT_FIELDS);
+        result.current.onSubmit({ inputFields: DEFAULT_INPUT_FIELDS });
       });
 
       await waitFor(() => {
@@ -147,7 +147,7 @@ describe('usePage All Hooks Test', () => {
       );
 
       await act(async () => {
-        result.current.onSubmit(DEFAULT_INPUT_FIELDS);
+        result.current.onSubmit({ inputFields: DEFAULT_INPUT_FIELDS });
       });
 
       await waitFor(() => {

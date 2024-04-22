@@ -88,10 +88,15 @@ export const useSubmitForm = (
   const [hasData, setHasData] = useLocalStorage<boolean>('hasData', false);
   const { fetchRevenueData, revenueData } = useFetchRevenueData();
 
-  const onSubmit = async (
-    inputFields: z.infer<typeof inputFieldsSchema>,
-    selectedDatasets?: Array<string>,
-  ) => {
+  const onSubmit = async ({
+    inputFields,
+    selectedDatasets,
+    selectedIndexes,
+  }: {
+    inputFields: z.infer<typeof inputFieldsSchema>;
+    selectedDatasets?: Array<string>;
+    selectedIndexes?: Array<number>;
+  }) => {
     fetchRevenueData(inputFields);
     if (setCorrelateInputData) {
       setCorrelateInputData(revenueData);
@@ -135,12 +140,21 @@ export const useSubmitForm = (
           urlParams.append('selected_datasets', dataset);
         });
       }
+      if (selectedIndexes) {
+        selectedIndexes.forEach((index) => {
+          urlParams.append('selected_indexes', index.toString());
+        });
+      }
 
       const res = await fetch(`api/fetch?${urlParams.toString()}`);
       const jsonData = await handleResponseStatus(res);
 
       setLoading(false);
-      const correlationData: CorrelationData = jsonData.data;
+      const correlationData: CorrelationData = {
+        data: jsonData.data.data,
+        aggregationPeriod: jsonData.data.aggregation_period,
+        correlationMetric: jsonData.data.correlation_metric,
+      };
       setCorrelateResponseData(correlationData);
       setHasData(true);
     } catch (e) {
@@ -159,10 +173,15 @@ export const useCorrelateInputText = (
   const [loading, setLoading] = useState<boolean>(false);
   const [hasData, setHasData] = useLocalStorage<boolean>('hasData', false);
 
-  const correlateInputText = async (
-    inputFields: z.infer<typeof inputFieldsSchema>,
-    selectedDatasets?: Array<string>,
-  ) => {
+  const correlateInputText = async ({
+    inputFields,
+    selectedDatasets,
+    selectedIndexes,
+  }: {
+    inputFields: z.infer<typeof inputFieldsSchema>;
+    selectedDatasets?: Array<string>;
+    selectedIndexes?: Array<number>;
+  }) => {
     if (!inputFields.inputData) {
       alert('No input data');
       return;
@@ -202,6 +221,11 @@ export const useCorrelateInputText = (
           urlParams.append('selected_datasets', dataset);
         });
       }
+      if (selectedIndexes) {
+        selectedIndexes.forEach((index) => {
+          urlParams.append('selected_indexes', index.toString());
+        });
+      }
 
       const res = await fetch(
         `api/correlateinputdata?${urlParams.toString()}`,
@@ -217,7 +241,11 @@ export const useCorrelateInputText = (
       const jsonData = await handleResponseStatus(res);
 
       setLoading(false);
-      const correlationData: CorrelationData = jsonData.data;
+      const correlationData: CorrelationData = {
+        data: jsonData.data.data,
+        aggregationPeriod: jsonData.data.aggregation_period,
+        correlationMetric: jsonData.data.correlation_metric,
+      };
       setCorrelateResponseData(correlationData);
       setHasData(true);
     } catch (e) {

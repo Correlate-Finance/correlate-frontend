@@ -1,7 +1,5 @@
 import { CorrelationData } from '@/app/api/schema';
 import ChartBar from '@/assets/ChartBar';
-import { useState } from 'react';
-import DropdownFilters from './DropdownFilters';
 import InputData from './InputData';
 import Results from './Results';
 import Loading from './animations/Loading';
@@ -22,7 +20,6 @@ const CorrelationResult = ({
   const aggregationPeriod = data.aggregationPeriod;
   const correlationMetric = data.correlationMetric;
 
-  const [filteredData, setFilteredData] = useState(data.data);
   if (loading) {
     return (
       <div className="flex flex-col justify-center items-center w-full h-full ml-4">
@@ -44,15 +41,12 @@ const CorrelationResult = ({
 
   return (
     <div className="w-full mt-4">
-      <div className="flex flex-row gap-2">
-        <DropdownFilters data={data.data} setFilteredData={setFilteredData} />
-      </div>
       <div className="m-5 flex flex-row justify-between gap-8 ml-4">
         <InputData data={inputData} />
         <div className="flex-1">
           <Results
             data={{
-              data: filteredData,
+              data: data.data,
               aggregationPeriod,
               correlationMetric,
             }}
