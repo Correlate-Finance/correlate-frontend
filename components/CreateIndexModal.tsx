@@ -89,7 +89,7 @@ export default function CreateIndexModal({
       <DialogTrigger asChild>
         <Button
           className="bg-blue-800 text-white"
-          disabled={totalRows > 5}
+          disabled={totalRows > 20}
           onClick={() => {
             form.setValue(
               'percentages',
@@ -129,7 +129,7 @@ export default function CreateIndexModal({
                 <Separator className="mt-2 dark:bg-white" />
               </DialogTitle>
 
-              <ul>
+              <ul className="overflow-scroll max-h-[40vh]">
                 {[...data].map((dp, i) => (
                   <li key={dp.internal_name}>
                     <div className="flex flex-row justify-between m-1">

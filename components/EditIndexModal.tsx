@@ -139,7 +139,7 @@ export default function EditIndexModal({
                 />
               </DialogTitle>
 
-              <ul>
+              <ul className="overflow-scroll max-h-[40vh]">
                 {data.map((indexDataset, i) => (
                   <li key={i}>
                     <div className="flex flex-row justify-between m-1">
