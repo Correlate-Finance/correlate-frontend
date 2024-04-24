@@ -40,7 +40,7 @@ export default function IndexModal({
     .object({
       indexName: z.string(),
       percentages: z
-        .array(z.string().default((1 / checkedRows.size).toFixed(2)))
+        .array(z.string().default((1 / checkedRows.size).toFixed(3)))
         .min(checkedRows.size),
       button: z.string(),
     })
@@ -49,7 +49,7 @@ export default function IndexModal({
         const sum = values.percentages.reduce((acc, curr) => {
           return acc + Number(curr);
         }, 0);
-        return sum >= 0.99 && sum <= 1.0;
+        return sum >= 0.98 && sum <= 1.2;
       },
       {
         message: 'The sum should be 1',
@@ -73,7 +73,7 @@ export default function IndexModal({
     defaultValues: {
       indexName: '',
       percentages: Array.from({ length: checkedRows.size }, () =>
-        (1 / checkedRows.size).toFixed(2),
+        (1 / checkedRows.size).toFixed(3),
       ),
       button: 'correlate',
     },
@@ -134,12 +134,12 @@ export default function IndexModal({
       <DialogTrigger asChild>
         <Button
           className="bg-blue-800 text-white"
-          disabled={checkedRows.size > 5}
+          disabled={checkedRows.size > 20}
           onClick={() => {
             form.setValue(
               'percentages',
               Array.from({ length: checkedRows.size }, () =>
-                (1 / checkedRows.size).toFixed(2),
+                (1 / checkedRows.size).toFixed(3),
               ),
             );
           }}
@@ -172,7 +172,7 @@ export default function IndexModal({
                 />
               </DialogTitle>
 
-              <ul>
+              <ul className="overflow-scroll max-h-[40vh]">
                 {[...checkedRows].map((index, i) => (
                   <li key={index}>
                     <div className="flex flex-row justify-between m-1">
