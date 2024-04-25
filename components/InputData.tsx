@@ -35,7 +35,14 @@ const InputData: React.FC<MyComponentProps> = ({ data }) => {
                 {dp[0]}
               </TableCell>
               <TableCell className="whitespace-nowrap">
-                {USDollar.format(Number(dp?.[1]?.replaceAll(',', '')))}
+                {USDollar.format(
+                  Number(
+                    dp?.[1]
+                      ?.replaceAll(',', '')
+                      .replaceAll('$', '')
+                      .replaceAll('%', ''),
+                  ),
+                )}
               </TableCell>
             </TableRow>
           ))}
