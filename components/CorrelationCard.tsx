@@ -20,6 +20,7 @@ import { ReloadIcon } from '@radix-ui/react-icons';
 import DOMPurify from 'isomorphic-dompurify';
 import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
+import GenerateReportButton from './GenerateReportButton';
 
 interface ComponentProps {
   onAutomaticSubmit: (inputFields: z.infer<typeof inputFieldsSchema>) => void;
@@ -27,6 +28,13 @@ interface ComponentProps {
   onManualSubmit: (inputFields: z.infer<typeof inputFieldsSchema>) => void;
   loadingManual: boolean;
   setLagPeriods: (lagPeriods: number) => void;
+  generateReport?: (
+    stock?: string,
+    name?: string,
+    description?: string,
+  ) => void;
+  correlateResponseLoaded: boolean;
+  defaultInputs?: z.infer<typeof inputFieldsSchema>;
 }
 
 const CorrelationCard: React.FC<ComponentProps> = ({
@@ -35,6 +43,8 @@ const CorrelationCard: React.FC<ComponentProps> = ({
   onManualSubmit,
   loadingManual,
   setLagPeriods,
+  generateReport,
+  correlateResponseLoaded,
 }) => {
   const [tabValue, setTabValue] = useLocalStorage('tabValue', 'Manual');
   const [segments, setSegments] = useState([] as string[]);
@@ -201,6 +211,12 @@ const CorrelationCard: React.FC<ComponentProps> = ({
               )}
               Correlate
             </Button>
+            {correlateResponseLoaded && generateReport && (
+              <GenerateReportButton
+                generateReport={generateReport}
+                stock={inputFields.ticker}
+              />
+            )}
           </TabsContent>
           <TabsContent
             value="Manual"
@@ -258,6 +274,9 @@ const CorrelationCard: React.FC<ComponentProps> = ({
               )}
               Correlate
             </Button>
+            {correlateResponseLoaded && generateReport && (
+              <GenerateReportButton generateReport={generateReport} />
+            )}
           </TabsContent>
         </Tabs>
       </CardContent>

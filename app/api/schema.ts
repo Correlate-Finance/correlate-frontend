@@ -49,6 +49,7 @@ export type CorrelationData = {
   data: CorrelationDataPoint[];
   aggregationPeriod: string;
   correlationMetric: string;
+  correlationParametersId: number;
 };
 
 export type CorrelationDataPoint = {
@@ -77,6 +78,23 @@ export type IndexType = {
   id: number;
   name: string;
   index_datasets: IndexDatasetType[];
+};
+
+export type LLMResponse = {
+  id: string;
+  name: string;
+  correlation: number;
+  rationale: string;
+};
+
+export type Report = {
+  id: number;
+  llm_response: LLMResponse[];
+  report_data: CorrelationDataPoint[];
+  created_at: string;
+  // Todo: Create a type for the correlation parameters
+  parameters: any;
+  description: string;
 };
 
 export const registerFieldsSchema = z

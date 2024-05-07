@@ -1,6 +1,6 @@
 'use client';
 
-import { DatasetMetadataType } from '@/app/api/schema';
+import { CorrelationData, DatasetMetadataType } from '@/app/api/schema';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Pagination,
@@ -23,9 +23,9 @@ import {
   inputFieldsSchema,
   useCorrelateInputData,
   useCorrelateInputText,
-  useCorrelateResponseData,
   useSubmitForm,
 } from '@/hooks/usePage';
+import { getReport } from '@/lib/getReport';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -160,8 +160,13 @@ export default function SearchableTable({
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
-  const { correlateResponseData, setCorrelateResponseData } =
-    useCorrelateResponseData();
+  const [correlateResponseData, setCorrelateResponseData] =
+    useState<CorrelationData>({
+      data: [],
+      aggregationPeriod: '',
+      correlationMetric: '',
+      correlationParametersId: -1,
+    });
   const { correlateInputData, setCorrelateInputData } = useCorrelateInputData();
 
   const { onSubmit, loading: loadingAutomatic } = useSubmitForm(
@@ -196,6 +201,12 @@ export default function SearchableTable({
           }}
           loadingManual={loadingManual}
           setLagPeriods={setLagPeriods}
+          generateReport={(
+            stock?: string,
+            name?: string,
+            description?: string,
+          ) => getReport({ name, correlateResponseData, description, stock })}
+          correlateResponseLoaded={correlateResponseData.data.length != 0}
         />
         {!showResults && (
           <div className="w-2/3 mt-4 mx-8">
@@ -321,7 +332,15 @@ export default function SearchableTable({
           <div className="flex-1">
             <button
               className="cursor-pointer flex flex-row ml-6 mt-4 items-center"
-              onClick={() => setShowResults(false)}
+              onClick={() => {
+                setShowResults(false);
+                setCorrelateResponseData({
+                  data: [],
+                  aggregationPeriod: '',
+                  correlationMetric: '',
+                  correlationParametersId: -1,
+                });
+              }}
             >
               <ArrowLeft className="w-4 h-4" />
               <p>Search</p>

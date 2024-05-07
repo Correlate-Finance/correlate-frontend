@@ -129,7 +129,7 @@ export default function SearchableIndexTable({ data }: { data: IndexType[] }) {
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
   const { correlateInputData, setCorrelateInputData } = useCorrelateInputData();
   const { correlateResponseData, setCorrelateResponseData } =
-    useCorrelateResponseData();
+    useCorrelateResponseData('indexExplorerCorrelateResponseData');
 
   const { onSubmit, loading: loadingAutomatic } = useSubmitForm(
     setCorrelateResponseData,
@@ -176,6 +176,7 @@ export default function SearchableIndexTable({ data }: { data: IndexType[] }) {
         }}
         loadingManual={loadingManual}
         setLagPeriods={setLagPeriods}
+        correlateResponseLoaded={correlateResponseData.data.length != 0}
       />
       <div className="w-full mt-4">
         {!showResults && (

@@ -1,6 +1,10 @@
 'use server';
 
-import { CorrelationData, IndexType } from '@/app/api/schema';
+import {
+  CorrelationData,
+  CorrelationDataPoint,
+  IndexType,
+} from '@/app/api/schema';
 import { inputFieldsSchema } from '@/hooks/usePage';
 import { authOptions } from '@/lib/configs/authOptions';
 import { getServerSession } from 'next-auth/next';
@@ -8,6 +12,7 @@ import { z } from 'zod';
 import {
   DatasetMetadataType,
   IndexDataset,
+  Report,
   registerFieldsSchema,
 } from './schema';
 import { getBaseUrl } from './util';
@@ -288,6 +293,90 @@ export async function getDatasetFilters() {
       Authorization: `Token ${session.user.accessToken}`,
     },
   });
+  const data = await response.json();
+  return data;
+}
+
+export async function generateReport(
+  topCorrelations: CorrelationDataPoint[],
+  correlationParametersId: number,
+  stock?: string,
+  name?: string,
+  companyDescription?: string,
+) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+  let urlParams;
+  if (stock !== undefined) {
+    urlParams = new URLSearchParams({
+      stock: stock,
+      correlation_parameters_id: correlationParametersId.toString(),
+    });
+  } else if (name !== undefined && companyDescription !== undefined) {
+    urlParams = new URLSearchParams({
+      correlation_parameters_id: correlationParametersId.toString(),
+      name: name,
+      company_description: companyDescription,
+    });
+  } else {
+    return Promise.reject('No stock or company information provided');
+  }
+
+  const response = await fetch(
+    `${getBaseUrl()}/generate-report?${urlParams.toString()}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Token ${session.user.accessToken}`,
+      },
+      body: JSON.stringify({
+        top_correlations: topCorrelations,
+      }),
+    },
+  );
+  const data = await response.json();
+  return data;
+}
+
+export async function getReport(report_id: string): Promise<Report> {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+
+  const urlParams = new URLSearchParams({
+    report_id: report_id,
+  });
+
+  const response = await fetch(
+    `${getBaseUrl()}/get-report?${urlParams.toString()}`,
+    {
+      headers: {
+        Authorization: `Token ${session.user.accessToken}`,
+      },
+    },
+  );
+  const data = await response.json();
+  return data;
+}
+
+export async function getAllReports(): Promise<Report[]> {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+
+  const response = await fetch(`${getBaseUrl()}/get-all-reports`, {
+    headers: {
+      Authorization: `Token ${session.user.accessToken}`,
+    },
+  });
+
   const data = await response.json();
   return data;
 }

@@ -63,11 +63,11 @@ const DarkModeLogo: React.FC<ISvgIconProps> = ({ className }) => {
             y2="2.13777"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#C8DCFF" />
-            <stop offset="0.0001" stop-color="#BAB7E6" />
-            <stop offset="0.255" stop-color="#ABA8EB" />
-            <stop offset="0.775" stop-color="#B9B5F8" />
-            <stop offset="1" stop-color="white" />
+            <stop stopColor="#C8DCFF" />
+            <stop offset="0.0001" stopColor="#BAB7E6" />
+            <stop offset="0.255" stopColor="#ABA8EB" />
+            <stop offset="0.775" stopColor="#B9B5F8" />
+            <stop offset="1" stopColor="white" />
           </linearGradient>
           <linearGradient
             id="paint1_linear_212_4850"
@@ -77,11 +77,11 @@ const DarkModeLogo: React.FC<ISvgIconProps> = ({ className }) => {
             y2="-7.5786"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#D7E5FF" />
-            <stop offset="0.0001" stop-color="#605D92" />
-            <stop offset="0.265" stop-color="#B5B2ED" />
-            <stop offset="0.57" stop-color="#7773CD" />
-            <stop offset="1" stop-color="#8A8A8A" />
+            <stop stopColor="#D7E5FF" />
+            <stop offset="0.0001" stopColor="#605D92" />
+            <stop offset="0.265" stopColor="#B5B2ED" />
+            <stop offset="0.57" stopColor="#7773CD" />
+            <stop offset="1" stopColor="#8A8A8A" />
           </linearGradient>
           <linearGradient
             id="paint2_linear_212_4850"
@@ -91,12 +91,12 @@ const DarkModeLogo: React.FC<ISvgIconProps> = ({ className }) => {
             y2="32.992"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#A0BCEE" />
-            <stop offset="0.0001" stop-color="#E2D4FF" />
-            <stop offset="0.255" stop-color="#DFDEFF" />
-            <stop offset="0.585524" stop-color="#4E4A99" />
-            <stop offset="0.850421" stop-color="#D7D6FF" />
-            <stop offset="1" stop-color="#C9E3FF" />
+            <stop stopColor="#A0BCEE" />
+            <stop offset="0.0001" stopColor="#E2D4FF" />
+            <stop offset="0.255" stopColor="#DFDEFF" />
+            <stop offset="0.585524" stopColor="#4E4A99" />
+            <stop offset="0.850421" stopColor="#D7D6FF" />
+            <stop offset="1" stopColor="#C9E3FF" />
           </linearGradient>
           <linearGradient
             id="paint3_linear_212_4850"
@@ -106,11 +106,11 @@ const DarkModeLogo: React.FC<ISvgIconProps> = ({ className }) => {
             y2="39.0036"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#E1ECFF" />
-            <stop offset="0.0001" stop-color="#8FA8D6" />
-            <stop offset="0.265" stop-color="#C0BCFF" />
-            <stop offset="0.57" stop-color="#918BFF" />
-            <stop offset="1" stop-color="#FFF7F7" />
+            <stop stopColor="#E1ECFF" />
+            <stop offset="0.0001" stopColor="#8FA8D6" />
+            <stop offset="0.265" stopColor="#C0BCFF" />
+            <stop offset="0.57" stopColor="#918BFF" />
+            <stop offset="1" stopColor="#FFF7F7" />
           </linearGradient>
         </defs>
       </svg>
