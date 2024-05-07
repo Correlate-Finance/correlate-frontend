@@ -9,6 +9,7 @@ import {
   useCorrelateResponseData,
   useSubmitForm,
 } from '@/hooks/usePage';
+import { getReport } from '@/lib/getReport';
 import { useState } from 'react';
 import { z } from 'zod';
 
@@ -38,6 +39,15 @@ const HomePage = () => {
         }}
         loadingManual={loadingManual}
         setLagPeriods={setLagPeriods}
+        generateReport={(stock?: string, name?: string, description?: string) =>
+          getReport({
+            name,
+            correlateResponseData,
+            description,
+            stock,
+          })
+        }
+        correlateResponseLoaded={correlateResponseData.data.length != 0}
       />
       <div className="flex-1">
         <CorrelationResult

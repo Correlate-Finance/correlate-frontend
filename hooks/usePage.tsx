@@ -28,12 +28,15 @@ export function useCorrelateInputData() {
   return { correlateInputData, setCorrelateInputData };
 }
 
-export function useCorrelateResponseData() {
+export function useCorrelateResponseData(
+  localStorageKey: string = 'correlateResponseData',
+) {
   const [correlateResponseData, setCorrelateResponseData] =
     useLocalStorage<CorrelationData>('correlateResponseData', {
       data: [],
       aggregationPeriod: '',
       correlationMetric: '',
+      correlationParametersId: -1,
     });
   return { correlateResponseData, setCorrelateResponseData };
 }
@@ -106,6 +109,7 @@ export const useSubmitForm = (
       data: [],
       aggregationPeriod: '',
       correlationMetric: '',
+      correlationParametersId: -1,
     });
 
     const {
@@ -154,6 +158,7 @@ export const useSubmitForm = (
         data: jsonData.data.data,
         aggregationPeriod: jsonData.data.aggregation_period,
         correlationMetric: jsonData.data.correlation_metric,
+        correlationParametersId: jsonData.data.correlation_parameters_id,
       };
       setCorrelateResponseData(correlationData);
       setHasData(true);
@@ -245,6 +250,7 @@ export const useCorrelateInputText = (
         data: jsonData.data.data,
         aggregationPeriod: jsonData.data.aggregation_period,
         correlationMetric: jsonData.data.correlation_metric,
+        correlationParametersId: jsonData.data.correlation_parameters_id,
       };
       setCorrelateResponseData(correlationData);
       setHasData(true);

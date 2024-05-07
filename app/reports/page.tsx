@@ -1,0 +1,60 @@
+'use client';
+
+import { Report } from '@/app/api/schema';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { getAllReports } from '../api/actions';
+
+export default function ReportPage() {
+  const [data, setData] = useState<Report[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchedData = await getAllReports();
+      setData(fetchedData);
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <div>
+      <Table className="mx-8 w-[90%] m-auto">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Index</TableHead>
+            <TableHead>Ticker</TableHead>
+            <TableHead>Created At</TableHead>
+            <TableHead>Description</TableHead>
+          </TableRow>
+        </TableHeader>
+
+        <TableBody>
+          {data.map((report, i) => (
+            <TableRow
+              key={report.id}
+              onClick={() => router.push(`/report/${report.id}`)}
+              className="cursor-pointer hover:bg-gray-100"
+            >
+              <TableCell>{i + 1}</TableCell>
+              <TableCell>{report.parameters.ticker}</TableCell>
+              <TableCell>{report.created_at}</TableCell>
+              <TableCell className="line-clamp-2 max-h-[80%]">
+                {report.description}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}

@@ -32,6 +32,9 @@ const Header = () => {
           <Link href="/index-explorer">
             <h2 className="text-[16px] mx-6">Index Explorer</h2>
           </Link>
+          <Link href="/reports">
+            <h2 className="text-[16px] mx-6">Reports</h2>
+          </Link>
         </div>
         <div className="flex flex-row justify-end w-1/5 items-center gap-4 mr-2">
           <ThemeSwitch />
