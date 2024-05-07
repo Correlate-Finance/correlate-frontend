@@ -49,6 +49,7 @@ const CorrelationResult = ({
               data: data.data,
               aggregationPeriod,
               correlationMetric,
+              correlationParametersId: data.correlationParametersId,
             }}
             lagPeriods={lagPeriods}
           />
