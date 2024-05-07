@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { getAllReports } from '../api/actions';
 
-export default function ReportPage() {
+export default function ReportsPage() {
   const [data, setData] = useState<Report[]>([]);
   const router = useRouter();
 
