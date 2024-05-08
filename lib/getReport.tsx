@@ -19,10 +19,9 @@ export async function getReport({
   if (!name && !stock) {
     return;
   }
-
   toast({
     title: 'Generating Report',
-    description: 'The report is being generated for ' + name || stock,
+    description: `The report is being generated for  ${name || stock}`,
   });
 
   const data = await generateReport(
