@@ -1,13 +1,13 @@
 'use client';
-import { getReport } from '@/app/api/actions';
+import { addOrRemoveWatchlist, fetchWatchlistedRows, getReport } from '@/app/api/actions';
 import { CorrelationDataPoint, Report } from '@/app/api/schema';
 import ExpandableText from '@/components/ExpandableText';
 import DoubleLineChart from '@/components/chart/DoubleLineChart';
 import { useToast } from '@/components/ui/use-toast';
 import { convertToGraphData, correlationCoefficient } from '@/lib/utils';
+import { BellIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-
 type TProps = {
   params: {
     id: string;
@@ -19,11 +19,19 @@ export default function ReportPage({ params }: Readonly<TProps>) {
   const { toast } = useToast();
   const [correlations, setCorrelations] = useState<number[]>([]);
   const [graphData, setGraphData] = useState<any[][]>([[]]);
+  const [watchlistedRows, setWatchlistedRows] = useState<boolean[]>([]);
 
   useEffect(() => {
     if (!report) return;
     setCorrelations(report.report_data.map((dp) => dp.pearson_value));
     setGraphData(report.report_data.map((dp) => convertToGraphData(dp)));
+
+    const datasetTitles = report?.report_data.map((dp) => dp.title);
+    if (!datasetTitles) return;
+    const responseData = fetchWatchlistedRows(datasetTitles);
+    responseData.then((data) => {
+      setWatchlistedRows(data.watchlisted);
+    });
   }, [report]);
 
   useEffect(() => {
@@ -74,14 +82,33 @@ export default function ReportPage({ params }: Readonly<TProps>) {
       <ul>
         {report?.report_data.map((dp, i) => (
           <li className="my-4" key={i}>
-            <div className="font-bold">
+            <div className="flex flex-row gap-1 font-bold">
+              <BellIcon
+                className="h-6 cursor-pointer hover:text-green-400 transition-colors duration-300 ease-in-out"
+                fill={watchlistedRows[i] ? '#166534' : 'none'}
+                stroke={watchlistedRows[i] ? '#166534' : 'currentColor'}
+                onClick={() => {
+                  toast({
+                    title: watchlistedRows[i]
+                      ? 'Disabled Alerts for'
+                      : 'Enabled Alerts for',
+                    description: `${dp.title}`,
+                  });
+                  addOrRemoveWatchlist(watchlistedRows[i], dp.title);
+                  setWatchlistedRows((prev) => {
+                    const newWatchlistedRows = [...prev];
+                    newWatchlistedRows[i] = !watchlistedRows[i];
+                    return newWatchlistedRows;
+                  });
+                }}
+              />
               <Link
                 className="hover:underline"
                 href={`/data/${dp.internal_name}`}
               >{`${i + 1}: ${dp.title}`}</Link>
             </div>
-            <div className="flex flex-col gap-2">
-              <div className="h-[60vh]">
+            <div className="flex flex-col gap-2 items-center">
+              <div className="w-[80%]">
                 {graphData[i] && (
                   <DoubleLineChart
                     data={graphData[i]}
