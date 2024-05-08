@@ -1,6 +1,7 @@
 'use client';
 import { getReport } from '@/app/api/actions';
 import { CorrelationDataPoint, Report } from '@/app/api/schema';
+import ExpandableText from '@/components/ExpandableText';
 import DoubleLineChart from '@/components/chart/DoubleLineChart';
 import { useToast } from '@/components/ui/use-toast';
 import { convertToGraphData, correlationCoefficient } from '@/lib/utils';
@@ -67,7 +68,7 @@ export default function ReportPage({ params }: Readonly<TProps>) {
       <h1 className="text-3xl font-bold text-center my-6 underline">
         AI generated report for {report?.name}
       </h1>
-      <p>Company Description: {report?.description}</p>
+      <ExpandableText text={`Company Description: ${report?.description}`} />
 
       <ul>
         {report?.report_data.map((dp, i) => (
