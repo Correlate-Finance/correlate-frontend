@@ -1,11 +1,10 @@
 'use client';
-
 import { getReport } from '@/app/api/actions';
-import { Report } from '@/app/api/schema';
+import { CorrelationDataPoint, Report } from '@/app/api/schema';
 import DoubleLineChart from '@/components/chart/DoubleLineChart';
 import { useToast } from '@/components/ui/use-toast';
-import { convertToGraphData } from '@/lib/utils';
-import { useEffect, useState } from 'react';
+import { convertToGraphData, correlationCoefficient } from '@/lib/utils';
+import { useCallback, useEffect, useState } from 'react';
 
 type TProps = {
   params: {
@@ -16,6 +15,14 @@ type TProps = {
 export default function ReportPage({ params }: Readonly<TProps>) {
   const [report, setReport] = useState<Report>();
   const { toast } = useToast();
+  const [correlations, setCorrelations] = useState<number[]>([]);
+  const [graphData, setGraphData] = useState<any[][]>([[]]);
+
+  useEffect(() => {
+    if (!report) return;
+    setCorrelations(report.report_data.map((dp) => dp.pearson_value));
+    setGraphData(report.report_data.map((dp) => convertToGraphData(dp)));
+  }, [report]);
 
   useEffect(() => {
     getReport(params.id)
@@ -30,10 +37,35 @@ export default function ReportPage({ params }: Readonly<TProps>) {
       });
   }, [params.id, toast]);
 
+  const onBrushChange = useCallback((dp: CorrelationDataPoint, i: number) => {
+    return ({
+      startIndex,
+      endIndex,
+    }: {
+      startIndex?: number;
+      endIndex?: number;
+    }) => {
+      const X = dp.dataset_data.slice(
+        startIndex,
+        endIndex ? endIndex - dp.lag + 1 : dp.dataset_data.length - dp.lag,
+      );
+      const Y = dp.input_data.slice(
+        startIndex ? startIndex + dp.lag : dp.lag,
+        endIndex ? endIndex + 1 : dp.input_data.length,
+      );
+      const newCorrelation = correlationCoefficient(X, Y);
+      setCorrelations((prev) => {
+        const newCorrelations = [...prev];
+        newCorrelations[i] = newCorrelation;
+        return newCorrelations;
+      });
+    };
+  }, []);
+
   return (
     <div className="flex max-w-[800px] mx-auto flex-col justify-center">
       <h1 className="text-3xl font-bold text-center my-6 underline">
-        AI generated report for ticker {report?.parameters.ticker}
+        AI generated report for {report?.name}
       </h1>
       <p>Company Description: {report?.description}</p>
 
@@ -43,11 +75,14 @@ export default function ReportPage({ params }: Readonly<TProps>) {
             <div className="font-bold">{`${i + 1}: ${dp.title}`}</div>
             <div className="flex flex-col gap-2">
               <div className="h-[60vh]">
-                <DoubleLineChart
-                  data={convertToGraphData(dp)}
-                  syncId="sync"
-                  correlation={dp.pearson_value.toString()}
-                />
+                {graphData[i] && (
+                  <DoubleLineChart
+                    data={graphData[i]}
+                    syncId="sync"
+                    correlation={correlations[i]?.toFixed(3)}
+                    onBrushChange={onBrushChange(dp, i)}
+                  />
+                )}
               </div>
               <p className="dark:text-gray-300 text-gray-400 text-center">
                 {dp.source}: {dp.url}
