@@ -5,6 +5,7 @@ import ExpandableText from '@/components/ExpandableText';
 import DoubleLineChart from '@/components/chart/DoubleLineChart';
 import { useToast } from '@/components/ui/use-toast';
 import { convertToGraphData, correlationCoefficient } from '@/lib/utils';
+import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
 type TProps = {
@@ -73,7 +74,12 @@ export default function ReportPage({ params }: Readonly<TProps>) {
       <ul>
         {report?.report_data.map((dp, i) => (
           <li className="my-4" key={i}>
-            <div className="font-bold">{`${i + 1}: ${dp.title}`}</div>
+            <div className="font-bold">
+              <Link
+                className="hover:underline"
+                href={`/data/${dp.internal_name}`}
+              >{`${i + 1}: ${dp.title}`}</Link>
+            </div>
             <div className="flex flex-col gap-2">
               <div className="h-[60vh]">
                 {graphData[i] && (
