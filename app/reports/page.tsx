@@ -14,6 +14,35 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { generateAutomaticReport, getAllReports } from '../api/actions';
 
+function time2TimeAgo(ts: number) {
+  // This function computes the delta between the
+  // provided timestamp and the current time, then test
+  // the delta for predefined ranges.
+
+  var d = new Date(); // Gets the current time
+  var nowTs = Math.floor(d.getTime() / 1000); // getTime() returns milliseconds, and we need seconds, hence the Math.floor and division by 1000
+  var seconds = nowTs - ts;
+
+  // more that two days
+  if (seconds > 2 * 24 * 3600) {
+    return new Date(ts * 1000).toLocaleDateString();
+  }
+  // a day
+  if (seconds > 24 * 3600) {
+    return 'yesterday';
+  }
+
+  if (seconds > 3600) {
+    return 'a few hours ago';
+  }
+  if (seconds > 1800) {
+    return 'Half an hour ago';
+  }
+  if (seconds > 60) {
+    return Math.floor(seconds / 60) + ' minutes ago';
+  }
+}
+
 export default function ReportsPage() {
   const [data, setData] = useState<Report[]>([]);
   const router = useRouter();
@@ -21,7 +50,7 @@ export default function ReportsPage() {
   useEffect(() => {
     const fetchData = async () => {
       const fetchedData = await getAllReports();
-      setData(fetchedData);
+      setData(fetchedData.reverse());
     };
 
     fetchData();
@@ -48,7 +77,11 @@ export default function ReportsPage() {
             >
               <TableCell>{i + 1}</TableCell>
               <TableCell>{report.name}</TableCell>
-              <TableCell>{report.created_at}</TableCell>
+              <TableCell>
+                {time2TimeAgo(
+                  new Date(Date.parse(report.created_at)).getTime() / 1000,
+                )}
+              </TableCell>
               <TableCell className="line-clamp-2 max-h-[80%]">
                 {report.description}
               </TableCell>
