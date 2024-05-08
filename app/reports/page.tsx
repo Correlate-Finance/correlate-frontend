@@ -1,6 +1,7 @@
 'use client';
 
 import { Report } from '@/app/api/schema';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -11,7 +12,7 @@ import {
 } from '@/components/ui/table';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { getAllReports } from '../api/actions';
+import { generateAutomaticReport, getAllReports } from '../api/actions';
 
 export default function ReportsPage() {
   const [data, setData] = useState<Report[]>([]);
@@ -46,7 +47,7 @@ export default function ReportsPage() {
               className="cursor-pointer hover:bg-gray-100"
             >
               <TableCell>{i + 1}</TableCell>
-              <TableCell>{report.parameters.ticker}</TableCell>
+              <TableCell>{report.name}</TableCell>
               <TableCell>{report.created_at}</TableCell>
               <TableCell className="line-clamp-2 max-h-[80%]">
                 {report.description}
@@ -55,6 +56,9 @@ export default function ReportsPage() {
           ))}
         </TableBody>
       </Table>
+      <Button onClick={() => generateAutomaticReport(['AAPL'])}>
+        Generate New Report
+      </Button>
     </div>
   );
 }

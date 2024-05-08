@@ -42,7 +42,7 @@ export default function ReportPage({ params }: Readonly<TProps>) {
           <li className="my-4" key={i}>
             <div className="font-bold">{`${i + 1}: ${dp.title}`}</div>
             <div className="flex flex-col gap-2">
-              <div className="h-[50vh]">
+              <div className="h-[60vh]">
                 <DoubleLineChart
                   data={convertToGraphData(dp)}
                   syncId="sync"

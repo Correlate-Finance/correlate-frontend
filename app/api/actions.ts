@@ -380,3 +380,31 @@ export async function getAllReports(): Promise<Report[]> {
   const data = await response.json();
   return data;
 }
+
+export async function generateAutomaticReport(
+  stocks: string[],
+): Promise<Report> {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return Promise.reject('Unauthorized');
+  }
+
+  const urlParams = new URLSearchParams({});
+  stocks.forEach((stock) => {
+    urlParams.append('stocks', stock);
+  });
+
+  const response = await fetch(
+    `${getBaseUrl()}/generate-automatic-report/?${urlParams.toString()}`,
+    {
+      headers: {
+        Authorization: `Token ${session.user.accessToken}`,
+      },
+      method: 'POST',
+    },
+  );
+
+  const data = await response.json();
+  return data;
+}

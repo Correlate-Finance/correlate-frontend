@@ -95,6 +95,7 @@ export type Report = {
   // Todo: Create a type for the correlation parameters
   parameters: any;
   description: string;
+  name: string;
 };
 
 export const registerFieldsSchema = z
