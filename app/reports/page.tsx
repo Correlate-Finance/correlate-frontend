@@ -1,7 +1,7 @@
 'use client';
 
 import { Report } from '@/app/api/schema';
-import { Button } from '@/components/ui/button';
+import GenerateAutomaticReportModal from '@/components/GenerateAutomaticReportModal';
 import {
   Table,
   TableBody,
@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/table';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { generateAutomaticReport, getAllReports } from '../api/actions';
+import { getAllReports } from '../api/actions';
 
 function time2TimeAgo(ts: number) {
   // This function computes the delta between the
@@ -33,7 +33,7 @@ function time2TimeAgo(ts: number) {
   }
 
   if (seconds > 3600) {
-    return 'a few hours ago';
+    return Math.floor(seconds / 3600) + ' hours ago';
   }
   if (seconds > 1800) {
     return 'Half an hour ago';
@@ -41,6 +41,7 @@ function time2TimeAgo(ts: number) {
   if (seconds > 60) {
     return Math.floor(seconds / 60) + ' minutes ago';
   }
+  return 'Just now';
 }
 
 export default function ReportsPage() {
@@ -89,9 +90,9 @@ export default function ReportsPage() {
           ))}
         </TableBody>
       </Table>
-      <Button onClick={() => generateAutomaticReport(['AAPL'])}>
-        Generate New Report
-      </Button>
+      <div className="sticky bottom-4 flex flex-row mx-8 justify-end gap-4">
+        <GenerateAutomaticReportModal />
+      </div>
     </div>
   );
 }

@@ -1,5 +1,9 @@
 'use client';
-import { addOrRemoveWatchlist, fetchWatchlistedRows, getReport } from '@/app/api/actions';
+import {
+  addOrRemoveWatchlist,
+  fetchWatchlistedRows,
+  getReport,
+} from '@/app/api/actions';
 import { CorrelationDataPoint, Report } from '@/app/api/schema';
 import ExpandableText from '@/components/ExpandableText';
 import DoubleLineChart from '@/components/chart/DoubleLineChart';
