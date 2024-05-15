@@ -1,0 +1,2 @@
+!function(){function e(e){var n=JSON.parse(e.message);document.querySelector("h2").textContent=n.name}Office.onReady((function(){Office.context.ui.addHandlerAsync(Office.EventType.DialogParentMessageReceived,e)}))}();
+//# sourceMappingURL=error.js.map
