@@ -74,7 +74,7 @@ export default function ReportsPage() {
             <TableRow
               key={report.id}
               onClick={() => router.push(`/report/${report.id}`)}
-              className="cursor-pointer hover:bg-gray-100"
+              className="cursor-pointer"
             >
               <TableCell>{i + 1}</TableCell>
               <TableCell>{report.name}</TableCell>
@@ -83,8 +83,8 @@ export default function ReportsPage() {
                   new Date(Date.parse(report.created_at)).getTime() / 1000,
                 )}
               </TableCell>
-              <TableCell className="line-clamp-2 max-h-[80%]">
-                {report.description}
+              <TableCell>
+                <p className="line-clamp-2">{report.description}</p>
               </TableCell>
             </TableRow>
           ))}
