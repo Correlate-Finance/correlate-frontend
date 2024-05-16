@@ -20,6 +20,7 @@ import {
   exportToExcel,
 } from '@/lib/utils';
 import { BellIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import { useToast } from './ui/use-toast';
@@ -164,12 +165,14 @@ const ResultsRow: React.FC<MyComponentProps> = ({
                   {dp.source}: {dp.url}
                 </p>
               </div>
-              <Button
-                onClick={() => router.push(`/data/${dp.internal_name}`)}
-                className="bg-blue-700 hover:bg-blue-900"
-              >
-                Data Trend
-              </Button>
+              <Link href={`/data/${dp.internal_name}`}>
+                <Button
+                  onClick={() => router.push(`/data/${dp.internal_name}`)}
+                  className="bg-blue-700 hover:bg-blue-900"
+                >
+                  Data Trend
+                </Button>
+              </Link>
             </div>
           </TableCell>
         </TableRow>

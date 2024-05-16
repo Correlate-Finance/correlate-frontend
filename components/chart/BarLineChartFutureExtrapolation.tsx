@@ -114,17 +114,6 @@ const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
               }
             }}
           />
-          <YAxis
-            yAxisId="right"
-            orientation="right"
-            tickFormatter={(number) => {
-              if (lineChartKeyFormat === 'percentage') {
-                return formatPercentage(number);
-              } else {
-                return formatNumber(number);
-              }
-            }}
-          />
           <Tooltip
             formatter={(value, name, { dataKey }) => {
               if (
@@ -172,7 +161,7 @@ const BarLineChartFutureExtrapolation: React.FC<MyComponentProps> = ({
               })}
           </Bar>
           <Line
-            yAxisId="right"
+            yAxisId="left"
             type="monotone"
             dataKey={lineChartKey}
             stroke="#ff7300"

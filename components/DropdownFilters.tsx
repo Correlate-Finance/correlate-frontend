@@ -43,13 +43,19 @@ const DropdownFilters = <T extends DatasetMetadataType | CorrelationDataPoint>({
       }
     });
 
-    setSelectedCategories(Array.from(categories));
-    setSelectedReleases(Array.from(releases));
-    setSelectedSources(Array.from(sources));
+    const caseInsensitiveSort = (a: string, b: string) =>
+      a.toLowerCase().localeCompare(b.toLowerCase());
+    const sortedCategories = Array.from(categories).sort(caseInsensitiveSort);
+    const sortedReleases = Array.from(releases).sort(caseInsensitiveSort);
+    const sortedSources = Array.from(sources).sort(caseInsensitiveSort);
+
+    setSelectedCategories(sortedCategories);
+    setSelectedReleases(sortedReleases);
+    setSelectedSources(sortedSources);
     setFilters({
-      categories: Array.from(categories),
-      source: Array.from(sources),
-      release: Array.from(releases),
+      categories: sortedCategories,
+      source: sortedSources,
+      release: sortedReleases,
     });
   }, [data]);
 
