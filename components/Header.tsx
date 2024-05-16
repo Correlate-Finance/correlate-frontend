@@ -16,25 +16,29 @@ const Header = () => {
   return (
     <header className="flex-row justify-items-center">
       <div className="flex flex-row justify-between items-center">
-        <div className="flex flex-row justify-start items-center">
+        <div className="flex flex-row justify-start items-center min-h-[50px]">
           <Link href="/">
             <div>
               {resolvedTheme === 'dark' && <DarkModeLogo className="h-6" />}
               {resolvedTheme === 'light' && <LightModeLogo className="h-6" />}
             </div>
           </Link>
-          <Link href="/">
-            <h2 className="text-[16px] mx-6">Home</h2>
-          </Link>
-          <Link href="/table-explorer">
-            <h2 className="text-[16px] mx-6">Dataset Explorer</h2>
-          </Link>
-          <Link href="/index-explorer">
-            <h2 className="text-[16px] mx-6">Index Explorer</h2>
-          </Link>
-          <Link href="/reports">
-            <h2 className="text-[16px] mx-6">Reports</h2>
-          </Link>
+          {session.status === 'authenticated' && (
+            <>
+              <Link href="/">
+                <h2 className="text-[16px] mx-6">Home</h2>
+              </Link>
+              <Link href="/table-explorer">
+                <h2 className="text-[16px] mx-6">Dataset Explorer</h2>
+              </Link>
+              <Link href="/index-explorer">
+                <h2 className="text-[16px] mx-6">Index Explorer</h2>
+              </Link>
+              <Link href="/reports">
+                <h2 className="text-[16px] mx-6">Reports</h2>
+              </Link>
+            </>
+          )}
         </div>
         <div className="flex flex-row justify-end w-1/5 items-center gap-4 mr-2">
           <ThemeSwitch />
